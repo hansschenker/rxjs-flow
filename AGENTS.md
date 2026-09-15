@@ -12,8 +12,8 @@ history and attribution. Do not modify `rxjs-stack` or `rxjs-fullstack`.
 
 Recovery PR #1 is merged at `27f8f2cbcc7ba68ff6bc1062ebf25cc46f363769`;
 both original histories are verified in main ancestry. M00 execution evidence
-is recorded on `m00/baseline-evidence`, with closeout under review. Stay within
-M00 until accepted; do not advance automatically to M01.
+is recorded on `m00/baseline-evidence`; the user approved closeout PR #2 for
+merge. Verify its merged state when resuming. Do not advance automatically to M01.
 
 Use a dedicated branch and pull request. No merge, release, package publication
 or deployment without explicit authorization. Preserve the imported ancestry.

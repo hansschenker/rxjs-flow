@@ -69,3 +69,20 @@ M05 before treating the production start/stop story as complete. Generated
 Evidence: [client build](final-client-build.txt),
 [server build](server-build.txt), [source startup](server-source-smoke-final.txt),
 [emitted startup](server-built-smoke.txt).
+
+## Review correction before the approved closeout merge
+
+CodeRabbit identified that Python optimization could skip `assert`-based
+acceptance checks in the archived smoke harness. The checks now use explicit
+conditions and raise errors for missing/wrong Node, invalid health, or invalid
+Todo responses. Production TypeScript is unchanged.
+
+`python -O docs/m00/server-smoke.py --import tsx src/server/main.ts` passed
+against the actual source server on Node 22.22.1. Six isolated invalid fixtures
+(missing Node, wrong Node, bad health, bad Todo status, wrong collection type,
+and invalid Todo fields) were rejected under `python -O` as well. The fixture
+check mocked process/socket boundaries and did not launch another server.
+
+Evidence: [optimized real smoke](reviewed-smoke-source-optimized.txt),
+[optimized invalid-fixture checks](reviewed-smoke-invalid-optimized.txt), and
+the appended command ledger entries.

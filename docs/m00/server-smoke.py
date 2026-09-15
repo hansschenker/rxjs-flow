@@ -11,8 +11,11 @@ import time
 
 cwd = str(pathlib.Path(__file__).resolve().parents[2])
 node = shutil.which('node')
-assert node is not None, 'Node 22.22.1 is required'
-assert subprocess.check_output([node, '--version'], text=True).strip() == 'v22.22.1'
+if node is None:
+    raise RuntimeError('Node 22.22.1 is required but node was not found')
+node_version = subprocess.check_output([node, '--version'], text=True).strip()
+if node_version != 'v22.22.1':
+    raise RuntimeError(f'Node 22.22.1 is required; found {node_version}')
 command = [node, *sys.argv[1:]]
 with socket.socket() as check:
     check.bind(('127.0.0.1', 3000))
@@ -33,14 +36,17 @@ try:
             if time.monotonic() > deadline or child.poll() is not None:
                 raise
             time.sleep(0.02)
-    assert health == [200, {'status': 'ok'}], health
+    if health != [200, {'status': 'ok'}]:
+        raise ValueError(f'Invalid health response: {health!r}')
     connection = http.client.HTTPConnection('127.0.0.1', 3000, timeout=2)
     connection.request('GET', '/todos')
     response = connection.getresponse()
     todos = [response.status, json.loads(response.read())]
     connection.close()
-    assert todos[0] == 200 and isinstance(todos[1], list), todos
-    assert all(isinstance(todo.get('id'), str) and isinstance(todo.get('title'), str) and isinstance(todo.get('completed'), bool) for todo in todos[1]), todos
+    if todos[0] != 200 or not isinstance(todos[1], list):
+        raise ValueError(f'Invalid Todo list response: {todos!r}')
+    if not all(isinstance(todo, dict) and isinstance(todo.get('id'), str) and isinstance(todo.get('title'), str) and isinstance(todo.get('completed'), bool) for todo in todos[1]):
+        raise ValueError(f'Invalid Todo fields: {todos!r}')
     print(json.dumps({'command':command,'health':health,'todos':todos,'smoke':'passed'}))
 finally:
     if child.poll() is None:

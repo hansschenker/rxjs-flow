@@ -11,7 +11,7 @@ This roadmap now applies to **`hansschenker/rxjs-flow`**. It continues the imple
 
 **Goal:** complete a small, functional, RxJS-7 application architecture in which events, state, derived values, rendering, effects, and server updates participate in explicit, owned dataflow.
 
-**Implementation status, 2026-09-15:** M00's recovery is merged at `27f8f2cbcc7ba68ff6bc1062ebf25cc46f363769`. Baseline execution, characterization, dependency review and build/start decisions are recorded in [the M00 evidence report](baseline-rxjs-flow-m00.md); closeout is under review. Characterization commit `5640870a1f5b0cc92946b42e8dba261fcd0eacb6` preserves the remaining failures separately, and housekeeping commit `37735b6ef4b34d4b251514a9ab9161f6ff6ea601` removes the unused CLI. M01–M09 remain pending. The design requirements below retain revision `rxjs-flow migration r1`; this evidence update does not claim that the ChatGPT Project reference copy has already been refreshed.
+**Implementation status, 2026-09-15:** M00's recovery is merged at `27f8f2cbcc7ba68ff6bc1062ebf25cc46f363769`. Baseline execution, characterization, dependency review and build/start decisions are recorded in [the M00 evidence report](baseline-rxjs-flow-m00.md); the user approved closeout PR #2 for merge. Characterization commit `5640870a1f5b0cc92946b42e8dba261fcd0eacb6` preserves the remaining failures separately, and housekeeping commit `37735b6ef4b34d4b251514a9ab9161f6ff6ea601` removes the unused CLI. M01–M09 remain pending. The design requirements below retain revision `rxjs-flow migration r1`; this evidence update does not claim that the ChatGPT Project reference copy has already been refreshed.
 
 Read with [the architecture contract](dataflow-architecture.md) and [the historical source audit](repository-audit-2026-09-15.md). The older broad roadmap remains in [the historical archive](archive/roadmap-before-dataflow-2026-09-15.md). Existing dated plans under `docs/superpowers/` remain historical implementation records, not evidence that every item in the old broad roadmap shipped. Do not assume these documents have already reached `rxjs-flow/main`; check their presence during M00.
 
@@ -87,7 +87,7 @@ At the original audited baseline, the source changelog recorded v0.2 backend wor
 
 | ID | Outcome | Depends on | Status |
 |---|---|---|---|
-| M00 | Verified rxjs-flow import, reproducible baseline, and reconciled project status | — | Acceptance evidence recorded; closeout under review |
+| M00 | Verified rxjs-flow import, reproducible baseline, and reconciled project status | — | Accepted; closeout PR #2 approved for merge |
 | M01 | Explicit application/component/source lifetimes | M00 | Pending |
 | M02 | Instance-owned state machine and coherent derived streams | M01 | Pending |
 | M03 | Effect streams with explicit policies and correct HTTP outcomes | M02 | Pending |

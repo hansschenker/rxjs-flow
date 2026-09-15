@@ -8,7 +8,7 @@ Read it with the [architecture contract](dataflow-architecture.md),
 [M00 recovery/baseline record](baseline-rxjs-flow-m00.md).
 
 M00's recovery is merged and its baseline/characterization evidence is recorded;
-the closeout change is under review. M01 remains pending and is not authorized
+the user approved closeout PR #2 for merge. M01 remains pending and is not authorized
 by completion of the baseline work.
 
 Historical plans remain in [archive/](archive/). They are evidence of earlier

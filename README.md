@@ -6,7 +6,7 @@ A TypeScript Todo application built on **RxJS 7**, custom JSX, and Node HTTP.
 This repository continues the implementation originally developed in
 [rxjs-stack](https://github.com/hansschenker/rxjs-stack).
 
-**Current status: the import is merged; M00 baseline evidence is under review.**
+**Current status: M00 baseline acceptance is approved for closeout in PR #2.**
 The original application and Git history are present on `main`. Baseline tests
 pass; separate characterization records the remaining runtime failures and
 their milestone owners. The complete live-state loop remains planned work.

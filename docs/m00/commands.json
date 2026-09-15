@@ -248,5 +248,32 @@
     "started": "2026-09-15T08:33:16.659346+00:00",
     "finished": "2026-09-15T08:33:16.936886+00:00",
     "exit_code": 1
+  },
+  {
+    "label": "reviewed-smoke-source-optimized",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "command": [
+      "python",
+      "-O",
+      "docs/m00/server-smoke.py",
+      "--import",
+      "tsx",
+      "src/server/main.ts"
+    ],
+    "started": "2026-09-15T08:50:34.393484+00:00",
+    "finished": "2026-09-15T08:50:34.938385+00:00",
+    "exit_code": 0
+  },
+  {
+    "label": "reviewed-smoke-invalid-optimized",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "command": [
+      "python",
+      "-O",
+      "/workspace/scratch/69635aad2014/m00-review-checks.py"
+    ],
+    "started": "2026-09-15T08:51:35.763136+00:00",
+    "finished": "2026-09-15T08:51:36.225218+00:00",
+    "exit_code": 0
   }
 ]

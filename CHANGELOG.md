@@ -14,7 +14,7 @@ Changes to rxjs-flow are recorded here. Released entries below retain their orig
 - Adopt the migration-r1 roadmap and destination metadata; archive inherited optional automation for separate review.
 - Preserve both histories in merge commit `27f8f2cbcc7ba68ff6bc1062ebf25cc46f363769`.
 
-### M00 baseline closeout (under review)
+### M00 baseline closeout (approved in PR #2)
 
 - Record Node 22.22.1 clean-install, typecheck, 180-test, and destination CI evidence.
 - Preserve separate failing characterization cases for HTTP outcomes, startup, root ownership, request isolation and live SSE disposal, with milestone owners.

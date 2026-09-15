@@ -1,8 +1,8 @@
 # M00 — verified import, baseline, and characterization
 
 Updated: 2026-09-15. Design authority: **rxjs-flow migration r1**.
-**M00 execution and acceptance evidence are recorded; the closeout change is
-under review. No M01 implementation is included or authorized by this record.**
+**M00 execution and acceptance evidence are recorded; the user approved
+closeout PR #2 for merge. No M01 implementation is included or authorized.**
 
 ## Exact history and working snapshots
 
@@ -221,8 +221,7 @@ because of file-count/capacity limits; that was not a review approval.
 
 There is **no remaining import or execution-environment blocker**. Runtime
 failures and development dependency findings above are deliberately recorded
-open work, with ownership and reproducible evidence. The closeout PR still
-requires review/merge; user approval to merge recovery PR #1 is not treated as
-approval to merge another PR. Stay within M00 until closeout is accepted, and
-do not begin M01 automatically. No release, package publication, or deployment
+open work, with ownership and reproducible evidence. The user subsequently approved merging closeout PR #2. Its final head,
+merge commit, and destination CI are recorded in the PR description after
+verification. Do not begin M01 automatically. No release, package publication, or deployment
 is authorized or performed.
