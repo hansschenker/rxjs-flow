@@ -1,0 +1,279 @@
+[
+  {
+    "label": "after-housekeeping-audit",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "command": [
+      "npm",
+      "audit",
+      "--json"
+    ],
+    "started": "2026-09-15T08:33:57.889366+00:00",
+    "finished": "2026-09-15T08:34:25.866121+00:00",
+    "exit_code": 1
+  },
+  {
+    "label": "after-housekeeping-install",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "command": [
+      "npm",
+      "ci",
+      "--no-fund"
+    ],
+    "started": "2026-09-15T08:33:15.406113+00:00",
+    "finished": "2026-09-15T08:33:17.684211+00:00",
+    "exit_code": 0
+  },
+  {
+    "label": "after-housekeeping-tests",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "command": [
+      "npm",
+      "test"
+    ],
+    "started": "2026-09-15T08:33:57.889763+00:00",
+    "finished": "2026-09-15T08:34:01.845038+00:00",
+    "exit_code": 0
+  },
+  {
+    "label": "after-housekeeping-typecheck",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "command": [
+      "npm",
+      "run",
+      "typecheck"
+    ],
+    "started": "2026-09-15T08:33:57.884864+00:00",
+    "finished": "2026-09-15T08:34:01.488267+00:00",
+    "exit_code": 0
+  },
+  {
+    "label": "baseline-audit",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "command": [
+      "npm",
+      "audit",
+      "--json"
+    ],
+    "started": "2026-09-15T08:28:14.746213+00:00",
+    "finished": "2026-09-15T08:28:44.350593+00:00",
+    "exit_code": 1
+  },
+  {
+    "label": "baseline-tests",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "command": [
+      "npm",
+      "test"
+    ],
+    "started": "2026-09-15T08:28:14.738378+00:00",
+    "finished": "2026-09-15T08:28:19.860479+00:00",
+    "exit_code": 0
+  },
+  {
+    "label": "baseline-typecheck",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "command": [
+      "npm",
+      "run",
+      "typecheck"
+    ],
+    "started": "2026-09-15T08:28:14.739836+00:00",
+    "finished": "2026-09-15T08:28:19.361772+00:00",
+    "exit_code": 0
+  },
+  {
+    "label": "characterization-install",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-characterization",
+    "command": [
+      "npm",
+      "ci",
+      "--no-fund"
+    ],
+    "started": "2026-09-15T08:28:14.746220+00:00",
+    "finished": "2026-09-15T08:28:20.267776+00:00",
+    "exit_code": 0
+  },
+  {
+    "label": "characterization-tests",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-characterization",
+    "command": [
+      "npm",
+      "test",
+      "--",
+      "src/m00"
+    ],
+    "started": "2026-09-15T08:31:18.896843+00:00",
+    "finished": "2026-09-15T08:31:20.815508+00:00",
+    "exit_code": 1
+  },
+  {
+    "label": "characterization-typecheck",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-characterization",
+    "command": [
+      "npm",
+      "run",
+      "typecheck"
+    ],
+    "started": "2026-09-15T08:31:18.893446+00:00",
+    "finished": "2026-09-15T08:31:21.458277+00:00",
+    "exit_code": 0
+  },
+  {
+    "label": "client-build",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "command": [
+      "npm",
+      "exec",
+      "--",
+      "vite",
+      "build"
+    ],
+    "started": "2026-09-15T08:31:18.896215+00:00",
+    "finished": "2026-09-15T08:31:19.566735+00:00",
+    "exit_code": 0
+  },
+  {
+    "label": "final-client-build",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "command": [
+      "npm",
+      "exec",
+      "--",
+      "vite",
+      "build"
+    ],
+    "started": "2026-09-15T08:35:24.486587+00:00",
+    "finished": "2026-09-15T08:35:24.948396+00:00",
+    "exit_code": 0
+  },
+  {
+    "label": "production-audit",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "command": [
+      "npm",
+      "audit",
+      "--omit=dev",
+      "--json"
+    ],
+    "started": "2026-09-15T08:34:54.129276+00:00",
+    "finished": "2026-09-15T08:35:05.181611+00:00",
+    "exit_code": 0
+  },
+  {
+    "label": "remove-unused-hono-cli",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "command": [
+      "npm",
+      "uninstall",
+      "--save-dev",
+      "@hono/cli",
+      "--ignore-scripts",
+      "--no-audit",
+      "--no-fund"
+    ],
+    "started": "2026-09-15T08:32:25.059455+00:00",
+    "finished": "2026-09-15T08:32:25.502307+00:00",
+    "exit_code": 0
+  },
+  {
+    "label": "server-build",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "command": [
+      "npm",
+      "exec",
+      "--",
+      "esbuild",
+      "src/server/main.ts",
+      "--bundle",
+      "--platform=node",
+      "--target=node22",
+      "--format=esm",
+      "--packages=external",
+      "--outfile=build/m00-probe/server.mjs"
+    ],
+    "started": "2026-09-15T08:34:26.926612+00:00",
+    "finished": "2026-09-15T08:34:27.170932+00:00",
+    "exit_code": 0
+  },
+  {
+    "label": "server-built-smoke",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "command": [
+      "python",
+      "docs/m00/server-smoke.py",
+      "build/m00-probe/server.mjs"
+    ],
+    "started": "2026-09-15T08:35:23.966618+00:00",
+    "finished": "2026-09-15T08:35:24.166109+00:00",
+    "exit_code": 0
+  },
+  {
+    "label": "server-source-smoke-final",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "command": [
+      "python",
+      "docs/m00/server-smoke.py",
+      "--import",
+      "tsx",
+      "src/server/main.ts"
+    ],
+    "started": "2026-09-15T08:35:13.653868+00:00",
+    "finished": "2026-09-15T08:35:14.040380+00:00",
+    "exit_code": 0
+  },
+  {
+    "label": "server-source-smoke-retry",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "command": [
+      "python",
+      "/workspace/scratch/69635aad2014/m00-server-smoke.py",
+      "--import",
+      "tsx",
+      "src/server/main.ts"
+    ],
+    "started": "2026-09-15T08:33:57.887132+00:00",
+    "finished": "2026-09-15T08:33:58.405193+00:00",
+    "exit_code": 1
+  },
+  {
+    "label": "server-source-smoke",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "command": [
+      "python",
+      "/workspace/scratch/69635aad2014/m00-server-smoke.py",
+      "--import",
+      "tsx",
+      "src/server/main.ts"
+    ],
+    "started": "2026-09-15T08:33:16.659346+00:00",
+    "finished": "2026-09-15T08:33:16.936886+00:00",
+    "exit_code": 1
+  },
+  {
+    "label": "reviewed-smoke-source-optimized",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "command": [
+      "python",
+      "-O",
+      "docs/m00/server-smoke.py",
+      "--import",
+      "tsx",
+      "src/server/main.ts"
+    ],
+    "started": "2026-09-15T08:50:34.393484+00:00",
+    "finished": "2026-09-15T08:50:34.938385+00:00",
+    "exit_code": 0
+  },
+  {
+    "label": "reviewed-smoke-invalid-optimized",
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "command": [
+      "python",
+      "-O",
+      "/workspace/scratch/69635aad2014/m00-review-checks.py"
+    ],
+    "started": "2026-09-15T08:51:35.763136+00:00",
+    "finished": "2026-09-15T08:51:36.225218+00:00",
+    "exit_code": 0
+  }
+]

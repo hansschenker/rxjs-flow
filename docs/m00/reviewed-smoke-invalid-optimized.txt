@@ -1,0 +1,11 @@
+PASS: rejects missing Node under optimized Python
+PASS: rejects wrong Node under optimized Python
+
+PASS: rejects bad health under optimized Python
+
+PASS: rejects bad Todo status under optimized Python
+
+PASS: rejects bad Todo collection under optimized Python
+
+PASS: rejects bad Todo fields under optimized Python
+6 invalid fixtures rejected; no external server launched by these fixture checks.

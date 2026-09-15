@@ -6,13 +6,21 @@ Changes to rxjs-flow are recorded here. Released entries below retain their orig
 
 ## [Unreleased]
 
-### M00 migration recovery (pending review)
+### M00 migration recovery (merged as PR #1)
 
 - Join the imported application/documentation history with the destination initial commit.
 - Restore the original application files; preserve RxJS 7, TypeScript, custom JSX, Node HTTP, and all existing tests.
 - Remove generated dependencies and the embedded bare-clone directory from the working tree without rewriting history.
 - Adopt the migration-r1 roadmap and destination metadata; archive inherited optional automation for separate review.
-- M00 remains incomplete; see `docs/baseline-rxjs-flow-m00.md`.
+- Preserve both histories in merge commit `27f8f2cbcc7ba68ff6bc1062ebf25cc46f363769`.
+
+### M00 baseline closeout (approved in PR #2)
+
+- Record Node 22.22.1 clean-install, typecheck, 180-test, and destination CI evidence.
+- Preserve separate failing characterization cases for HTTP outcomes, startup, root ownership, request isolation and live SSE disposal, with milestone owners.
+- Remove unused `@hono/cli` and its exclusive dependencies; retain all remaining locked versions and review the eight remaining development audit findings.
+- Correct the browser page title and record passing client-build/server-start probes and the delivery strategy.
+- Keep M01 pending; see `docs/baseline-rxjs-flow-m00.md` for acceptance evidence and open work.
 
 ---
 

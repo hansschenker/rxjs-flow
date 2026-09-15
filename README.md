@@ -6,10 +6,10 @@ A TypeScript Todo application built on **RxJS 7**, custom JSX, and Node HTTP.
 This repository continues the implementation originally developed in
 [rxjs-stack](https://github.com/hansschenker/rxjs-stack).
 
-**Current status: M00 migration recovery is under review. M00 is not complete.**
-The original application and Git history have been restored on the recovery
-branch. Runtime ownership, effect outcomes, and the complete live-state loop
-remain milestone work; importing the code does not establish those guarantees.
+**Current status: M00 baseline acceptance is approved for closeout in PR #2.**
+The original application and Git history are present on `main`. Baseline tests
+pass; separate characterization records the remaining runtime failures and
+their milestone owners. The complete live-state loop remains planned work.
 
 ## Project documents
 
@@ -39,8 +39,6 @@ Use Node **22.22.1** (also recorded in `.nvmrc`):
 ```bash
 git clone https://github.com/hansschenker/rxjs-flow.git
 cd rxjs-flow
-# While recovery is under review:
-git switch m00/recover-import
 npm ci
 npm run typecheck
 npm test
@@ -58,7 +56,9 @@ npm run dev:client
 
 The API uses port 3000. Vite serves the browser client and proxies `/api/*` to
 the API. The server store is in memory; restarting the server loses Todos.
-Production build/start and smoke-test delivery remain roadmap work.
+Production build/start delivery remains roadmap work. The
+[M00 build/start decision and probes](docs/m00/build-start-strategy.md) record
+the selected direction and current limits.
 
 ## Scope and contribution
 

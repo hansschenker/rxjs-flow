@@ -1,0 +1,8 @@
+{"command": ["/workspace/scratch/69635aad2014/m00-node22/node_modules/node-linux-x64/bin/node", "--import", "tsx", "src/server/main.ts"], "health": [200, {"status": "ok"}], "todos": [200, [{"id": "1", "title": "Learn rxjs-stack", "completed": false, "createdAt": "2026-09-15T08:50:34.904Z"}]], "smoke": "passed"}
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+rxjs-stack server on http://localhost:3000
+GET /health
+GET /todos
