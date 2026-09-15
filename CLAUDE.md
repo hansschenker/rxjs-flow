@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+Development target: `hansschenker/rxjs-flow`. Read `docs/roadmap-gpt-6-astra-2026-09-15.md` (revision `rxjs-flow migration r1`) and `docs/baseline-rxjs-flow-m00.md` before changes. Work on a dedicated branch, stay within M00 until accepted, and do not merge, publish, or deploy without explicit authorization. The source `rxjs-stack` and separate `rxjs-fullstack` repositories are read-only/out of scope.
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Commands

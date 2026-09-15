@@ -1,6 +1,12 @@
 # Dataflow architecture contract
 
-Design revision: 2026-09-15. Applies to `hansschenker/rxjs-stack`, reached through the supplied `rxjs-full` URL. This is the target contract for the [implementation roadmap](roadmap.md), not a claim that the audited code already satisfies every rule.
+Design revision: 2026-09-15. Target migration revision: **rxjs-flow migration r1**.
+
+Applies to the ChatGPT Project **`rxjs-flow`** and development repository **`hansschenker/rxjs-flow`**. The historical implementation was audited in `hansschenker/rxjs-stack`, reached through the earlier `rxjs-full` URL. The source and the separate `hansschenker/rxjs-fullstack` repository are not development targets for this contract.
+
+This is the target contract for the [implementation roadmap](roadmap-gpt-6-astra-2026-09-15.md), not a claim that the imported code already satisfies every rule. Complete that roadmap's M00 migration gate to verify the destination and imported history before implementation. Creating this document does not prove the repository transfer or Project upload succeeded. Leave source repositories unchanged and preserve original attribution, commit provenance, and the historical audit.
+
+Only this contract's project identity and roadmap link have changed for the migration; sections 1–10 below retain the original technical requirements. Historical source and library-version links are intentional.
 
 ## 1. One model, two runtime boundaries
 

@@ -1,10 +1,18 @@
 # Changelog
 
-All notable changes to rxjs-stack are documented here.
+Changes to rxjs-flow are recorded here. Released entries below retain their original rxjs-stack attribution and version labels.
 
 ---
 
 ## [Unreleased]
+
+### M00 migration recovery (pending review)
+
+- Join the imported application/documentation history with the destination initial commit.
+- Restore the original application files; preserve RxJS 7, TypeScript, custom JSX, Node HTTP, and all existing tests.
+- Remove generated dependencies and the embedded bare-clone directory from the working tree without rewriting history.
+- Adopt the migration-r1 roadmap and destination metadata; archive inherited optional automation for separate review.
+- M00 remains incomplete; see `docs/baseline-rxjs-flow-m00.md`.
 
 ---
 

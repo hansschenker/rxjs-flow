@@ -1,6 +1,8 @@
-# Contributing to rxjs-stack
+# Contributing to rxjs-flow
 
 Thank you for your interest in contributing. This project is a focused reference implementation of five Marble.js patterns in pure RxJS — contributions that keep it clean, educational, and idiomatic are most welcome.
+
+Read the [canonical roadmap](docs/roadmap-gpt-6-astra-2026-09-15.md) and [baseline record](docs/baseline-rxjs-flow-m00.md) before implementation. Work on the current milestone only.
 
 ## What belongs here
 
@@ -18,13 +20,13 @@ Thank you for your interest in contributing. This project is a focused reference
 ## Getting started
 
 ```bash
-git clone https://github.com/hansschenker/rxjs-stack.git
-cd rxjs-stack
-npm install
+git clone https://github.com/hansschenker/rxjs-flow.git
+cd rxjs-flow
+npm ci
 
 npm run dev:server   # API server on port 3000
 npm run dev:client   # Vite client on port 5173+
-npm test             # run all 78 tests
+npm test             # run the test suite
 npm run typecheck    # TypeScript strict check
 ```
 
@@ -72,4 +74,4 @@ docs: clarify Effect type in README
 
 ## Questions
 
-Open an issue at [github.com/hansschenker/rxjs-stack/issues](https://github.com/hansschenker/rxjs-stack/issues).
+Open an issue at [github.com/hansschenker/rxjs-flow/issues](https://github.com/hansschenker/rxjs-flow/issues).

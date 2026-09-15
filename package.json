@@ -1,7 +1,7 @@
 {
-  "name": "rxjs-stack",
+  "name": "rxjs-flow",
   "version": "1.0.0",
-  "description": "",
+  "description": "RxJS 7 application dataflow with TypeScript, custom JSX, and Node HTTP",
   "main": "index.js",
   "scripts": {
     "test": "vitest run",
@@ -12,16 +12,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hansschenker/rxjs-stack.git"
+    "url": "git+https://github.com/hansschenker/rxjs-flow.git"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "type": "module",
   "bugs": {
-    "url": "https://github.com/hansschenker/rxjs-stack/issues"
+    "url": "https://github.com/hansschenker/rxjs-flow/issues"
   },
-  "homepage": "https://github.com/hansschenker/rxjs-stack#readme",
+  "homepage": "https://github.com/hansschenker/rxjs-flow#readme",
   "dependencies": {
     "rxjs": "^7.8.2",
     "zod": "^4.4.3"

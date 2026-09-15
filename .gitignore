@@ -28,3 +28,6 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# Local import evidence and embedded bare clones
+rxjs-flow-import.*/
