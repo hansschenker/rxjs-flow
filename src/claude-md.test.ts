@@ -1,0 +1,299 @@
+// Validates every code example in CLAUDE.md.
+// If these tests break, the documentation is out of date.
+
+import { firstValueFrom, of } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { expectTypeOf, vi } from 'vitest';
+
+vi.mock('rxjs/fetch', () => ({ fromFetch: vi.fn() }));
+
+import { fromFetch } from 'rxjs/fetch';
+import { apiPath, routes, type RouteParams, type RouteBody, type RouteResponse } from './shared/routes';
+import type { Todo, CreateTodoBody, UpdateTodoBody } from './shared/types';
+import { createClient } from './client/api';
+import { createApp } from './server/core/app';
+import { cors, requireAuth } from './server/core/middleware';
+import { json } from './server/core/response';
+import { createTestContext, createTestRequest, runRequest } from './server/core/testing';
+import { createTodoEffects } from './server/todos/todo.effect';
+import { createTodoStore } from './server/todos/todo.store';
+import { get, handle } from './server/core/router';
+
+// ---------------------------------------------------------------------------
+// Shared route contracts
+// ---------------------------------------------------------------------------
+
+describe('CLAUDE.md — shared route contracts', () => {
+	it('apiPath builds /api/todos/42 from the update route', () => {
+		expect(apiPath(routes.todos.update.path, { id: '42' })).toBe('/api/todos/42');
+	});
+
+	it('RouteParams<update.path> is { id: string }', () => {
+		expectTypeOf<RouteParams<typeof routes.todos.update.path>>().toEqualTypeOf<{ id: string }>();
+	});
+
+	it('RouteBody<create> is CreateTodoBody', () => {
+		expectTypeOf<RouteBody<typeof routes.todos.create>>().toEqualTypeOf<CreateTodoBody>();
+	});
+
+	it('RouteResponse<create> is Todo', () => {
+		expectTypeOf<RouteResponse<typeof routes.todos.create>>().toEqualTypeOf<Todo>();
+	});
+});
+
+// ---------------------------------------------------------------------------
+// Generated typed client  (createClient)
+// ---------------------------------------------------------------------------
+
+const mockFetch = vi.mocked(fromFetch);
+const fakeResponse = (data: unknown): Response =>
+	({ json: () => Promise.resolve(data) }) as unknown as Response;
+
+describe('CLAUDE.md — createClient(routes)', () => {
+	const api = createClient(routes);
+
+	it('api.todos.list() sends GET /api/todos and returns Todo[]', async () => {
+		const todos: Todo[] = [
+			{ id: '1', title: 'One', completed: false, createdAt: '2026-01-01T00:00:00.000Z' },
+		];
+		mockFetch.mockReturnValue(of(fakeResponse(todos)));
+
+		const result = await firstValueFrom(api.todos.list({}));
+
+		expect(mockFetch).toHaveBeenCalledWith('/api/todos', expect.objectContaining({ method: 'GET' }));
+		expect(result).toEqual(todos);
+	});
+
+	it('api.todos.list(query) appends query string', async () => {
+		mockFetch.mockReturnValue(of(fakeResponse([])));
+
+		await firstValueFrom(api.todos.list({ completed: 'true' }));
+
+		expect(mockFetch).toHaveBeenCalledWith('/api/todos?completed=true', expect.any(Object));
+	});
+
+	it('api.todos.create({ title }) sends POST and returns the new Todo', async () => {
+		const todo: Todo = { id: '2', title: 'Ship it', completed: false, createdAt: '2026-01-01T00:00:00.000Z' };
+		mockFetch.mockReturnValue(of(fakeResponse(todo)));
+
+		const result = await firstValueFrom(api.todos.create({ title: 'Ship it' }));
+
+		expect(mockFetch).toHaveBeenCalledWith('/api/todos', expect.objectContaining({
+			method: 'POST',
+			body: JSON.stringify({ title: 'Ship it' }),
+		}));
+		expect(result).toEqual(todo);
+	});
+
+	it('api.todos.update({ id }, body) sends PUT /api/todos/:id', async () => {
+		const todo: Todo = { id: '42', title: 'Ship it', completed: true, createdAt: '2026-01-01T00:00:00.000Z' };
+		mockFetch.mockReturnValue(of(fakeResponse(todo)));
+
+		const result = await firstValueFrom(api.todos.update({ id: '42' }, { completed: true }));
+
+		expect(mockFetch).toHaveBeenCalledWith('/api/todos/42', expect.objectContaining({
+			method: 'PUT',
+			body: JSON.stringify({ completed: true }),
+		}));
+		expect(result).toEqual(todo);
+	});
+
+	it('api.todos.remove({ id }) sends DELETE /api/todos/:id', async () => {
+		mockFetch.mockReturnValue(of(new Response(null, { status: 204 })));
+
+		await firstValueFrom(api.todos.remove({ id: '42' }));
+
+		expect(mockFetch).toHaveBeenCalledWith('/api/todos/42', expect.objectContaining({ method: 'DELETE' }));
+	});
+
+	it('method signatures match the route contracts', () => {
+		expectTypeOf(api.todos.list).toEqualTypeOf<
+			(query: { completed?: 'true' | 'false' }) => import('rxjs').Observable<Todo[]>
+		>();
+		expectTypeOf(api.todos.create).toEqualTypeOf<
+			(body: CreateTodoBody) => import('rxjs').Observable<Todo>
+		>();
+		expectTypeOf(api.todos.update).toEqualTypeOf<
+			(params: { id: string }, body: UpdateTodoBody) => import('rxjs').Observable<Todo>
+		>();
+		expectTypeOf(api.todos.remove).toEqualTypeOf<
+			(params: { id: string }) => import('rxjs').Observable<void>
+		>();
+	});
+});
+
+// ---------------------------------------------------------------------------
+// Testing patterns — runRequest + createTestRequest + createTestContext
+// ---------------------------------------------------------------------------
+
+describe('CLAUDE.md — testing patterns', () => {
+	const todoStore = createTodoStore();
+	const effects = createTodoEffects();
+	const todoRoutes = [
+		handle(routes.todos.list,   effects.getAll$),
+		handle(routes.todos.create, effects.create$),
+		handle(routes.todos.update, effects.update$),
+		handle(routes.todos.remove, effects.delete$),
+	];
+
+	beforeEach(() => todoStore.reset());
+
+	it('runRequest + createTestRequest + createTestContext creates a new todo', async () => {
+		const res = await runRequest(
+			todoRoutes,
+			createTestRequest({
+				method: 'POST',
+				url: '/todos',
+				body: { title: 'Test' },
+				context: createTestContext({ todoStore }),
+			}),
+		);
+
+		expect(res.status).toBe(201);
+		expect((res.body as { title: string }).title).toBe('Test');
+	});
+
+	it('runRequest + createTestRequest reads all todos through the router', async () => {
+		const res = await runRequest(
+			todoRoutes,
+			createTestRequest({ url: '/todos', context: createTestContext({ todoStore }) }),
+		);
+
+		expect(res.status).toBe(200);
+		expect(Array.isArray(res.body)).toBe(true);
+	});
+
+	it('createTestContext injects services accessible to effects', async () => {
+		todoStore.setTodos([
+			{ id: '99', title: 'Injected', completed: false, createdAt: '2026-01-01T00:00:00.000Z' },
+		]);
+
+		const res = await runRequest(
+			todoRoutes,
+			createTestRequest({ url: '/todos', context: createTestContext({ todoStore }) }),
+		);
+
+		expect((res.body as Todo[]).find(t => t.id === '99')).toBeDefined();
+	});
+
+	it('router returns 404 for unmatched routes', async () => {
+		const res = await runRequest(
+			todoRoutes,
+			createTestRequest({ url: '/unknown', context: createTestContext({ todoStore }) }),
+		);
+
+		expect(res.status).toBe(404);
+	});
+});
+
+// ---------------------------------------------------------------------------
+// cors() via createApp + app.router — CLAUDE.md "Server layers" section
+// ---------------------------------------------------------------------------
+
+describe('CLAUDE.md — cors() via createApp and app.router', () => {
+	const testRoutes = [
+		get('/todos', req$ => req$.pipe(map(() => json([])))),
+	];
+
+	it('app.router is an Effect callable without starting an HTTP server', async () => {
+		const app = createApp(testRoutes);
+		const res = await firstValueFrom(app.router(of(createTestRequest({ url: '/todos' }))));
+		expect(res.status).toBe(200);
+	});
+
+	it('cors() default — OPTIONS returns 204 with wildcard Allow-Origin and method list', async () => {
+		const app = createApp(testRoutes, { cors: cors() });
+		const res = await firstValueFrom(
+			app.router(of(createTestRequest({ method: 'OPTIONS', url: '/todos', headers: {} }))),
+		);
+		expect(res.status).toBe(204);
+		expect(res.headers?.['Access-Control-Allow-Origin']).toBe('*');
+		expect(res.headers?.['Access-Control-Allow-Methods']).toContain('GET');
+	});
+
+	it('cors() default — non-OPTIONS response receives Access-Control-Allow-Origin: *', async () => {
+		const app = createApp(testRoutes, { cors: cors() });
+		const res = await firstValueFrom(
+			app.router(of(createTestRequest({ url: '/todos', headers: {} }))),
+		);
+		expect(res.headers?.['Access-Control-Allow-Origin']).toBe('*');
+	});
+
+	it('cors({ origins }) — echoes a matching origin instead of wildcard', async () => {
+		const app = createApp(testRoutes, { cors: cors({ origins: ['http://localhost:5173'] }) });
+		const res = await firstValueFrom(
+			app.router(of(createTestRequest({ url: '/todos', headers: { origin: 'http://localhost:5173' } }))),
+		);
+		expect(res.headers?.['Access-Control-Allow-Origin']).toBe('http://localhost:5173');
+	});
+
+	it('cors({ origins }) — omits header for a non-matching origin', async () => {
+		const app = createApp(testRoutes, { cors: cors({ origins: ['http://localhost:5173'] }) });
+		const res = await firstValueFrom(
+			app.router(of(createTestRequest({ url: '/todos', headers: { origin: 'http://evil.com' } }))),
+		);
+		expect(res.headers?.['Access-Control-Allow-Origin']).toBeUndefined();
+	});
+
+	it('cors({ origins, credentials: true }) — adds Access-Control-Allow-Credentials header', async () => {
+		const app = createApp(testRoutes, {
+			cors: cors({ origins: ['http://localhost:5173'], credentials: true }),
+		});
+		const res = await firstValueFrom(
+			app.router(of(createTestRequest({ url: '/todos', headers: { origin: 'http://localhost:5173' } }))),
+		);
+		expect(res.headers?.['Access-Control-Allow-Credentials']).toBe('true');
+	});
+});
+
+// ---------------------------------------------------------------------------
+// requireAuth() via createApp — CLAUDE.md "Server layers" section
+// ---------------------------------------------------------------------------
+
+describe('CLAUDE.md — requireAuth() via createApp', () => {
+	const testRoutes = [
+		get('/profile', req$ => req$.pipe(map(() => json({ id: '42' })))),
+	];
+
+	it('valid token — claims accessible at req.requestContext.state.user', async () => {
+		const app = createApp([
+			get('/profile', req$ => req$.pipe(
+				map(req => {
+					const user = req.requestContext.state.user as { id: string };
+					return json({ id: user.id });
+				}),
+			)),
+		], {
+			auth: requireAuth(async () => ({ id: '99' })),
+		});
+		const res = await firstValueFrom(
+			app.router(of(createTestRequest({
+				url: '/profile',
+				headers: { authorization: 'Bearer my-token' },
+			}))),
+		);
+		expect((res.body as { id: string }).id).toBe('99');
+	});
+
+	it('missing token returns 401', async () => {
+		const app = createApp(testRoutes, {
+			auth: requireAuth(async () => ({ id: '1' })),
+		});
+		const res = await firstValueFrom(
+			app.router(of(createTestRequest({ url: '/profile', headers: {} }))),
+		);
+		expect(res.status).toBe(401);
+	});
+
+	it('excluded path bypasses auth entirely', async () => {
+		const app = createApp(testRoutes, {
+			auth: requireAuth(async () => { throw new Error('should not be called'); }, {
+				exclude: ['/profile'],
+			}),
+		});
+		const res = await firstValueFrom(
+			app.router(of(createTestRequest({ url: '/profile', headers: {} }))),
+		);
+		expect(res.status).toBe(200);
+	});
+});
