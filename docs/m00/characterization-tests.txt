@@ -1,0 +1,214 @@
+
+> rxjs-flow@1.0.0 test
+> vitest run src/m00
+
+
+ RUN  v4.1.6 /workspace/scratch/69635aad2014/rxjs-flow-characterization
+
+ ❯ src/m00/client-http.characterization.test.ts (12 tests | 9 failed) 22ms
+     × rejects GET HTTP 400 instead of emitting its error body as Todos 11ms
+     × rejects GET HTTP 401 instead of emitting its error body as Todos 2ms
+     × rejects GET HTTP 404 instead of emitting its error body as Todos 1ms
+     × rejects GET HTTP 409 instead of emitting its error body as Todos 1ms
+     × rejects GET HTTP 422 instead of emitting its error body as Todos 1ms
+     × rejects GET HTTP 500 instead of emitting its error body as Todos 1ms
+     × rejects GET HTTP 503 instead of emitting its error body as Todos 1ms
+     × rejects failed DELETE HTTP 404 instead of emitting success 1ms
+     × rejects failed DELETE HTTP 500 instead of emitting success 1ms
+ ❯ src/m00/client-lifetime.characterization.test.ts (3 tests | 2 failed) 59ms
+     × M02: renders a synchronous startup result 46ms
+     × M01: exposes an explicit construction/disposal boundary 5ms
+stdout | src/m00/server-lifetime.characterization.test.ts > M00 / M05: real HTTP isolation and SSE ownership > malformed parameter must leave the next request serviceable
+rxjs-stack server on http://localhost:0
+
+stdout | src/m00/server-lifetime.characterization.test.ts > M00 / M05: real HTTP isolation and SSE ownership > malformed parameter must leave the next request serviceable
+{"scenario":"malformed parameter","bad":{"error":"500ms request deadline"},"good":{"error":"connect ECONNREFUSED 127.0.0.1:36901"},"rootClosed":true}
+
+stdout | src/m00/server-lifetime.characterization.test.ts > M00 / M05: real HTTP isolation and SSE ownership > synchronous handler construction must leave the next request serviceable
+rxjs-stack server on http://localhost:0
+
+stdout | src/m00/server-lifetime.characterization.test.ts > M00 / M05: real HTTP isolation and SSE ownership > synchronous handler construction must leave the next request serviceable
+{"scenario":"synchronous handler construction","bad":{"error":"500ms request deadline"},"good":{"error":"connect ECONNREFUSED 127.0.0.1:38753"},"rootClosed":true}
+
+stdout | src/m00/server-lifetime.characterization.test.ts > M00 / M05: real HTTP isolation and SSE ownership > keeps SSE through GET completion, then disposes it on real response disconnect
+rxjs-stack server on http://localhost:0
+
+stdout | src/m00/server-lifetime.characterization.test.ts > M00 / M05: real HTTP isolation and SSE ownership > keeps SSE through GET completion, then disposes it on real response disconnect
+{"scenario":"SSE disconnect","active":1,"finalized":0,"requestClosed":1,"responseClosed":1}
+
+stdout | src/m00/server-lifetime.characterization.test.ts > M00 / M05: real HTTP isolation and SSE ownership > disposes live SSE subscriptions when the application stops
+rxjs-stack server on http://localhost:0
+
+stdout | src/m00/server-lifetime.characterization.test.ts > M00 / M05: real HTTP isolation and SSE ownership > disposes live SSE subscriptions when the application stops
+{"scenario":"app stop with SSE","active":1,"finalized":0,"requestClosed":1,"responseClosed":0,"rootClosed":true}
+
+ ❯ src/m00/server-lifetime.characterization.test.ts (5 tests | 4 failed) 1047ms
+     × malformed parameter must leave the next request serviceable 524ms
+     × synchronous handler construction must leave the next request serviceable 506ms
+     × keeps SSE through GET completion, then disposes it on real response disconnect 7ms
+     × disposes live SSE subscriptions when the application stops 3ms
+
+ Test Files  3 failed (3)
+      Tests  15 failed | 5 passed (20)
+   Start at  11:31:19
+   Duration  1.45s (transform 199ms, setup 0ms, import 497ms, tests 1.13s, environment 619ms)
+
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Both esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsxFactory: 'h', jsxFragment: 'null' }`
+(node:52) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:53) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:54) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 15 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/m00/client-http.characterization.test.ts > M00 / M03: finite HTTP outcomes > rejects GET HTTP 400 instead of emitting its error body as Todos
+ FAIL  src/m00/client-http.characterization.test.ts > M00 / M03: finite HTTP outcomes > rejects GET HTTP 401 instead of emitting its error body as Todos
+ FAIL  src/m00/client-http.characterization.test.ts > M00 / M03: finite HTTP outcomes > rejects GET HTTP 404 instead of emitting its error body as Todos
+ FAIL  src/m00/client-http.characterization.test.ts > M00 / M03: finite HTTP outcomes > rejects GET HTTP 409 instead of emitting its error body as Todos
+ FAIL  src/m00/client-http.characterization.test.ts > M00 / M03: finite HTTP outcomes > rejects GET HTTP 422 instead of emitting its error body as Todos
+ FAIL  src/m00/client-http.characterization.test.ts > M00 / M03: finite HTTP outcomes > rejects GET HTTP 500 instead of emitting its error body as Todos
+ FAIL  src/m00/client-http.characterization.test.ts > M00 / M03: finite HTTP outcomes > rejects GET HTTP 503 instead of emitting its error body as Todos
+AssertionError: promise resolved "{ error: 'rejected' }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "error": "rejected",
+  }
+
+ ❯ src/m00/client-http.characterization.test.ts:16:56
+     14|   it.each([400, 401, 404, 409, 422, 500, 503])('rejects GET HTTP %i in…
+     15|     transport.mockReturnValue(of(new Response(JSON.stringify({ error: …
+     16|     await expect(firstValueFrom(client.todos.list({}))).rejects.toBeDe…
+       |                                                        ^
+     17|   });
+     18|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/15]⎯
+
+ FAIL  src/m00/client-http.characterization.test.ts > M00 / M03: finite HTTP outcomes > rejects failed DELETE HTTP 404 instead of emitting success
+ FAIL  src/m00/client-http.characterization.test.ts > M00 / M03: finite HTTP outcomes > rejects failed DELETE HTTP 500 instead of emitting success
+AssertionError: promise resolved "undefined" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+undefined
+
+ ❯ src/m00/client-http.characterization.test.ts:21:73
+     19|   it.each([404, 500])('rejects failed DELETE HTTP %i instead of emitti…
+     20|     transport.mockReturnValue(of(new Response(JSON.stringify({ error: …
+     21|     await expect(firstValueFrom(client.todos.remove({ id: 'missing' })…
+       |                                                                         ^
+     22|   });
+     23|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/15]⎯
+
+ FAIL  src/m00/client-lifetime.characterization.test.ts > M00: client startup and root ownership > M02: renders a synchronous startup result
+AssertionError: expected '' to contain 'synchronous result'
+
+- Expected
++ Received
+
+- synchronous result
+
+ ❯ src/m00/client-lifetime.characterization.test.ts:29:63
+     27|     await import('../client/main');
+     28|     expect(service.getAll$).toHaveBeenCalledOnce();
+     29|     expect(document.getElementById('todo-list')!.textContent).toContai…
+       |                                                               ^
+     30|   });
+     31|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/15]⎯
+
+ FAIL  src/m00/client-lifetime.characterization.test.ts > M00: client startup and root ownership > M01: exposes an explicit construction/disposal boundary
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/m00/client-lifetime.characterization.test.ts:36:77
+     34|     // No specific future API name is prescribed. A caller needs an en…
+     35|     // to construct a disposable root or an exported disposal function.
+     36|     expect(Object.values(entry).some(value => typeof value === 'functi…
+       |                                                                             ^
+     37|   });
+     38|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/15]⎯
+
+ FAIL  src/m00/server-lifetime.characterization.test.ts > M00 / M05: real HTTP isolation and SSE ownership > malformed parameter must leave the next request serviceable
+ FAIL  src/m00/server-lifetime.characterization.test.ts > M00 / M05: real HTTP isolation and SSE ownership > synchronous handler construction must leave the next request serviceable
+AssertionError: expected undefined to be 200 // Object.is equality
+
+- Expected:
+200
+
++ Received:
+undefined
+
+ ❯ src/m00/server-lifetime.characterization.test.ts:101:25
+     99|     const good = await request('/ok');
+    100|     console.log(JSON.stringify({ scenario, bad, good, rootClosed: root…
+    101|     expect(good.status).toBe(200);
+       |                         ^
+    102|     expect(root.closed).toBe(false);
+    103|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/15]⎯
+
+ FAIL  src/m00/server-lifetime.characterization.test.ts > M00 / M05: real HTTP isolation and SSE ownership > keeps SSE through GET completion, then disposes it on real response disconnect
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ src/m00/server-lifetime.characterization.test.ts:126:32
+    124|     await nextTurn();
+    125|     console.log(JSON.stringify({ scenario: 'SSE disconnect', ...live.c…
+    126|     expect(live.counts.active).toBe(0);
+       |                                ^
+    127|     expect(live.counts.finalized).toBe(1);
+    128|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/15]⎯
+
+ FAIL  src/m00/server-lifetime.characterization.test.ts > M00 / M05: real HTTP isolation and SSE ownership > disposes live SSE subscriptions when the application stops
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ src/m00/server-lifetime.characterization.test.ts:136:34
+    134|     console.log(JSON.stringify({ scenario: 'app stop with SSE', ...liv…
+    135|     try {
+    136|       expect(live.counts.active).toBe(0);
+       |                                  ^
+    137|       expect(live.counts.responseClosed).toBe(1);
+    138|     } finally {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/15]⎯

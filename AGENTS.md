@@ -10,14 +10,16 @@ Read these files before implementation:
 The development repository is `hansschenker/rxjs-flow`. Preserve the original
 history and attribution. Do not modify `rxjs-stack` or `rxjs-fullstack`.
 
-M00 remains incomplete. Verify the recovery has reached `main` with both histories
-preserved before treating the migration gate as complete. Stay within M00; do
-not advance automatically to M01.
+Recovery PR #1 is merged at `27f8f2cbcc7ba68ff6bc1062ebf25cc46f363769`;
+both original histories are verified in main ancestry. M00 execution evidence
+is recorded on `m00/baseline-evidence`, with closeout under review. Stay within
+M00 until accepted; do not advance automatically to M01.
 
 Use a dedicated branch and pull request. No merge, release, package publication
-or deployment without explicit authorization. In particular, the recovery PR
-must retain its merge ancestry; a squash or rebase would lose the imported main
-ancestry required by M00.
+or deployment without explicit authorization. Preserve the imported ancestry.
+The separate `m00/characterize-baseline` branch contains deliberately failing
+probes; do not merge it into main. The baseline report maps each fix to its
+milestone and records remaining development dependency findings.
 
 Preserve RxJS 7, TypeScript, custom JSX and Node HTTP. Prefer named pure domain
 functions and function-based factories. Events, state, derived values, rendering
