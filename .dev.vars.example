@@ -1,0 +1,2 @@
+# Optional local override. Copy to .dev.vars; no credentials are needed for M05a.
+FOUNDATION_LABEL="rxjs-flow foundation"

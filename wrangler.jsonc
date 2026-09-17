@@ -1,0 +1,18 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "rxjs-flow-foundation",
+  "main": "src/worker/index.ts",
+  "compatibility_date": "2026-09-16",
+  "compatibility_flags": [],
+  "workers_dev": false,
+  "preview_urls": false,
+  "send_metrics": false,
+  "vars": {
+    "FOUNDATION_LABEL": "rxjs-flow foundation"
+  },
+  "secrets": { "required": [] },
+  "assets": {
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api", "/api/*"]
+  }
+}

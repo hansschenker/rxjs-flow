@@ -1,10 +1,9 @@
 import { defineConfig } from 'vite';
+import { browserBoundary } from './scripts/browser-boundary';
 
 export default defineConfig({
-  esbuild: {
-    jsxFactory: 'h',
-    jsxFragment: 'null',
-  },
+  plugins: [browserBoundary()],
+  oxc: { jsx: { runtime: 'classic', pragma: 'h', pragmaFrag: 'null' } },
   server: {
     port: 5173,
     proxy: {

@@ -1,17 +1,21 @@
 {
-  "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["ES2022", "DOM"],
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "jsx": "react",
-    "jsxFactory": "h",
-    "jsxFragmentFactory": "null",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "types": ["vite/client", "vitest/globals"]
-  }
+  "extends": "./tsconfig.base.json",
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.client.json"
+    },
+    {
+      "path": "./tsconfig.worker.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.test.json"
+    },
+    {
+      "path": "./tsconfig.worker-test.json"
+    }
+  ]
 }

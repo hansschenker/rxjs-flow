@@ -15,6 +15,14 @@ build/
 .env
 .env.local
 .env.*.local
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+.wrangler/
+worker-configuration.d.ts
+coverage/
 
 # Logs
 *.log

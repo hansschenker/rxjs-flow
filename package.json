@@ -1,14 +1,25 @@
 {
   "name": "rxjs-flow",
   "version": "1.0.0",
-  "description": "RxJS 7 application dataflow with TypeScript, custom JSX, and Node HTTP",
+  "description": "RxJS 7 dataflow with TypeScript, custom JSX, a Node Todo baseline and Cloudflare Workers foundation",
   "main": "index.js",
   "scripts": {
     "test": "vitest run",
     "dev:server": "tsx watch src/server/main.ts",
     "dev:client": "vite",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "npm run cf:typegen && npm run typecheck:client && npm run typecheck:worker && npm run typecheck:node && npm run typecheck:tests",
+    "typecheck:client": "tsc -p tsconfig.client.json",
+    "typecheck:worker": "tsc -p tsconfig.worker.json",
+    "typecheck:node": "tsc -p tsconfig.node.json",
+    "typecheck:tests": "tsc -p tsconfig.test.json && tsc -p tsconfig.worker-test.json",
+    "cf:typegen": "wrangler types --config wrangler.jsonc worker-configuration.d.ts --env-interface WorkerEnv",
+    "cf:typecheck": "wrangler types --config wrangler.jsonc worker-configuration.d.ts --env-interface WorkerEnv --check",
+    "dev:worker": "vite --config vite.worker.config.ts",
+    "build:worker": "vite build --config vite.worker.config.ts",
+    "preview:worker": "vite preview --config vite.worker.config.ts",
+    "test:worker": "vitest run --config vitest.worker.config.ts",
+    "smoke:worker": "node scripts/smoke-worker.mjs"
   },
   "repository": {
     "type": "git",
@@ -23,16 +34,20 @@
   },
   "homepage": "https://github.com/hansschenker/rxjs-flow#readme",
   "dependencies": {
+    "hono": "4.13.8",
     "rxjs": "^7.8.2",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "1.54.11",
+    "@cloudflare/vitest-plugin": "1.1.11",
     "@types/node": "^25.7.0",
     "@vitest/coverage-v8": "^4.1.6",
     "jsdom": "^29.1.1",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3",
     "vite": "^8.0.12",
-    "vitest": "^4.1.6"
+    "vitest": "^4.1.6",
+    "wrangler": "4.133.0"
   }
 }

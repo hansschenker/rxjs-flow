@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node", "vite/client", "vitest/globals"]
+  },
+  "include": ["src/client/**/*", "src/server/**/*", "src/shared/**/*", "src/claude-md.test.ts", "scripts/**/*.test.ts"]
+}
