@@ -28,8 +28,9 @@ describe('M01 inert feature import', () => {
 		expect(create).not.toHaveBeenCalled();
 		expect(fetch).not.toHaveBeenCalled();
 		expect(eventSource).not.toHaveBeenCalled();
-		const { action$ } = await import('./todo.state');
-		expect(action$.observed).toBe(false);
+		const state = vi.fn();
+		app.state$.subscribe(state);
+		expect(state).not.toHaveBeenCalled();
 		app.dispose();
 	});
 });
