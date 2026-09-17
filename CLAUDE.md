@@ -8,8 +8,10 @@ Development target: `hansschenker/rxjs-flow`. Read [AGENTS.md](AGENTS.md), the
 M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e` (PR #2).
 M01 is accepted/merged in PR #5 at `188f21ff307ff7d2146d9f90b24e5ee5c7dfd99d`.
 M05a is accepted/merged in PR #6 at `eeb8d2989884372fa42f4e321295aa7f3e8faa75`.
-M02 is implemented with [acceptance review pending](docs/m02/acceptance.md).
-M03–M04 and M05b–M09 remain pending. Use a dedicated branch and PR; do not start a milestone,
+M02 is accepted/merged in PR #7 at `7374557b6d264a9bfa572526a4f71233fc3aa24e`;
+see its [state and transition acceptance](docs/m02/acceptance.md).
+M03 is implemented and verified locally with [acceptance review and merge pending](docs/m03/acceptance.md).
+M04 and M05b–M09 remain pending. Use a dedicated branch and PR; do not start a milestone,
 merge, publish, deploy, create remote resources or change `netxpert.ch` without
 appropriate explicit authorization. `rxjs-stack` and `rxjs-fullstack` are historical/
 separate repositories, not implementation targets.
@@ -21,21 +23,21 @@ Todo migration, authority and live integration remain planned. Keep Node
 as the baseline during the tested transition. Hono does not replace our renderer.
 Do not use mutable Worker-global state as authority or pass Hono context into reducers.
 
-After M02 acceptance, the next implementation is M03 when authorized, followed by
-M04 and remaining M05 substeps as specified in the roadmap. No permanent Node-only constraint or
+After M03 acceptance, the next implementation is M04 when authorized, followed by
+the remaining M05 substeps as specified in the roadmap. No permanent Node-only constraint or
 instruction to reopen M00 is in force. Do not merge the intentionally failing
 `m00/characterize-baseline` probes.
 
 ## Existing Node baseline reference
 
-The commands and examples below describe the inherited implementation, not the
-r2 target contract or acceptance of its known lifecycle/outcome gaps. In particular,
-module-global client state and positional replay defaults were replaced in M02;
-full list replacement on collection changes remains for M04. Preserve tested behavior while changing
-its ownership. The unmodified earlier guide is archived at
+The commands and examples below describe the current Node baseline and client
+checkpoints. Module-global client state and positional replay defaults were replaced
+in M02. M03 extracts owned effects, validates HTTP responses with Zod and requires
+a decoder for generic SSE values. Keyed DOM bindings remain M04 work; the live
+protocol and its app integration remain M06 work. Preserve tested behavior while
+changing its ownership. The unmodified earlier guide is archived at
 [CLAUDE-before-cloudflare-r2-2026-09-17.md](docs/archive/CLAUDE-before-cloudflare-r2-2026-09-17.md).
-Existing `src/claude-md.test.ts` examples remain baseline tests; no test code is changed
-by this documentation revision.
+Existing `src/claude-md.test.ts` examples remain baseline tests.
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -136,7 +138,9 @@ get('/profile', req$ => req$.pipe(
 
 ### Shared route contracts (`src/shared/routes.ts`)
 
-The single source of truth for every endpoint. One `RouteContract` declaration covers method, path template, body type, query type, and response type.
+The single source of truth for every endpoint. One `RouteContract` declaration covers
+method, path template, body type, query type, response type and `responseBody`
+metadata: `json` with a Zod schema, `empty` with status 204, or `stream`.
 
 ```typescript
 // Derive types from the contract
@@ -146,6 +150,11 @@ type CreateResult = RouteResponse<typeof routes.todos.create>;   // Todo
 
 // Build type-safe URLs
 apiPath(routes.todos.update.path, { id: '42' }); // /api/todos/42
+
+// Response handling follows the contract, including DELETE's empty 204.
+routes.todos.list.responseBody;   // { kind: 'json', schema: todoListSchema }
+routes.todos.remove.responseBody; // { kind: 'empty', status: 204 }
+routes.todos.stream.responseBody; // { kind: 'stream' }
 ```
 
 In the Node baseline, adding an endpoint means one entry in `src/shared/routes.ts`
@@ -161,8 +170,11 @@ contract. Type inference never replaces runtime validation of external input.
 | `src/client/todo.state.ts` | Readonly state, typed intents/facts and pure reducer |
 | `src/client/todo.model.ts` / `todo.selectors.ts` | Instance factory; coherent view model and explicit equality |
 | `src/client/runtime/program.ts` | Root-owned `scan`, state replay, FIFO ingress and transition records |
-| `src/client/todo.service.ts` | Typed client wrappers via `createClient` |
-| `src/client/api.ts` | `createClient(routes)` — generates typed Observable methods from the contract tree |
+| `src/client/todo.intents.ts` | Pure transition-to-intent interpretation and correlated result facts |
+| `src/client/todo.effects.ts` | Latest-read cancellation, create admission and one bounded FIFO mutation queue |
+| `src/client/todo.service.ts` | Inert `createTodoService({ fetch })` factory and typed compatibility wrappers |
+| `src/client/api.ts` | Cold typed HTTP methods, response validation, structured failures and fetch/body cancellation |
+| `src/client/sse.ts` | Subscription-owned EventSource adapter with a required decoder from `unknown` |
 | `src/client/main.tsx` | Inert app factory; connects views/feedback before external inputs and startup |
 
 The M02 model is inert until its owner starts it. Subscribe feedback and views
@@ -170,7 +182,11 @@ before start; then activate external inputs. After disposal, construct a fresh
 instance. Effects consume `{ message, previous, state }` transition records;
 late state consumers receive the current snapshot, but transitions do not replay.
 The [M02 checkpoint](docs/m02/acceptance.md) defines ordering and reset behavior.
-Transport decoding and the full extracted effect policy remain M03 work.
+The host owns one `todoEffects$` subscription and feeds its result facts back into
+the model. Component event handlers emit intents; additional state, view-model and transition
+consumers do not execute requests. Reads use `switchMap`, repeated create submissions
+use `exhaustMap`, and all accepted writes share a bounded `concatMap` queue.
+The [M03 checkpoint](docs/m03/acceptance.md) records policies and local verification.
 
 ### Generated typed client
 
@@ -182,7 +198,28 @@ api.todos.update({ id: '42' }, { completed: true });
 api.todos.remove({ id: '42' });                // Observable<void>
 ```
 
-`createClient` walks the contract tree: leaf nodes that match the `AnyRoute` shape are converted to functions; branches become nested objects. Argument order: `(params, body)` or `(query)` — only the slots present in the contract appear, in the order params → query/body.
+`createClient` walks the contract tree: leaf nodes that match the `AnyRoute` shape
+are converted to functions; branches become nested objects. Only the slots present
+in the contract appear, in the order params → query → body. Pass `{ fetch }` as the
+second factory argument to inject a transport. Each subscription starts one request;
+unsubscription aborts fetch and cancels active body consumption. Non-2xx responses
+produce structured HTTP failures; successful JSON must pass the route's Zod schema.
+Only the declared empty 204 response emits `undefined`. Streaming routes fail through
+the finite client's error channel without starting a request.
+
+The generic SSE adapter requires a decoder. For the existing Node `todos` event:
+
+```typescript
+import { fromEventSource } from './src/client/sse';
+import { todoListSchema } from './src/shared/todo.schema';
+
+const snapshots$ = fromEventSource('/api/todos/stream', 'todos', value => todoListSchema.parse(value));
+```
+
+Constructing this Observable is inert. Each subscription owns its connection;
+unsubscribe, transport failure or decode failure removes listeners and closes it.
+This adapter is not yet connected to the Todo app; M06 owns its live protocol,
+recovery rules and integration after the remaining M05 substeps.
 
 ### JSX configuration
 

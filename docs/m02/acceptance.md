@@ -1,7 +1,12 @@
 # M02 — Instance-owned state and coherent derived streams
 
 Date: 2026-09-17. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
-Status: implemented and locally verified; acceptance review/merge pending.
+Status: accepted and merged in [PR #7](https://github.com/hansschenker/rxjs-flow/pull/7)
+at `7374557b6d264a9bfa572526a4f71233fc3aa24e`.
+The execution evidence and implementation limits below describe the historical M02
+checkpoint. Subsequent effect/transport work is recorded in the
+[M03 acceptance report](../m03/acceptance.md); M03 is locally verified with acceptance
+review/merge pending. M04 is next only after M03 acceptance and authorization.
 
 ## Provenance and scope
 

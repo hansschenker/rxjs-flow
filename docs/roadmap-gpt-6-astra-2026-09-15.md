@@ -8,7 +8,7 @@ Updated: 2026-09-17. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**. F
 **Original audited source baseline:** `cbc91eefbccdeaf17221d06c75bdd237fe5e5499` on the source repository's `main`.  
 **Inspected destination baseline for this revision:** `c9197b68591e390a0a3add4667e5dd23717d6b6e` on `rxjs-flow/main`.
 
-**Implementation status, 2026-09-17:** M00 is accepted and closed by merged PR #2 at the destination baseline above. M01 is accepted/merged in PR #5 at `188f21f`. M05a is accepted/merged in PR #6 at `eeb8d29`. M02 has [state/transition evidence awaiting review](m02/acceptance.md). M03–M04 and M05b–M09 remain pending. The executable implementation still uses Node HTTP/in-memory Todo storage. Hono, Wrangler, Worker build/preview and runtime tests now form a local foundation; Todo HTTP migration and Durable Object persistence remain planned. The r2 plan adoption changed documentation only; subsequent M01/M05a/M02 checkpoints implement browser lifetime/state ownership and the local platform foundation. The ChatGPT Project reference copy remains separately unverified.
+**Implementation status, 2026-09-17:** M00 is accepted and closed by merged PR #2 at the destination baseline above. M01 is accepted/merged in PR #5 at `188f21f`. M05a is accepted/merged in PR #6 at `eeb8d29`. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [implemented and locally verified, with acceptance review/merge pending](m03/acceptance.md). M04 and M05b–M09 remain pending. The executable implementation still uses Node HTTP/in-memory Todo storage. Hono, Wrangler, Worker build/preview and runtime tests form a local foundation; Todo HTTP migration and Durable Object persistence remain planned. The r2 plan adoption changed documentation only; subsequent M01/M05a/M02/M03 checkpoints implement browser lifetime/state ownership, extracted effect policies, validated HTTP outcomes, a required generic SSE decoder and the local platform foundation. Keyed DOM rendering remains M04; live protocol and application integration remain M06. The ChatGPT Project reference copy remains separately unverified.
 
 This is a continuation of the existing application, not a fresh scaffold, repository rename, history reset or import from `rxjs-fullstack`. It explicitly amends r1's permanent Node HTTP and in-memory-only target assumptions. Preserve domain behavior and tested contracts while moving the platform boundary through reviewable steps. No runtime replacement occurs in this documentation change.
 
@@ -93,8 +93,8 @@ Node retirement is an explicit later decision: retain the baseline until corresp
 |---|---|---|---|
 | M00 | Verified import, baseline and reconciled status | — | Accepted/closed; PR #2 merged at `c9197b6` |
 | M01 | Explicit application/component/source lifetimes | M00 | Accepted/merged; PR #5 at `188f21f` |
-| M02 | Instance-owned state and coherent derived streams | M01 | Implemented; [acceptance review pending](m02/acceptance.md) |
-| M03 | Effect policies and correct HTTP outcomes | M02 | Pending |
+| M02 | Instance-owned state and coherent derived streams | M01 | Accepted/merged; [PR #7 at `7374557`](m02/acceptance.md) |
+| M03 | Effect policies and correct HTTP outcomes | M02 | Implemented and locally verified; [acceptance review/merge pending](m03/acceptance.md) |
 | M04 | Owned, targeted reactive DOM rendering | M02, M03 | Pending |
 | M05 | Cloudflare/Hono request, authority and SSE correctness | M05a–M05d | Pending |
 | M05a | Cloudflare/Hono development and build foundation | M01 | Accepted/merged; PR #6 at `eeb8d29` |
@@ -118,7 +118,7 @@ Tests accompany every milestone. M05a starts Workers-runtime testing; M08 is not
 
 **Purpose and retained evidence:** verify original history/application, reproducible install/typecheck/tests, dependency review, characterization and the original build/start probes. See [M00 evidence](baseline-rxjs-flow-m00.md) and the [unmodified r1 tasks and acceptance](archive/roadmap-rxjs-flow-migration-r1-2026-09-15.md).
 
-**r2 treatment:** preserve all executed evidence and the separate intentionally failing characterization branch. Supersede only future Node-only hosting assumptions. Current implementation failures still have owners: M01 startup/disposal, M03 HTTP outcomes, M05b request isolation, M05d SSE cleanup. A subsequent platform replacement must account for those requirements rather than deleting failing cases without explanation.
+**r2 treatment:** preserve all executed evidence and the separate intentionally failing characterization branch. Supersede only future Node-only hosting assumptions. Characterized failures retain milestone owners: M01 startup/disposal, M03 HTTP outcomes, M05b request isolation, M05d SSE cleanup. The corresponding acceptance reports record fixes or tested replacements. A subsequent platform replacement must account for those requirements rather than deleting failing cases without explanation.
 
 ## M01 — Make lifetime and source ownership explicit
 
@@ -147,6 +147,10 @@ is unchanged: M01, then M05a, then M02–M04.
 
 ## M02 — Build the state machine and derived-stream contract
 
+**Implementation checkpoint, 2026-09-17:** [acceptance evidence](m02/acceptance.md)
+records the state/transition implementation and historical local verification.
+Accepted and merged in PR #7 at `7374557b6d264a9bfa572526a4f71233fc3aa24e`.
+
 **Purpose:** make memory, ordering, and sharing explicit while preserving the existing pure reducer approach.
 
 **Touch:** `todo.state.ts`, new `todo.model.ts` / `todo.selectors.ts`, `src/client/runtime/program.ts`, state/runtime tests. Names are proposed file locations, not existing APIs.
@@ -166,6 +170,13 @@ is unchanged: M01, then M05a, then M02–M04.
 **Important:** `shareReplay({ bufferSize: 1, refCount: true })` alone does not specify app lifetime. The mounted runtime must own the state connection; disposal must release that ownership and references. **Visible evidence:** state-transition and derived-value examples from the tested instance model.
 
 ## M03 — Separate effect streams and repair HTTP outcomes
+
+**Implementation checkpoint, 2026-09-17:** [acceptance evidence](m03/acceptance.md)
+records extracted owned effects, bounded mutation admission, recoverable correlated
+outcomes, validated HTTP responses, abort through body consumption and the required
+generic SSE decoder. Implementation and local verification are complete; acceptance
+review/merge is pending. Keyed DOM rendering remains M04, and the application live
+protocol/reconnect integration remains M06. No later milestone starts automatically.
 
 **Purpose:** events describe intent, pure functions determine meaning, and effect streams implement explicit execution policies.
 
@@ -225,7 +236,8 @@ Start with one simple ordered mutation queue. Per-entity queues are a later opti
 **Implementation checkpoint, 2026-09-17:** [acceptance evidence](m05a/acceptance.md)
 records the exact baseline/implementation, 252 tests across Node/DOM/workerd and
 real local dev/preview checks. [Run the checkpoint](m05a/local-development.md).
-Acceptance review/merge is pending; M05b–M05d remain unimplemented.
+Accepted and merged in PR #6 at `eeb8d2989884372fa42f4e321295aa7f3e8faa75`;
+M05b–M05d remain unimplemented.
 
 **Depends on:** M01. **Timing:** perform immediately after M01 in the recommended sequence.
 
@@ -401,4 +413,4 @@ Keep documentation, dependency/toolchain changes, platform adapters, storage aut
 
 After a roadmap amendment is merged/accepted, refresh the ChatGPT Project reference copy with this same filename and revision. Until that refresh is confirmed, report it as pending rather than claiming automatic Project synchronization. GitHub branch content is not proof that main or the Project copy has changed.
 
-**Next implementation session:** verify M02 acceptance and current repository state, then begin M03 when authorized. M00, M01 and M05a remain closed. Continue M02–M04 before M05b–M05d in the recommended serial order. No later milestone starts automatically.
+**Next implementation session:** complete M03 acceptance review and verify the current repository state, then begin M04 only when authorized. M00, M01, M05a and M02 remain accepted/closed. Continue with M04 before M05b–M05d in the recommended serial order. No later milestone starts automatically.

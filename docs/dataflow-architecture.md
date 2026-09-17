@@ -4,7 +4,7 @@ Design revision: 2026-09-17. Target revision: **rxjs-flow migration r2 — Cloud
 
 Applies to the ChatGPT Project **`rxjs-flow`** and development repository **`hansschenker/rxjs-flow`**. Read with the [canonical roadmap](roadmap-gpt-6-astra-2026-09-15.md) and [Cloudflare/Hono runtime decision](runtime-cloudflare-hono.md). The historical source `rxjs-stack` and separate `rxjs-fullstack` repositories are not development targets.
 
-**Status:** target behavior, not a claim that the current implementation satisfies it. M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e`; M01 is accepted/merged in PR #5. M05a is accepted/merged in PR #6. M02 has [state/transition evidence awaiting review](m02/acceptance.md). M03–M04 and M05b–M09 remain pending. A local Worker probe exists; Todo migration, durable authority, live integration and deployment remain unimplemented. The [r1 contract](archive/dataflow-architecture-r1-2026-09-15.md) and M00 evidence are preserved.
+**Status:** target behavior, with implementation evidence recorded per milestone. M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e`; M01 is accepted/merged in PR #5. M05a is accepted/merged in PR #6. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [implemented and locally verified, with acceptance review/merge pending](m03/acceptance.md). M04 and M05b–M09 remain pending; M04 requires M03 acceptance and authorization. A local Worker probe exists; Todo migration, durable authority, live integration and deployment remain unimplemented. The [r1 contract](archive/dataflow-architecture-r1-2026-09-15.md) and M00 evidence are preserved.
 
 r2 retains the reactive core, rendering and transport-correctness requirements while replacing the permanent Node-server assumption with an explicit Hono/Workers boundary and a minimal durable shared-state authority. Platform facts and primary references are separated from these project requirements in the runtime decision.
 
@@ -75,6 +75,8 @@ Hono owns HTTP integration; the existing JSX/binding layer owns browser renderin
 Do not force a new `Command` vocabulary. Preserve `Action` compatibility where appropriate and distinguish intent from completed fact. Pure domain functions may return ordinary values; they do not all need to become Observables. Hono middleware is not automatically an RxJS `Middleware`/`OperatorFunction`.
 
 The core and browser code must not import Node raw request types, Hono context, Worker bindings or Durable Object stubs. Restrict these to their adapter modules. Preserve one shared route contract and test its HTTP mapping; do not create independently maintained route trees.
+
+The M03 checkpoint extracts pure Todo intent interpretation and one app-owned effect graph. Reads use latest-read cancellation; accepted create/update/delete operations share a FIFO with a default capacity of 32 active plus waiting writes. Create exhaustion lasts through queued and active work. Expected failures return correlated facts, and unexpected graph/render faults reach the host's cleanup/reporting boundary. HTTP work is cold, uses response contracts and shared Zod schemas, preserves structured failures and aborts body consumption on disposal. The generic SSE adapter now requires a decoder from `unknown`; it is not connected to the Todo app. Keyed DOM ownership remains M04, and the versioned live protocol, reconnect policy and app connection remain M06.
 
 ## 3. Construction, activation, and disposal
 
