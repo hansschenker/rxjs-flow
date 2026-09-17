@@ -8,8 +8,9 @@ originally developed in [rxjs-stack](https://github.com/hansschenker/rxjs-stack)
 
 **Implementation status, 2026-09-17: M00 is accepted and closed.** PR #2 merged at
 [`c9197b6`](https://github.com/hansschenker/rxjs-flow/commit/c9197b68591e390a0a3add4667e5dd23717d6b6e).
-M01 browser ownership is implemented on this branch and awaits acceptance review;
-see the [M01 acceptance record](docs/m01/acceptance.md). M02–M09 remain pending.
+M01 is accepted and merged in PR #5 at `188f21f`. M05a adds the locally verified
+[Cloudflare/Hono foundation](docs/m05a/acceptance.md), awaiting acceptance review.
+M02–M04 and M05b–M09 remain pending.
 The executable baseline still uses **Node HTTP and an
 in-memory store**; the complete owned/live-state loop is not yet implemented.
 M00's dated test results and separate failing characterization remain evidence,
@@ -18,8 +19,9 @@ not a claim that every planned behavior works.
 **Planning revision: rxjs-flow migration r2 — Cloudflare/Hono.** The selected target
 uses Hono for HTTP integration, Cloudflare Workers for execution, a minimal Durable
 Object authority for shared Todo state, Vite for builds and Wrangler for Cloudflare
-operations. These integrations remain planned work. M01 changes browser lifetimes;
-it adds no platform dependencies, deployment configuration or domain settings.
+operations. M05a supplies project-local Wrangler, Vite/Workers builds and a typed
+Hono/RxJS probe. Todo HTTP migration, durable authority and live synchronization
+remain planned work. No deployed Worker or domain configuration is claimed.
 
 ## Project documents
 
@@ -28,6 +30,8 @@ it adds no platform dependencies, deployment configuration or domain settings.
 - [Cloudflare/Hono runtime decision](docs/runtime-cloudflare-hono.md)
 - [M00 baseline and recovery evidence](docs/baseline-rxjs-flow-m00.md)
 - [M01 browser lifetime acceptance](docs/m01/acceptance.md)
+- [M05a acceptance and test evidence](docs/m05a/acceptance.md)
+- [Local Cloudflare/Hono development guide](docs/m05a/local-development.md)
 - [Historical source audit](docs/repository-audit-2026-09-15.md)
 
 ## Existing foundation and planned work
@@ -35,7 +39,7 @@ it adds no platform dependencies, deployment configuration or domain settings.
 | Area | Existing implementation | Work still planned |
 |---|---|---|
 | Client | Typed finite-route client, pure reducer, custom JSX, owned startup/disposal and CRUD wiring | Instance state, effect feedback and targeted rendering (M02–M04) |
-| HTTP server | Node Observable HTTP source, routes, middleware, auth and Zod validation | Hono/Workers foundation and compatibility-tested request ownership (M05a–M05b) |
+| HTTP server | Node Todo baseline plus a local Hono/Workers foundation probe | Compatibility-tested Todo request ownership (M05b) |
 | Shared state | In-memory Node Todo store | Logical collection authority, minimal durable commit/recovery and ordering metadata (M05c) |
 | Live updates | Node SSE route and client EventSource adapter | Owned bounded delivery, validated snapshots and reconnect semantics (M05d–M06) |
 | Reference app/delivery | Existing Todo application and separate development processes | Complete browser loop, platform tests/traces and documented Cloudflare-ready build (M07–M09) |
@@ -77,9 +81,19 @@ These commands remain the baseline workflow until implementation changes them.
 
 The [M00 build/start probes](docs/m00/build-start-strategy.md) remain historical
 Node evidence. Their future Node-only delivery choice is superseded by the r2
-runtime decision. M05a will establish project-local Wrangler authentication,
-generated Worker types, Vite/Cloudflare development/build/preview and compatible
-runtime tests. Do not treat Wrangler commands as configured repository scripts yet.
+runtime decision. The [M05a guide](docs/m05a/local-development.md) documents the
+installed tools, generated Worker types, local development/build/preview, and
+optional developer authentication. Local verification needs no account login.
+
+To inspect the new foundation separately from the Node Todo workflow:
+
+```bash
+npm run dev:worker
+```
+
+Open `http://127.0.0.1:5174/api/foundation` for the typed Worker response. The Worker
+serves the existing JSX assets, but `/api/todos` is still unimplemented there.
+`npm run build:worker` and `npm run smoke:worker` verify the built local checkpoint.
 
 ## Scope and contribution
 
@@ -96,8 +110,8 @@ implementation targets; no code/history replacement is part of this direction.
 
 Inherited optional Claude workflows, Dependabot configuration and local Claude
 permission settings remain under `docs/archive/` for separate review. They are not
-activated by this revision. The inherited install/typecheck/test CI remains the
-validation workflow; no deployment workflow or secrets are added here.
+activated by this revision. CI now checks separate Node/DOM and workerd tests, generated types, browser/Worker
+builds and local preview. No deployment workflow or secrets are added here.
 
 The original work by **Hans Schenker and Claude (Anthropic)** retains its commit
 authorship and [MIT license](LICENSE). The

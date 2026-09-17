@@ -6,20 +6,22 @@ Development target: `hansschenker/rxjs-flow`. Read [AGENTS.md](AGENTS.md), the
 [runtime decision](docs/runtime-cloudflare-hono.md) before changes.
 
 M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e` (PR #2).
-M01 implementation is ready for acceptance review; see [its evidence](docs/m01/acceptance.md).
-M02–M09 remain pending. Use a dedicated branch and PR; do not start a milestone,
+M01 is accepted/merged in PR #5 at `188f21ff307ff7d2146d9f90b24e5ee5c7dfd99d`.
+M05a is implemented with [acceptance review pending](docs/m05a/acceptance.md).
+M02–M04 and M05b–M09 remain pending. Use a dedicated branch and PR; do not start a milestone,
 merge, publish, deploy, create remote resources or change `netxpert.ch` without
 appropriate explicit authorization. `rxjs-stack` and `rxjs-fullstack` are historical/
 separate repositories, not implementation targets.
 
 The r2 target is RxJS 7 + TypeScript + existing custom JSX, Hono HTTP integration
 on Cloudflare Workers, Vite/Cloudflare build tooling, project-local Wrangler, and
-a minimal Durable Object authority. These are planned, not implemented. Keep Node
+a minimal Durable Object authority. M05a now provides the local platform foundation;
+Todo migration, authority and live integration remain planned. Keep Node
 as the baseline during the tested transition. Hono does not replace our renderer.
 Do not use mutable Worker-global state as authority or pass Hono context into reducers.
 
-Next authorized implementation: M01, then early M05a, then M02–M04 and remaining
-M05 substeps as specified in the roadmap. No permanent Node-only constraint or
+After M05a acceptance, the next implementation is M02 when authorized, then M03–M04
+and remaining M05 substeps as specified in the roadmap. No permanent Node-only constraint or
 instruction to reopen M00 is in force. Do not merge the intentionally failing
 `m00/characterize-baseline` probes.
 

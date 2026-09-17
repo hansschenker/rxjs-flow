@@ -14,8 +14,9 @@ assumptions or completed milestones.
 
 M00 is accepted and closed: recovery PR #1 merged at
 `27f8f2cbcc7ba68ff6bc1062ebf25cc46f363769`; closeout PR #2 merged at
-`c9197b68591e390a0a3add4667e5dd23717d6b6e`. M01 implementation is ready for
-acceptance review; see `docs/m01/acceptance.md`. M02–M09 remain pending.
+`c9197b68591e390a0a3add4667e5dd23717d6b6e`. M01 is accepted/merged in PR #5 at
+`188f21ff307ff7d2146d9f90b24e5ee5c7dfd99d`. M05a is implemented with acceptance
+review pending; see `docs/m05a/acceptance.md`. M02–M04 and M05b–M09 remain pending.
 Do not repeat the import or reopen M00 because the platform target changed.
 The separate `m00/characterize-baseline` branch contains intentionally failing
 probes; do not merge it. Map each failure to a verified fix or tested replacement.
@@ -33,8 +34,10 @@ application class hierarchies or rewrite third-party libraries to remove classes
 
 The r2 target is Hono HTTP integration on Cloudflare Workers, Vite plus the
 Cloudflare Vite plugin, project-local Wrangler, and a minimal Durable Object
-collection authority. These are planned, not implemented. The current Node HTTP
-application remains the migration baseline until equivalent behavior is verified.
+collection authority. M05a establishes only a local Hono/RxJS probe, generated
+Worker types, builds and runtime tests; Todo migration/authority/SSE remain planned.
+The current Node HTTP application remains the migration baseline until equivalent
+behavior is verified.
 Keep its applicable lifecycle tests or explicitly document tested retirement.
 Do not scaffold over the repository, adopt Hono JSX, or add another reactive engine.
 
