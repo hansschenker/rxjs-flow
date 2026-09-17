@@ -1,37 +1,6 @@
 # CLAUDE.md
 
-Development target: `hansschenker/rxjs-flow`. Read [AGENTS.md](AGENTS.md), the
-[canonical roadmap](docs/roadmap-gpt-6-astra-2026-09-15.md) (**rxjs-flow migration r2 — Cloudflare/Hono**),
-[architecture contract](docs/dataflow-architecture.md), and
-[runtime decision](docs/runtime-cloudflare-hono.md) before changes.
-
-M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e` (PR #2).
-M01–M09 remain pending. Use a dedicated branch and PR; do not start a milestone,
-merge, publish, deploy, create remote resources or change `netxpert.ch` without
-appropriate explicit authorization. `rxjs-stack` and `rxjs-fullstack` are historical/
-separate repositories, not implementation targets.
-
-The r2 target is RxJS 7 + TypeScript + existing custom JSX, Hono HTTP integration
-on Cloudflare Workers, Vite/Cloudflare build tooling, project-local Wrangler, and
-a minimal Durable Object authority. These are planned, not implemented. Keep Node
-as the baseline during the tested transition. Hono does not replace our renderer.
-Do not use mutable Worker-global state as authority or pass Hono context into reducers.
-
-Next authorized implementation: M01, then early M05a, then M02–M04 and remaining
-M05 substeps as specified in the roadmap. No permanent Node-only constraint or
-instruction to reopen M00 is in force. Do not merge the intentionally failing
-`m00/characterize-baseline` probes.
-
-## Existing Node baseline reference
-
-The commands and examples below describe the inherited implementation, not the
-r2 target contract or acceptance of its known lifecycle/outcome gaps. In particular,
-module-global client state, positional replay defaults and full rerendering are
-starting points to be corrected in M01–M04. Preserve tested behavior while changing
-its ownership. The unmodified earlier guide is archived at
-[CLAUDE-before-cloudflare-r2-2026-09-17.md](docs/archive/CLAUDE-before-cloudflare-r2-2026-09-17.md).
-Existing `src/claude-md.test.ts` examples remain baseline tests; no test code is changed
-by this documentation revision.
+Development target: `hansschenker/rxjs-flow`. Read `docs/roadmap-gpt-6-astra-2026-09-15.md` (revision `rxjs-flow migration r1`) and `docs/baseline-rxjs-flow-m00.md` before changes. Work on a dedicated branch, stay within M00 until accepted, and do not merge, publish, or deploy without explicit authorization. The source `rxjs-stack` and separate `rxjs-fullstack` repositories are read-only/out of scope.
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -53,11 +22,9 @@ npx vitest run src/server/core/router.test.ts
 
 Vite proxies `/api/*` → `http://localhost:3000/*`, so the client and server can run independently.
 
-## Baseline architecture
+## Architecture
 
-The current implementation is a TypeScript app with custom JSX and Node HTTP.
-Its server `Effect` composes streams; pure domain functions need not return streams.
-The r2 platform migration must preserve or explicitly adapt these contracts.
+This is a framework-free full-stack TypeScript app. Every abstraction is either a plain RxJS `Observable` or a function that transforms one.
 
 ### Core type contracts (`src/server/core/types.ts`)
 
@@ -66,8 +33,7 @@ type Effect<TRequest>     = (req$: Observable<TRequest>)  => Observable<HttpResp
 type Middleware<TRequest> = OperatorFunction<TRequest, TRequest>;
 ```
 
-The baseline router and route handlers use the server `Effect` contract. Its
-RxJS middleware uses `OperatorFunction`; this is distinct from Hono middleware.
+A route handler, middleware, and the router itself are all `Effect`. Middleware is just an `OperatorFunction` — compose with `pipe()`.
 
 ### Server layers
 
@@ -144,10 +110,7 @@ type CreateResult = RouteResponse<typeof routes.todos.create>;   // Todo
 apiPath(routes.todos.update.path, { id: '42' }); // /api/todos/42
 ```
 
-In the Node baseline, adding an endpoint means one entry in `src/shared/routes.ts`
-and a `handle(contract, effect)` in the server router; the typed client uses that
-contract. M05b must test the corresponding Hono mapping, without duplicating the
-contract. Type inference never replaces runtime validation of external input.
+Adding a new endpoint: add one entry to `routes` in `src/shared/routes.ts`, add one `handle(contract, effect)` call in the server router, and the typed client is generated automatically.
 
 ### Client (`src/client/`)
 
@@ -159,7 +122,7 @@ contract. Type inference never replaces runtime validation of external input.
 | `src/client/api.ts` | `createClient(routes)` — generates typed Observable methods from the contract tree |
 | `src/client/main.tsx` | Entry: wires DOM events to `dispatch`, subscribes `state$` to re-render |
 
-The inherited client MVU pattern, to be replaced by owned instances in M02:
+The client MVU pattern:
 
 ```typescript
 export const action$ = new Subject<Action>();
@@ -181,9 +144,9 @@ api.todos.remove({ id: '42' });                // Observable<void>
 
 ### JSX configuration
 
-TSX uses a custom factory — **not React**. `jsxFactory: 'h'`, `jsxFragmentFactory: 'null'`. Import `h` explicitly in any `.tsx` file. Hono HTTP adoption does not change this selection.
+TSX uses a custom factory — **not React**. `jsxFactory: 'h'`, `jsxFragmentFactory: 'null'`. Import `h` explicitly in any `.tsx` file.
 
-## Baseline testing patterns
+## Testing patterns
 
 **Unit-test an effect in-memory** (no HTTP):
 
@@ -198,14 +161,9 @@ const res = await runRequest(todoRoutes, createTestRequest({
 }));
 ```
 
-**Integration-test against a live Node server**:
+**Integration-test against a live server**:
 
 ```typescript
 const client = createHttpTestClient('http://localhost:3000');
 const res = await client.post('/todos', { title: 'Test' });
 ```
-
-Workers-runtime tests begin in M05a and complement these tests; Node tests alone
-are not Cloudflare acceptance. Record actual versions, commands and evidence, keep
-credentials out of Git, and do not claim Project reference-copy synchronization
-or deployed verification without performing it.

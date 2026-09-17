@@ -1,5 +1,15 @@
 # M00 client build and server start strategy
 
+> **r2 supersession notice — 2026-09-17:** M00 remains accepted/closed at
+> `c9197b68591e390a0a3add4667e5dd23717d6b6e`. The executed Node probes and all
+> original evidence below remain unchanged. Only the **future delivery choice**
+> is superseded by [migration r2](../roadmap-gpt-6-astra-2026-09-15.md) and the
+> [Cloudflare/Hono runtime decision](../runtime-cloudflare-hono.md): M05a proves
+> Vite/Workers build integration early, M05b–M05d establish HTTP/authority/SSE
+> behavior, and M09 documents verified delivery. Node remains the migration
+> baseline until tested replacement or explicit retention. This notice adds no
+> runtime code, scripts, dependencies, deployment, or domain configuration.
+
 Decision date: 2026-09-15. Node **22.22.1**. The M00 task is to select and probe
 the build/start direction. Supported production scripts and the combined
 static/API smoke test remain M09 delivery work after the lifetime fixes.
