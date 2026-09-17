@@ -256,20 +256,21 @@ describe('M01 app activation and disposal', () => {
 		expect(list.textContent).toContain('Created');
 	});
 
-	it('disposes replaced rows while the current sibling remains interactive', () => {
+	it('disposes deleted rows while the retained sibling remains interactive', () => {
 		const { app, api } = create();
 		app.start(document.body);
 		const oldButtons = list.querySelectorAll('button');
 		oldButtons[0]!.click();
 		expect(list.textContent).not.toContain('First');
-		oldButtons[1]!.click();
+		oldButtons[0]!.click();
 		expect(api.remove$).toHaveBeenCalledTimes(1);
-		list.querySelector('button')!.click();
+		expect(list.querySelector('button')).toBe(oldButtons[1]);
+		oldButtons[1]!.click();
 		expect(api.remove$).toHaveBeenLastCalledWith('2');
 		expect(list.childElementCount).toBe(0);
 	});
 
-	it('does not initiate writes on rendering and owns updates across collection row rebuilds', () => {
+	it('does not initiate writes on rendering and owns updates across keyed collection changes', () => {
 		const pending = new Subject<Todo>();
 		const { app, api } = create();
 		api.update$.mockReturnValue(pending);
@@ -287,7 +288,7 @@ describe('M01 app activation and disposal', () => {
 		expect(checkbox.checked).toBe(true);
 		api.getAll$.mockReturnValueOnce(of([todo, second, { ...todo, id: '3', title: 'Refreshed' }]));
 		app.refresh();
-		expect(list.querySelector('input')).not.toBe(checkbox);
+		expect(list.querySelector('input')).toBe(checkbox);
 		expect(pending.observed).toBe(true);
 		pending.next({ ...todo, completed: true });
 		expect(list.querySelector('input')!.checked).toBe(true);

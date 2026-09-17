@@ -6,14 +6,31 @@
     <title>rxjs-flow Todos</title>
   </head>
   <body>
-    <h1>Todos</h1>
-    <form id="add-form">
-      <input id="title-input" type="text" placeholder="New todo..." required />
-      <button type="submit">Add</button>
-    </form>
-    <button id="refresh-todos" type="button">Refresh</button>
-    <ul id="todo-list"></ul>
-    <div id="error-msg" style="color:red"></div>
+    <main class="todo-app">
+      <header class="page-header">
+        <p class="eyebrow">RXJS FLOW</p>
+        <h1>Today’s list</h1>
+        <p class="intro">One task at a time.</p>
+      </header>
+      <section class="todo-card" aria-label="Your tasks">
+        <form id="add-form">
+          <label for="title-input">New task</label>
+          <div class="add-controls">
+            <input id="title-input" type="text" placeholder="What needs doing?" autocomplete="off" required />
+            <button type="submit">Add</button>
+          </div>
+        </form>
+        <div class="list-toolbar">
+          <p id="todo-summary" aria-live="polite"></p>
+          <button id="refresh-todos" type="button">Refresh</button>
+        </div>
+        <div id="loading-state" role="status"></div>
+        <ul id="todo-list" aria-label="Todo list"></ul>
+        <div id="empty-state"></div>
+        <p id="error-msg" role="alert"></p>
+        <footer><span class="status-dot" aria-hidden="true"></span><span id="pending-msg" role="status"></span></footer>
+      </section>
+    </main>
     <script type="module" src="/src/client/browser.ts"></script>
   </body>
 </html>
