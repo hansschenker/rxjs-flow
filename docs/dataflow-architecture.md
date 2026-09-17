@@ -4,7 +4,7 @@ Design revision: 2026-09-17. Target revision: **rxjs-flow migration r2 — Cloud
 
 Applies to the ChatGPT Project **`rxjs-flow`** and development repository **`hansschenker/rxjs-flow`**. Read with the [canonical roadmap](roadmap-gpt-6-astra-2026-09-15.md) and [Cloudflare/Hono runtime decision](runtime-cloudflare-hono.md). The historical source `rxjs-stack` and separate `rxjs-fullstack` repositories are not development targets.
 
-**Status:** target behavior, not a claim that the current implementation satisfies it. M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e`; M01 has [implementation evidence awaiting acceptance review](m01/acceptance.md). M02–M09 and Cloudflare/Hono integration remain pending. No Worker is implemented or deployed. The [r1 contract](archive/dataflow-architecture-r1-2026-09-15.md) and M00 evidence are preserved.
+**Status:** target behavior, not a claim that the current implementation satisfies it. M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e`; M01 is accepted/merged in PR #5. M05a has [local foundation evidence awaiting review](m05a/acceptance.md). M02–M04 and M05b–M09 remain pending. A local Worker probe exists; Todo migration, durable authority, live integration and deployment remain unimplemented. The [r1 contract](archive/dataflow-architecture-r1-2026-09-15.md) and M00 evidence are preserved.
 
 r2 retains the reactive core, rendering and transport-correctness requirements while replacing the permanent Node-server assumption with an explicit Hono/Workers boundary and a minimal durable shared-state authority. Platform facts and primary references are separated from these project requirements in the runtime decision.
 
@@ -80,7 +80,7 @@ The core and browser code must not import Node raw request types, Hono context, 
 
 Creating a program describes its graph and dependencies. Starting/mounting it subscribes or connects that graph. Importing feature modules must not subscribe, touch the DOM, issue a request, open a connection or mutate application state. Inert route registration and platform entry exports are permitted: defining a route is not executing its operation.
 
-A `createTodoProgram`/`mountTodoApp` split remains a proposed small function-based surface, not an existing public API. RxJS `Subscription` may implement ownership internally. Do not create a parallel subscription system or application class hierarchy. A platform-required Durable Object entry class may delegate to the functional core; library implementation classes need not be rewritten.
+M01 implements inert `createTodoApp` plus `start`/`dispose` and the host helper `mountTodoApp`. The richer instance-owned program/model remains M02 work. RxJS `Subscription` may implement ownership internally. Do not create a parallel subscription system or application class hierarchy. A platform-required Durable Object entry class may delegate to the functional core; library implementation classes need not be rewritten.
 
 The mounted browser runtime owns state accumulation, effects, bindings, source listeners, scheduled work and feedback. Internal adapter subscriptions are allowed only with named owners and teardown paths. “Exactly one subscribe call in the entire codebase” is not the constraint.
 

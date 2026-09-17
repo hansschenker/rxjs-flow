@@ -9,6 +9,9 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    env:
+      WRANGLER_SEND_METRICS: 'false'
+      CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV: 'false'
 
     steps:
       - uses: actions/checkout@v6
@@ -29,5 +32,18 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Test
+      - name: Test Node and DOM
         run: npm test
+
+      - name: Test in workerd
+        run: npm run test:worker
+
+      - name: Check generated Worker types
+        run: npm run cf:typecheck
+
+      - name: Build browser and Worker
+        run: npm run build:worker
+
+      - name: Smoke test local Worker preview
+        timeout-minutes: 3
+        run: npm run smoke:worker

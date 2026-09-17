@@ -1,7 +1,8 @@
 # M01 — Browser lifetime acceptance
 
 Date: 2026-09-17. Plan: **rxjs-flow migration r2 — Cloudflare/Hono**.
-Status: implementation and local acceptance checks complete; PR review/merge pending.
+Status: accepted/merged in PR #5 at `188f21ff307ff7d2146d9f90b24e5ee5c7dfd99d`.
+The original local evidence below remains tied to its recorded implementation commit.
 M00 remains closed. No later milestone is implemented by this change.
 
 ## Baseline and evidence identity

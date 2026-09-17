@@ -8,7 +8,7 @@ Updated: 2026-09-17. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**. F
 **Original audited source baseline:** `cbc91eefbccdeaf17221d06c75bdd237fe5e5499` on the source repository's `main`.  
 **Inspected destination baseline for this revision:** `c9197b68591e390a0a3add4667e5dd23717d6b6e` on `rxjs-flow/main`.
 
-**Implementation status, 2026-09-17:** M00 is accepted and closed by merged PR #2 at the destination baseline above. M01 has [implementation evidence awaiting acceptance review](m01/acceptance.md). M02–M09, including all new M05 substeps, remain pending. The executable implementation still uses Node HTTP/in-memory Todo storage. Hono, Cloudflare Workers, Wrangler integration and Durable Object persistence are selected targets, not implemented capabilities. The r2 plan adoption changed documentation only; the subsequent M01 checkpoint changes browser ownership and does not claim that the ChatGPT Project reference copy has been refreshed.
+**Implementation status, 2026-09-17:** M00 is accepted and closed by merged PR #2 at the destination baseline above. M01 is accepted/merged in PR #5 at `188f21f`. M05a has [local foundation evidence awaiting review](m05a/acceptance.md). M02–M04 and M05b–M09 remain pending. The executable implementation still uses Node HTTP/in-memory Todo storage. Hono, Wrangler, Worker build/preview and runtime tests now form a local foundation; Todo HTTP migration and Durable Object persistence remain planned. The r2 plan adoption changed documentation only; subsequent M01/M05a checkpoints implement browser ownership and the local platform foundation and does not claim that the ChatGPT Project reference copy has been refreshed.
 
 This is a continuation of the existing application, not a fresh scaffold, repository rename, history reset or import from `rxjs-fullstack`. It explicitly amends r1's permanent Node HTTP and in-memory-only target assumptions. Preserve domain behavior and tested contracts while moving the platform boundary through reviewable steps. No runtime replacement occurs in this documentation change.
 
@@ -92,12 +92,12 @@ Node retirement is an explicit later decision: retain the baseline until corresp
 | ID | Outcome | Depends on | Status |
 |---|---|---|---|
 | M00 | Verified import, baseline and reconciled status | — | Accepted/closed; PR #2 merged at `c9197b6` |
-| M01 | Explicit application/component/source lifetimes | M00 | Implemented; [acceptance review pending](m01/acceptance.md) |
+| M01 | Explicit application/component/source lifetimes | M00 | Accepted/merged; PR #5 at `188f21f` |
 | M02 | Instance-owned state and coherent derived streams | M01 | Pending |
 | M03 | Effect policies and correct HTTP outcomes | M02 | Pending |
 | M04 | Owned, targeted reactive DOM rendering | M02, M03 | Pending |
 | M05 | Cloudflare/Hono request, authority and SSE correctness | M05a–M05d | Pending |
-| M05a | Cloudflare/Hono development and build foundation | M01 | Pending; perform early |
+| M05a | Cloudflare/Hono development and build foundation | M01 | Implemented; [acceptance review pending](m05a/acceptance.md) |
 | M05b | HTTP compatibility and request ownership | M05a | Pending |
 | M05c | Durable shared Todo authority | M05b | Pending; explicit added scope |
 | M05d | Owned SSE and bounded authority-to-client delivery | M05b, M05c | Pending |
@@ -125,7 +125,8 @@ Tests accompany every milestone. M05a starts Workers-runtime testing; M08 is not
 **Implementation checkpoint, 2026-09-17:** browser ownership is implemented and
 locally verified; [acceptance evidence](m01/acceptance.md) records the exact starting
 and implementation commits, 219-test result and remaining boundaries. Review/merge
-is pending. The r2 order is unchanged: M01, then M05a, then M02–M04.
+completed in PR #5 at `188f21ff307ff7d2146d9f90b24e5ee5c7dfd99d`. The r2 order
+is unchanged: M01, then M05a, then M02–M04.
 
 **Purpose:** every subscription and external resource has an owner before further abstraction is added.
 
@@ -220,6 +221,11 @@ Start with one simple ordered mutation queue. Per-entity queues are a later opti
 **Parent acceptance:** all four substeps pass, original characterization requirements have an explicit disposition, the supported-runtime status is documented, and the complete authority-to-live-response path is ready for M06. A working health endpoint is not M05 completion.
 
 ### M05a — Cloudflare/Hono development and build foundation
+
+**Implementation checkpoint, 2026-09-17:** [acceptance evidence](m05a/acceptance.md)
+records the exact baseline/implementation, 252 tests across Node/DOM/workerd and
+real local dev/preview checks. [Run the checkpoint](m05a/local-development.md).
+Acceptance review/merge is pending; M05b–M05d remain unimplemented.
 
 **Depends on:** M01. **Timing:** perform immediately after M01 in the recommended sequence.
 
@@ -395,4 +401,4 @@ Keep documentation, dependency/toolchain changes, platform adapters, storage aut
 
 After a roadmap amendment is merged/accepted, refresh the ChatGPT Project reference copy with this same filename and revision. Until that refresh is confirmed, report it as pending rather than claiming automatic Project synchronization. GitHub branch content is not proof that main or the Project copy has changed.
 
-**Next implementation session:** verify the reviewed r2 revision and current repository state, then begin M01 when authorized. M00 remains closed. The next infrastructure checkpoint is M05a, followed by M02–M04 in the recommended serial order. This documentation amendment does not itself start those milestones.
+**Next implementation session:** verify M05a acceptance and current repository state, then begin M02 when authorized. M00 and M01 remain closed. Continue M02–M04 before M05b–M05d in the recommended serial order. No later milestone starts automatically.

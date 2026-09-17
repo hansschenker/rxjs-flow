@@ -1,0 +1,293 @@
+{
+  "starting_commit": "188f21ff307ff7d2146d9f90b24e5ee5c7dfd99d",
+  "implementation_commit": "3e29ed1775bad5b5ca15d6acd44822272caf76be",
+  "implementation_tree": "9548562ba9bf2c42a2b7de0c51f5c0dacb3bf4cd",
+  "records": [
+    {
+      "label": "baseline-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started": "2026-09-17T07:27:54.449594+00:00",
+      "finished": "2026-09-17T07:27:57.216000+00:00",
+      "exit_code": 0,
+      "result_excerpt": ""
+    },
+    {
+      "label": "baseline-tests",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-17T07:27:57.244611+00:00",
+      "finished": "2026-09-17T07:28:01.829044+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  23 passed (23)\n      Tests  219 passed (219)"
+    },
+    {
+      "label": "install-hono",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "install",
+        "--save-exact",
+        "hono@4.13.8"
+      ],
+      "started": "2026-09-17T07:29:20.285339+00:00",
+      "finished": "2026-09-17T07:29:31.675382+00:00",
+      "exit_code": 0,
+      "result_excerpt": ""
+    },
+    {
+      "label": "install-cloudflare",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "install",
+        "--save-dev",
+        "--save-exact",
+        "wrangler@4.133.0",
+        "@cloudflare/vite-plugin@1.54.11",
+        "@cloudflare/vitest-plugin@1.1.11"
+      ],
+      "started": "2026-09-17T07:29:31.704528+00:00",
+      "finished": "2026-09-17T07:30:05.032146+00:00",
+      "exit_code": 0,
+      "result_excerpt": "added 36 packages, and changed 2 packages in 33s"
+    },
+    {
+      "label": "generate-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "cf:typegen"
+      ],
+      "started": "2026-09-17T07:32:42.558716+00:00",
+      "finished": "2026-09-17T07:33:10.926613+00:00",
+      "exit_code": 0,
+      "result_excerpt": ""
+    },
+    {
+      "label": "split-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started": "2026-09-17T07:33:45.842495+00:00",
+      "finished": "2026-09-17T07:34:00.037812+00:00",
+      "exit_code": 0,
+      "result_excerpt": ""
+    },
+    {
+      "label": "worker-build",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "build:worker"
+      ],
+      "started": "2026-09-17T07:34:22.122345+00:00",
+      "finished": "2026-09-17T07:34:24.685740+00:00",
+      "exit_code": 0,
+      "result_excerpt": "dist/rxjs_flow_foundation/.vite/manifest.json    0.15 kB \u2502 gzip:  0.11 kB\ndist/rxjs_flow_foundation/wrangler.json          1.51 kB \u2502 gzip:  0.76 kB\ndist/rxjs_flow_foundation/index.js             103.38 kB \u2502 gzip: 25.31 kB\n\u2713 built in 161ms\ndist/client/.assetsignore              0.02 kB\ndist/client/index.html                 0.55 kB \u2502 gzip: 0.35 kB\ndist/client/assets/index-CEEzI5Dt.js  29.24 kB \u2502 gzip: 9.61 kB\n\u2713 built in 167ms"
+    },
+    {
+      "label": "node-dom-tests",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-17T07:34:22.121080+00:00",
+      "finished": "2026-09-17T07:34:25.588289+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  24 passed (24)\n      Tests  233 passed (233)"
+    },
+    {
+      "label": "preview-smoke",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "smoke:worker"
+      ],
+      "started": "2026-09-17T07:35:06.306881+00:00",
+      "finished": "2026-09-17T07:35:07.710581+00:00",
+      "exit_code": 1,
+      "result_excerpt": "  \"previewOutput\": \"(node:26) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\\n(Use `node --trace-warnings ...` to show where the warning was created)\\n\\u001b[33m\u25b2 \\u001b[43;33m[\\u001b[43;30mWARNING\\u001b[43;33m]\\u001b[0m \\u001b[1mProxy environment variables detected. We'll use your proxy for fetch requests.\\u001b[0m\\n\\n\\nerror when starting preview server:\\nSystemError [ERR_SYSTEM_ERROR]: A system error occurred: uv_interface_addresses returned Unknown system error 1 (Unknown system error 1)\\n    at Object.networkInterfaces (node:os:218:16)\\n    at getLocalHosts (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/@cloudflare/vite-plugin/dist/index.mjs:48223:24)\\n    at getPorts (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/@cloudflare/vite-plugin/dist/index.mjs:48278:16)\\n    at getFirstAvailablePort (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/@cloudflare/vite-plugin/dist/index.mjs:69215:9)\\n    at getInputInspectorPort (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/@cloudflare/vite-plugin/dist/index.mjs:69210:77)\\n    at async getPreviewMiniflareOptions (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/@cloudflare/vite-plugin/dist/index.mjs:85037:29)\\n    at async BasicMinimalPluginContext.configurePreviewServer (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/@cloudflare/vite-plugin/dist/index.mjs:85661:58)\\n    at async preview (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/vite/dist/node/chunks/node.js:33710:91)\\n    at async CAC.<anonymous> (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/vite/dist/node/cli.js:809:18) {\\n  code: 'ERR_SYSTEM_ERROR',\\n  info: {\\n    errno: 1,\\n    code: 'Unknown system error 1',\\n    message: 'Unknown system error 1',\\n    syscall: 'uv_interface_addresses'\\n  },\\n  errno: [Getter/Setter: 1],\\n  syscall: [Getter/Setter: 'uv_interface_addresses']\\n}\\n\""
+    },
+    {
+      "label": "preview-smoke-no-inspector",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "smoke:worker"
+      ],
+      "started": "2026-09-17T07:35:46.397685+00:00",
+      "finished": "2026-09-17T07:35:50.998126+00:00",
+      "exit_code": 0,
+      "result_excerpt": "  \"status\": \"passed\",\n  \"runtime\": \"local workerd preview\",\n      \"path\": \"/\",\n      \"path\": \"/assets/index-CEEzI5Dt.js\",\n      \"bytes\": 29246\n      \"path\": \"/api/foundation\",\n        \"runtime\": \"workerd\",\n      \"path\": \"/api\",\n      \"path\": \"/api/missing\",\n      \"path\": \"/api/todos\",\n      \"path\": \"/unknown-page\","
+    },
+    {
+      "label": "generated-types-check",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "cf:typecheck"
+      ],
+      "started": "2026-09-17T07:36:43.161161+00:00",
+      "finished": "2026-09-17T07:36:51.501900+00:00",
+      "exit_code": 0,
+      "result_excerpt": "\u2728 Types at worker-configuration.d.ts are up to date."
+    },
+    {
+      "label": "dependency-resolution",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "ls",
+        "hono",
+        "wrangler",
+        "@cloudflare/vite-plugin",
+        "@cloudflare/vitest-plugin",
+        "miniflare",
+        "workerd",
+        "vite",
+        "vitest",
+        "rxjs",
+        "typescript",
+        "--depth=1"
+      ],
+      "started": "2026-09-17T07:36:51.532487+00:00",
+      "finished": "2026-09-17T07:36:51.813194+00:00",
+      "exit_code": 0,
+      "result_excerpt": ""
+    },
+    {
+      "label": "clean-install",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "ci"
+      ],
+      "started": "2026-09-17T07:37:21.154758+00:00",
+      "finished": "2026-09-17T07:37:33.836215+00:00",
+      "exit_code": 0,
+      "result_excerpt": "added 153 packages in 13s"
+    },
+    {
+      "label": "final-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started": "2026-09-17T07:37:57.589287+00:00",
+      "finished": "2026-09-17T07:38:13.155700+00:00",
+      "exit_code": 0,
+      "result_excerpt": ""
+    },
+    {
+      "label": "final-node-dom-tests",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-17T07:37:58.832647+00:00",
+      "finished": "2026-09-17T07:38:02.538304+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  24 passed (24)\n      Tests  236 passed (236)"
+    },
+    {
+      "label": "final-worker-tests",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker"
+      ],
+      "started": "2026-09-17T07:38:02.580164+00:00",
+      "finished": "2026-09-17T07:38:06.899365+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  1 passed (1)\n      Tests  16 passed (16)"
+    },
+    {
+      "label": "dev-smoke",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "scripts/smoke-worker.mjs",
+        "--dev"
+      ],
+      "started": "2026-09-17T07:37:58.831517+00:00",
+      "finished": "2026-09-17T07:38:06.725918+00:00",
+      "exit_code": 0,
+      "result_excerpt": "  \"status\": \"passed\",\n  \"runtime\": \"local workerd\",\n  \"mode\": \"development\",\n      \"path\": \"/\",\n      \"path\": \"/src/client/browser.ts\",\n      \"bytes\": 899\n      \"path\": \"/api/foundation\",\n        \"runtime\": \"workerd\",\n      \"path\": \"/api\",\n      \"path\": \"/api/missing\",\n      \"path\": \"/api/todos\",\n      \"path\": \"/unknown-page\","
+    },
+    {
+      "label": "final-worker-build",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "build:worker"
+      ],
+      "started": "2026-09-17T07:38:43.347433+00:00",
+      "finished": "2026-09-17T07:38:44.847010+00:00",
+      "exit_code": 0,
+      "result_excerpt": "dist/rxjs_flow_foundation/.vite/manifest.json    0.15 kB \u2502 gzip:  0.11 kB\ndist/rxjs_flow_foundation/wrangler.json          1.51 kB \u2502 gzip:  0.76 kB\ndist/rxjs_flow_foundation/index.js             103.38 kB \u2502 gzip: 25.31 kB\n\u2713 built in 53ms\ndist/client/.assetsignore              0.02 kB\ndist/client/index.html                 0.55 kB \u2502 gzip: 0.35 kB\ndist/client/assets/index-CEEzI5Dt.js  29.24 kB \u2502 gzip: 9.61 kB\n\u2713 built in 94ms"
+    },
+    {
+      "label": "final-preview-smoke",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "smoke:worker"
+      ],
+      "started": "2026-09-17T07:38:44.876826+00:00",
+      "finished": "2026-09-17T07:38:46.544614+00:00",
+      "exit_code": 0,
+      "result_excerpt": "  \"status\": \"passed\",\n  \"runtime\": \"local workerd\",\n  \"mode\": \"built-preview\",\n      \"path\": \"/\",\n      \"path\": \"/assets/index-CEEzI5Dt.js\",\n      \"bytes\": 29246\n      \"path\": \"/api/foundation\",\n        \"runtime\": \"workerd\",\n      \"path\": \"/api\",\n      \"path\": \"/api/missing\",\n      \"path\": \"/api/todos\",\n      \"path\": \"/unknown-page\","
+    },
+    {
+      "label": "auth-cli-help",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "wrangler",
+        "login",
+        "--help"
+      ],
+      "started": "2026-09-17T07:38:44.586100+00:00",
+      "finished": "2026-09-17T07:38:45.731155+00:00",
+      "exit_code": 0,
+      "result_excerpt": ""
+    },
+    {
+      "label": "identity-cli-help",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "wrangler",
+        "whoami",
+        "--help"
+      ],
+      "started": "2026-09-17T07:38:45.763954+00:00",
+      "finished": "2026-09-17T07:38:46.832705+00:00",
+      "exit_code": 0,
+      "result_excerpt": ""
+    }
+  ]
+}
