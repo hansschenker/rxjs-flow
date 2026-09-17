@@ -36,7 +36,7 @@ describe('selectViewModel', () => {
 		expect(view).toEqual({
 			todos: [first, second], error: 'Recoverable failure', draft: '  Next  ',
 			loading: false, empty: false, total: 2, completed: 1, remaining: 1,
-			pendingCount: 2, creating: false, connection: 'connected', canSubmit: true,
+			pendingCount: 2, pendingTodoIds: ['1'], creating: false, connection: 'connected', canSubmit: true,
 		});
 		expect(view.todos).toBe(state.todos);
 		expect(view.completed + view.remaining).toBe(view.total);
@@ -81,6 +81,19 @@ describe('selectViewModel', () => {
 		}));
 		expect(view).toMatchObject({ draft: '  Next\n', pendingCount: 1, creating: false, canSubmit: true });
 	});
+
+	it('keeps a row pending until every accepted operation for that Todo settles', () => {
+		const pending: State['pending'] = [
+			{ id: 'load', kind: 'load' },
+			{ id: 'create', kind: 'create', title: 'New' },
+			{ id: 'a', kind: 'update', todoId: first.id },
+			{ id: 'b', kind: 'delete', todoId: second.id },
+			{ id: 'c', kind: 'update', todoId: first.id },
+		];
+		expect(selectViewModel(stateWith({ pending })).pendingTodoIds).toEqual(['1', '2']);
+		expect(selectViewModel(stateWith({ pending: pending.filter(operation => operation.id !== 'a') })).pendingTodoIds).toEqual(['2', '1']);
+		expect(selectViewModel(stateWith({ pending: pending.filter(operation => !['a', 'c'].includes(operation.id)) })).pendingTodoIds).toEqual(['2']);
+	});
 });
 
 describe('equalViewModel', () => {
@@ -101,6 +114,7 @@ describe('equalViewModel', () => {
 		completed: { completed: 2 },
 		remaining: { remaining: 2 },
 		pendingCount: { pendingCount: 1 },
+		pendingTodoIds: { pendingTodoIds: ['1'] },
 		creating: { creating: true },
 		connection: { connection: 'disconnected' },
 		canSubmit: { canSubmit: true },

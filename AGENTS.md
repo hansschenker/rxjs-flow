@@ -19,10 +19,14 @@ M00 is accepted and closed: recovery PR #1 merged at
 `eeb8d2989884372fa42f4e321295aa7f3e8faa75`; see `docs/m05a/acceptance.md`.
 M02 is accepted/merged in PR #7 at
 `7374557b6d264a9bfa572526a4f71233fc3aa24e`; see `docs/m02/acceptance.md`.
-M03 is implemented and locally verified with acceptance review/merge pending;
-see `docs/m03/acceptance.md`. Its owned effect graph, validated HTTP outcomes and
-required generic SSE decoder are implemented. M04 and M05b–M09 remain pending.
-M04 is next only after M03 acceptance and explicit authorization.
+M03 is accepted/merged in PR #8 at
+`c64fda113b599ff9b0b21ae3e20aeff0c473a358`; see `docs/m03/acceptance.md`.
+M04 is implemented; acceptance review/merge pending. See `docs/m04/acceptance.md`
+and `docs/m04/minimal-sample.md` for owned scalar bindings, a stable shell and keyed
+rows with child scopes. Rendering commits synchronously, preserving focus and
+selection; `todo.view.tsx` owns rendering and the app root connects its streams.
+M05b–M09 remain pending. M05b is next only after M04 acceptance and explicit
+authorization.
 Do not repeat the import or reopen M00 because the platform target changed.
 The separate `m00/characterize-baseline` branch contains intentionally failing
 probes; do not merge it. Map each failure to a verified fix or tested replacement.

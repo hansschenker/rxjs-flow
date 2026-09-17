@@ -11,9 +11,11 @@ originally developed in [rxjs-stack](https://github.com/hansschenker/rxjs-stack)
 M01 is accepted and merged in PR #5 at `188f21f`; M05a in PR #6 at `eeb8d29`.
 M02's [instance-owned state and coherent derived streams](docs/m02/acceptance.md)
 are accepted and merged in PR #7 at `7374557`.
-M03 adds [owned effects and validated HTTP outcomes](docs/m03/acceptance.md),
-implemented and verified locally with acceptance review and merge pending.
-M04 and M05b–M09 remain pending.
+M03's [owned effects and validated HTTP outcomes](docs/m03/acceptance.md)
+are accepted and merged in PR #8 at `c64fda1`.
+M04's [owned, targeted DOM rendering](docs/m04/acceptance.md) is implemented;
+acceptance review/merge pending. See the [minimal binding sample](docs/m04/minimal-sample.md).
+M05b–M09 remain pending.
 The executable baseline still uses **Node HTTP and an
 in-memory store**; the complete owned/live-state loop is not yet implemented.
 M00's dated test results and separate failing characterization remain evidence,
@@ -35,6 +37,8 @@ remain planned work. No deployed Worker or domain configuration is claimed.
 - [M01 browser lifetime acceptance](docs/m01/acceptance.md)
 - [M02 state, transition examples and acceptance](docs/m02/acceptance.md)
 - [M03 effect policies, HTTP outcomes and acceptance](docs/m03/acceptance.md)
+- [M04 targeted DOM rendering and acceptance](docs/m04/acceptance.md)
+- [M04 minimal binding sample](docs/m04/minimal-sample.md)
 - [M05a acceptance and test evidence](docs/m05a/acceptance.md)
 - [Local Cloudflare/Hono development guide](docs/m05a/local-development.md)
 - [Historical source audit](docs/repository-audit-2026-09-15.md)
@@ -43,7 +47,7 @@ remain planned work. No deployed Worker or domain configuration is claimed.
 
 | Area | Existing implementation | Work still planned |
 |---|---|---|
-| Client | Instance-owned state and effects, ordered mutation queue, cancellable reads, Zod-validated HTTP outcomes, coherent view model and custom JSX | M03 acceptance; keyed DOM bindings and targeted rendering (M04) |
+| Client | Instance-owned state and effects, ordered mutation queue, cancellable reads, validated HTTP outcomes, coherent view model, custom JSX, a stable shell and owned scalar/keyed DOM bindings | M04 acceptance; live protocol integration (M06) |
 | HTTP server | Node Todo baseline plus a local Hono/Workers foundation probe | Compatibility-tested Todo request ownership (M05b) |
 | Shared state | In-memory Node Todo store | Logical collection authority, minimal durable commit/recovery and ordering metadata (M05c) |
 | Live updates | Node SSE route and a subscription-owned EventSource adapter with a required decoder | Owned bounded server delivery, versioned live protocol, reconnect semantics and app integration (M05d–M06) |
@@ -52,9 +56,12 @@ remain planned work. No deployed Worker or domain configuration is claimed.
 The intended flow is events → state → derived values → rendering, with external
 operations returning typed results to state. Rendering must not initiate network
 writes. The platform boundary changes; the RxJS model and custom renderer remain.
+`todo.view.tsx` owns rendering while the app root connects its streams. Synchronous
+bindings update the relevant DOM values; keyed rows retain their nodes and child
+scopes across updates, preserve focus and selection, and release ownership on removal.
 
 The recommended sequence is M01 → M05a → M02 → M03 → M04 → M05b → M05c → M05d →
-M06 → M07 → M08 → M09. M00 stays closed; M04 starts only after M03 acceptance and
+M06 → M07 → M08 → M09. M00 stays closed; M05b starts only after M04 acceptance and
 its own authorization. No SSR, Hono JSX, browser router or custom CLI is required for
 this completion target.
 

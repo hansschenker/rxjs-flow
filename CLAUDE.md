@@ -10,8 +10,11 @@ M01 is accepted/merged in PR #5 at `188f21ff307ff7d2146d9f90b24e5ee5c7dfd99d`.
 M05a is accepted/merged in PR #6 at `eeb8d2989884372fa42f4e321295aa7f3e8faa75`.
 M02 is accepted/merged in PR #7 at `7374557b6d264a9bfa572526a4f71233fc3aa24e`;
 see its [state and transition acceptance](docs/m02/acceptance.md).
-M03 is implemented and verified locally with [acceptance review and merge pending](docs/m03/acceptance.md).
-M04 and M05b–M09 remain pending. Use a dedicated branch and PR; do not start a milestone,
+M03 is [accepted/merged in PR #8](docs/m03/acceptance.md) at
+`c64fda113b599ff9b0b21ae3e20aeff0c473a358`.
+M04 is implemented; [acceptance review/merge pending](docs/m04/acceptance.md).
+The [minimal binding sample](docs/m04/minimal-sample.md) explains the rendering contract.
+M05b–M09 remain pending. Use a dedicated branch and PR; do not start a milestone,
 merge, publish, deploy, create remote resources or change `netxpert.ch` without
 appropriate explicit authorization. `rxjs-stack` and `rxjs-fullstack` are historical/
 separate repositories, not implementation targets.
@@ -23,7 +26,7 @@ Todo migration, authority and live integration remain planned. Keep Node
 as the baseline during the tested transition. Hono does not replace our renderer.
 Do not use mutable Worker-global state as authority or pass Hono context into reducers.
 
-After M03 acceptance, the next implementation is M04 when authorized, followed by
+After M04 acceptance, the next implementation is M05b when authorized, followed by
 the remaining M05 substeps as specified in the roadmap. No permanent Node-only constraint or
 instruction to reopen M00 is in force. Do not merge the intentionally failing
 `m00/characterize-baseline` probes.
@@ -33,8 +36,9 @@ instruction to reopen M00 is in force. Do not merge the intentionally failing
 The commands and examples below describe the current Node baseline and client
 checkpoints. Module-global client state and positional replay defaults were replaced
 in M02. M03 extracts owned effects, validates HTTP responses with Zod and requires
-a decoder for generic SSE values. Keyed DOM bindings remain M04 work; the live
-protocol and its app integration remain M06 work. Preserve tested behavior while
+a decoder for generic SSE values. M04 adds owned scalar bindings and keyed DOM rows
+under a stable shell, with synchronous commits that preserve focus and selection.
+The live protocol and its app integration remain M06 work. Preserve tested behavior while
 changing its ownership. The unmodified earlier guide is archived at
 [CLAUDE-before-cloudflare-r2-2026-09-17.md](docs/archive/CLAUDE-before-cloudflare-r2-2026-09-17.md).
 Existing `src/claude-md.test.ts` examples remain baseline tests.
@@ -175,6 +179,10 @@ contract. Type inference never replaces runtime validation of external input.
 | `src/client/todo.service.ts` | Inert `createTodoService({ fetch })` factory and typed compatibility wrappers |
 | `src/client/api.ts` | Cold typed HTTP methods, response validation, structured failures and fetch/body cancellation |
 | `src/client/sse.ts` | Subscription-owned EventSource adapter with a required decoder from `unknown` |
+| `src/client/dom/bindings.ts` | Scope-owned text, property, attribute, class and conditional-content sinks |
+| `src/client/dom/keyed-list.ts` | Stable keyed rows, each with a child scope; targeted updates and removal cleanup |
+| `src/client/components/todo-item.tsx` | Stable row construction, row bindings and typed DOM intents |
+| `src/client/todo.view.tsx` | Stable shell lookup and synchronous bindings from coherent projections of owned state |
 | `src/client/main.tsx` | Inert app factory; connects views/feedback before external inputs and startup |
 
 The M02 model is inert until its owner starts it. Subscribe feedback and views
@@ -187,6 +195,12 @@ the model. Component event handlers emit intents; additional state, view-model a
 consumers do not execute requests. Reads use `switchMap`, repeated create submissions
 use `exhaustMap`, and all accepted writes share a bounded `concatMap` queue.
 The [M03 checkpoint](docs/m03/acceptance.md) records policies and local verification.
+`todo.view.tsx` owns DOM rendering; the app root connects it to the model's
+view-model stream. State accumulation is shared; pure selectors run per consumer.
+Scalar bindings and keyed rows commit synchronously. Retained
+keys keep node identity and row scopes; removal disposes their bindings/listeners.
+See [M04 acceptance](docs/m04/acceptance.md) and the
+[minimal binding sample](docs/m04/minimal-sample.md) for focus, selection and cleanup behavior.
 
 ### Generated typed client
 

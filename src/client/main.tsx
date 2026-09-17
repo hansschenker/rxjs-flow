@@ -1,12 +1,10 @@
-import { tap } from 'rxjs';
-import type { Action, State } from './todo.state';
-import type { ViewModel } from './todo.selectors';
+import type { Action } from './todo.state';
 import { createTodoModel } from './todo.model';
 import { todoEffects$ } from './todo.effects';
 import * as defaultService from './todo.service';
 import type { TodoService } from './todo.service';
-import { TodoItem } from './components/todo-item';
-import { createScope, type Scope } from './runtime/scope';
+import { bindTodoView, findTodoElements } from './todo.view';
+import { createScope } from './runtime/scope';
 import { domEvent$ } from './runtime/sources';
 
 export type { TodoService } from './todo.service';
@@ -24,11 +22,10 @@ function reportRuntimeError(error: unknown): void {
 export function createTodoApp(service: TodoService = defaultService, options: TodoAppOptions = {}) {
 	const app = createScope();
 	const model = createTodoModel();
-	// Reject input first; release sources, rows, effects, binding, then state.
+	// Reject input first; release sources, view/rows, effects, then state.
 	const sources = app.child();
-	const children = app.child();
+	const view = app.child();
 	const effects = app.child();
-	const binding = app.child();
 	app.add(model.dispose);
 	let started = false;
 
@@ -48,42 +45,10 @@ export function createTodoApp(service: TodoService = defaultService, options: To
 
 	function start(root: ParentNode): void {
 		if (app.closed || started) return;
-		const list = root.querySelector<HTMLElement>('#todo-list');
-		const error = root.querySelector<HTMLElement>('#error-msg');
-		const form = root.querySelector<HTMLFormElement>('#add-form');
-		const input = root.querySelector<HTMLInputElement>('#title-input');
-		if (!list || !error || !form || !input) {
-			throw new Error('Todo app requires #todo-list, #error-msg, #add-form and #title-input.');
-		}
-		const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
-		const refreshButton = root.querySelector<HTMLButtonElement>('#refresh-todos');
+		const elements = findTodoElements(root);
+		const { form, input, refresh: refreshButton } = elements;
 		started = true;
-		let rows: Scope | undefined;
-		let renderedTodos: State['todos'] | undefined;
-		let renderedError: string | null = null;
-
-		const render = ({ todos, draft, creating, canSubmit, error: message }: ViewModel): void => {
-			error.textContent = message ?? '';
-			if (input.value !== draft) input.value = draft;
-			form.setAttribute('aria-busy', String(creating));
-			if (submit) {
-				submit.disabled = !canSubmit;
-				submit.textContent = creating ? 'Adding…' : 'Add';
-			}
-			// M04 will replace this coarse collection renderer with keyed bindings.
-			const newFailure = message !== null && message !== renderedError;
-			renderedError = message;
-			if (todos === renderedTodos && !newFailure) return;
-			renderedTodos = todos;
-			rows?.dispose();
-			rows = children.child();
-			list.replaceChildren();
-			for (const todo of todos) {
-				list.appendChild(TodoItem({ todo, scope: rows.child(), onIntent: accept, onError: failRuntime }));
-			}
-		};
-		// Rendering errors are stream errors; observer.next exceptions bypass its error handler.
-		binding.subscribe(model.viewModel$.pipe(tap(render)), { error: failRuntime });
+		bindTodoView(view, elements, model.viewModel$, accept, failRuntime);
 
 		// The host is the single owner of execution; traces read model transitions.
 		effects.subscribe(todoEffects$(model.transitions$, service, options), {

@@ -12,9 +12,11 @@ Read it with the [architecture contract](dataflow-architecture.md),
 M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e` (PR #2).
 M01 is accepted/merged in PR #5 at `188f21f`; M05a in PR #6 at `eeb8d29`.
 M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557`.
-M03 has [locally verified effect/transport evidence awaiting acceptance review and merge](m03/acceptance.md).
-Owned effects, validated HTTP outcomes and the generic SSE decoder are implemented.
-M04 and M05b–M09 remain pending. M04 is next only after M03 acceptance and
+M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda1`.
+M04 is implemented; [acceptance review/merge pending](m04/acceptance.md).
+Its stable shell, owned scalar bindings and keyed rows commit synchronously and
+preserve focus and selection; see the [minimal binding sample](m04/minimal-sample.md).
+M05b–M09 remain pending. M05b is next only after M04 acceptance and
 authorization. Todo still uses Node HTTP;
 the local Worker probe does not implement Todo migration, persistence or live state.
 

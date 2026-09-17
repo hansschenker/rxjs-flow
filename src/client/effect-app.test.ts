@@ -196,7 +196,7 @@ describe('M03 complete app effect loop', () => {
 		app.state$.subscribe({ complete: completed });
 		app.start(document.body);
 		const failure = new Error('DOM commit failed');
-		vi.spyOn(list, 'replaceChildren').mockImplementationOnce(() => { throw failure; });
+		vi.spyOn(list, 'insertBefore').mockImplementationOnce(() => { throw failure; });
 		pending.next([first]);
 		expect(reportError).toHaveBeenCalledExactlyOnceWith(failure);
 		expect(pending.observed).toBe(false);

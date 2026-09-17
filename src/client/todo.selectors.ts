@@ -10,6 +10,7 @@ export interface ViewModel {
 	readonly completed: number;
 	readonly remaining: number;
 	readonly pendingCount: number;
+	readonly pendingTodoIds: readonly string[];
 	readonly creating: boolean;
 	readonly connection: State['connection'];
 	readonly canSubmit: boolean;
@@ -30,6 +31,8 @@ export function selectViewModel(state: State): ViewModel {
 		completed,
 		remaining: total - completed,
 		pendingCount: state.pending.length,
+		pendingTodoIds: [...new Set(state.pending.flatMap(operation =>
+			'todoId' in operation ? [operation.todoId] : []))],
 		creating,
 		connection: state.connection,
 		canSubmit: state.draft.trim().length > 0 && !creating,
@@ -46,6 +49,8 @@ export function equalViewModel(left: ViewModel, right: ViewModel): boolean {
 		&& left.completed === right.completed
 		&& left.remaining === right.remaining
 		&& left.pendingCount === right.pendingCount
+		&& left.pendingTodoIds.length === right.pendingTodoIds.length
+		&& left.pendingTodoIds.every((id, index) => id === right.pendingTodoIds[index])
 		&& left.creating === right.creating
 		&& left.connection === right.connection
 		&& left.canSubmit === right.canSubmit;
