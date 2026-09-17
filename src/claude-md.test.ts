@@ -5,12 +5,9 @@ import { firstValueFrom, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { expectTypeOf, vi } from 'vitest';
 
-vi.mock('rxjs/fetch', () => ({ fromFetch: vi.fn() }));
-
-import { fromFetch } from 'rxjs/fetch';
 import { apiPath, routes, type RouteParams, type RouteBody, type RouteResponse } from './shared/routes';
 import type { Todo, CreateTodoBody, UpdateTodoBody } from './shared/types';
-import { createClient } from './client/api';
+import { createClient, type FetchTransport } from './client/api';
 import { createApp } from './server/core/app';
 import { cors, requireAuth } from './server/core/middleware';
 import { json } from './server/core/response';
@@ -45,18 +42,20 @@ describe('CLAUDE.md — shared route contracts', () => {
 // Generated typed client  (createClient)
 // ---------------------------------------------------------------------------
 
-const mockFetch = vi.mocked(fromFetch);
-const fakeResponse = (data: unknown): Response =>
-	({ json: () => Promise.resolve(data) }) as unknown as Response;
+const mockFetch = vi.fn<FetchTransport>();
+const jsonResponse = (data: unknown): Response =>
+	new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } });
 
 describe('CLAUDE.md — createClient(routes)', () => {
-	const api = createClient(routes);
+	const api = createClient(routes, { fetch: mockFetch });
+
+	beforeEach(() => mockFetch.mockReset());
 
 	it('api.todos.list() sends GET /api/todos and returns Todo[]', async () => {
 		const todos: Todo[] = [
 			{ id: '1', title: 'One', completed: false, createdAt: '2026-01-01T00:00:00.000Z' },
 		];
-		mockFetch.mockReturnValue(of(fakeResponse(todos)));
+		mockFetch.mockResolvedValue(jsonResponse(todos));
 
 		const result = await firstValueFrom(api.todos.list({}));
 
@@ -65,7 +64,7 @@ describe('CLAUDE.md — createClient(routes)', () => {
 	});
 
 	it('api.todos.list(query) appends query string', async () => {
-		mockFetch.mockReturnValue(of(fakeResponse([])));
+		mockFetch.mockResolvedValue(jsonResponse([]));
 
 		await firstValueFrom(api.todos.list({ completed: 'true' }));
 
@@ -74,7 +73,7 @@ describe('CLAUDE.md — createClient(routes)', () => {
 
 	it('api.todos.create({ title }) sends POST and returns the new Todo', async () => {
 		const todo: Todo = { id: '2', title: 'Ship it', completed: false, createdAt: '2026-01-01T00:00:00.000Z' };
-		mockFetch.mockReturnValue(of(fakeResponse(todo)));
+		mockFetch.mockResolvedValue(jsonResponse(todo));
 
 		const result = await firstValueFrom(api.todos.create({ title: 'Ship it' }));
 
@@ -87,7 +86,7 @@ describe('CLAUDE.md — createClient(routes)', () => {
 
 	it('api.todos.update({ id }, body) sends PUT /api/todos/:id', async () => {
 		const todo: Todo = { id: '42', title: 'Ship it', completed: true, createdAt: '2026-01-01T00:00:00.000Z' };
-		mockFetch.mockReturnValue(of(fakeResponse(todo)));
+		mockFetch.mockResolvedValue(jsonResponse(todo));
 
 		const result = await firstValueFrom(api.todos.update({ id: '42' }, { completed: true }));
 
@@ -99,7 +98,7 @@ describe('CLAUDE.md — createClient(routes)', () => {
 	});
 
 	it('api.todos.remove({ id }) sends DELETE /api/todos/:id', async () => {
-		mockFetch.mockReturnValue(of(new Response(null, { status: 204 })));
+		mockFetch.mockResolvedValue(new Response(null, { status: 204 }));
 
 		await firstValueFrom(api.todos.remove({ id: '42' }));
 

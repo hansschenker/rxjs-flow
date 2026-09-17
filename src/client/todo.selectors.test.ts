@@ -12,7 +12,7 @@ const second: Readonly<Todo> = Object.freeze({
 
 function stateWith(overrides: Partial<State> = {}): State {
 	return {
-		todos: [], draft: '', loadStatus: 'idle', pending: [], error: null,
+		todos: [], draft: '', loadStatus: 'idle', pending: [], error: null, failure: null,
 		connection: 'idle', ...overrides,
 	};
 }

@@ -1,4 +1,6 @@
+import type { z } from 'zod';
 import type { CreateTodoBody, Todo, UpdateTodoBody } from './types';
+import { todoListSchema, todoSchema } from './todo.schema';
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
@@ -8,6 +10,11 @@ export type RouteParams<Path extends string> =
 		: Path extends `${string}:${infer Param}`
 			? { [Key in Param]: string }
 			: Record<never, never>;
+
+export type ResponseBody<TResponse> =
+	| { readonly kind: 'json'; readonly schema: z.ZodType<TResponse> }
+	| { readonly kind: 'empty'; readonly status: 204 }
+	| { readonly kind: 'stream' };
 
 export interface RouteContract<
 	TMethod extends HttpMethod,
@@ -21,6 +28,7 @@ export interface RouteContract<
 	body: TBody;
 	query: TQuery;
 	response: TResponse;
+	responseBody: ResponseBody<TResponse>;
 }
 
 export type AnyRoute = RouteContract<HttpMethod, string, unknown, unknown, unknown>;
@@ -34,7 +42,7 @@ export type RouteRequest<TRoute extends AnyRoute> = {
 	query: RouteQuery<TRoute>;
 };
 
-const defineRoute = <
+export const defineRoute = <
 	TMethod extends HttpMethod,
 	TPath extends string,
 	TBody = undefined,
@@ -43,6 +51,7 @@ const defineRoute = <
 >(
 	method: TMethod,
 	path: TPath,
+	responseBody: ResponseBody<TResponse>,
 	hasQuery?: boolean,
 ): RouteContract<TMethod, TPath, TBody, TQuery, TResponse> => ({
 	method,
@@ -50,15 +59,16 @@ const defineRoute = <
 	body: undefined as TBody,
 	query: (hasQuery === true ? {} : undefined) as TQuery,
 	response: undefined as TResponse,
+	responseBody,
 });
 
 export const routes = {
 	todos: {
-		list: defineRoute<'GET', '/todos', undefined, { completed?: 'true' | 'false' }, Todo[]>('GET', '/todos', true),
-		create: defineRoute<'POST', '/todos', CreateTodoBody, undefined, Todo>('POST', '/todos'),
-		update: defineRoute<'PUT', '/todos/:id', UpdateTodoBody, undefined, Todo>('PUT', '/todos/:id'),
-		remove: defineRoute<'DELETE', '/todos/:id', undefined, undefined, void>('DELETE', '/todos/:id'),
-		stream: defineRoute('GET', '/todos/stream'),
+		list: defineRoute<'GET', '/todos', undefined, { completed?: 'true' | 'false' }, Todo[]>('GET', '/todos', { kind: 'json', schema: todoListSchema }, true),
+		create: defineRoute<'POST', '/todos', CreateTodoBody, undefined, Todo>('POST', '/todos', { kind: 'json', schema: todoSchema }),
+		update: defineRoute<'PUT', '/todos/:id', UpdateTodoBody, undefined, Todo>('PUT', '/todos/:id', { kind: 'json', schema: todoSchema }),
+		remove: defineRoute<'DELETE', '/todos/:id', undefined, undefined, void>('DELETE', '/todos/:id', { kind: 'empty', status: 204 }),
+		stream: defineRoute('GET', '/todos/stream', { kind: 'stream' }),
 	},
 } as const;
 

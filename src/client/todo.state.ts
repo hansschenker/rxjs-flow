@@ -1,4 +1,7 @@
 import type { Todo } from '../shared/types';
+import type { RequestFailure } from '../shared/http-error';
+
+export type RememberedFailure = Omit<RequestFailure, 'cause'>;
 
 export type Operation =
 	| { readonly id: string; readonly kind: 'load' }
@@ -18,13 +21,15 @@ export type Action =
 	| { readonly type: 'CREATE_REQUESTED'; readonly title: string }
 	| { readonly type: 'TOGGLE_REQUESTED'; readonly id: string; readonly completed: boolean }
 	| { readonly type: 'DELETE_REQUESTED'; readonly id: string }
+	| { readonly type: 'OPERATION_QUEUED'; readonly operation: Operation }
 	| { readonly type: 'OPERATION_STARTED'; readonly operation: Operation }
 	| { readonly type: 'LOAD_SUCCEEDED'; readonly operationId: string; readonly todos: readonly Readonly<Todo>[] }
 	| { readonly type: 'CREATE_SUCCEEDED'; readonly operationId: string; readonly todo: Readonly<Todo> }
 	| { readonly type: 'UPDATE_SUCCEEDED'; readonly operationId: string; readonly todo: Readonly<Todo> }
 	| { readonly type: 'DELETE_SUCCEEDED'; readonly operationId: string; readonly id: string }
-	| { readonly type: 'OPERATION_FAILED'; readonly operationId: string; readonly message: string }
+	| { readonly type: 'OPERATION_FAILED'; readonly operationId: string; readonly message: string; readonly failure?: RequestFailure }
 	| { readonly type: 'OPERATION_CANCELLED'; readonly operationId: string }
+	| { readonly type: 'MUTATION_REJECTED'; readonly message: string }
 	| { readonly type: 'SERVER_SNAPSHOT'; readonly todos: readonly Readonly<Todo>[] }
 	| { readonly type: 'CONNECTION_CHANGED'; readonly status: ConnectionStatus }
 	| { readonly type: 'ERROR_DISMISSED' };
@@ -35,11 +40,23 @@ export interface State {
 	readonly loadStatus: LoadStatus;
 	readonly pending: readonly Operation[];
 	readonly error: string | null;
+	readonly failure: RememberedFailure | null;
 	readonly connection: ConnectionStatus;
 }
 
 export function createInitialState(): State {
-	return { todos: [], draft: '', loadStatus: 'idle', pending: [], error: null, connection: 'idle' };
+	return { todos: [], draft: '', loadStatus: 'idle', pending: [], error: null, failure: null, connection: 'idle' };
+}
+
+function rememberFailure(failure?: RequestFailure): RememberedFailure | null {
+	if (!failure) return null;
+	// Keep structured HTTP evidence without retaining a transport exception/cause.
+	return {
+		kind: failure.kind, message: failure.message,
+		...(failure.status === undefined ? {} : { status: failure.status }),
+		...(failure.details === undefined ? {} : { details: failure.details }),
+		...(failure.body === undefined ? {} : { body: failure.body }),
+	};
 }
 
 function equalTodo(left: Readonly<Todo>, right: Readonly<Todo>): boolean {
@@ -86,6 +103,7 @@ export function reducer(state: State, action: Action): State {
 		case 'TOGGLE_REQUESTED':
 		case 'DELETE_REQUESTED':
 			return state;
+		case 'OPERATION_QUEUED':
 		case 'OPERATION_STARTED': {
 			if (state.pending.some(operation => operation.id === action.operation.id)) return state;
 			return {
@@ -94,13 +112,14 @@ export function reducer(state: State, action: Action): State {
 				loadStatus: action.operation.kind === 'load' && state.loadStatus !== 'ready'
 					? 'loading' : state.loadStatus,
 				error: null,
+				failure: null,
 			};
 		}
 		case 'LOAD_SUCCEEDED': {
 			if (!state.pending.some(operation => operation.id === action.operationId && operation.kind === 'load')) return state;
 			return {
 				...state, todos: replaceCollection(state.todos, action.todos),
-				pending: removeOperation(state, action.operationId), loadStatus: 'ready', error: null,
+				pending: removeOperation(state, action.operationId), loadStatus: 'ready', error: null, failure: null,
 			};
 		}
 		case 'CREATE_SUCCEEDED': {
@@ -138,8 +157,11 @@ export function reducer(state: State, action: Action): State {
 				...state, pending,
 				loadStatus: operation.kind === 'load' ? finishLoad(state, pending, failed) : state.loadStatus,
 				error: failed ? action.message : state.error,
+				failure: failed ? rememberFailure(action.failure) : state.failure,
 			};
 		}
+		case 'MUTATION_REJECTED':
+			return { ...state, error: action.message, failure: null };
 		case 'SERVER_SNAPSHOT': {
 			const todos = replaceCollection(state.todos, action.todos);
 			return todos === state.todos && state.loadStatus === 'ready'
@@ -148,6 +170,6 @@ export function reducer(state: State, action: Action): State {
 		case 'CONNECTION_CHANGED':
 			return state.connection === action.status ? state : { ...state, connection: action.status };
 		case 'ERROR_DISMISSED':
-			return state.error === null ? state : { ...state, error: null };
+			return state.error === null && state.failure === null ? state : { ...state, error: null, failure: null };
 	}
 }

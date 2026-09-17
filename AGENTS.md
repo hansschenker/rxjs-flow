@@ -17,8 +17,12 @@ M00 is accepted and closed: recovery PR #1 merged at
 `c9197b68591e390a0a3add4667e5dd23717d6b6e`. M01 is accepted/merged in PR #5 at
 `188f21ff307ff7d2146d9f90b24e5ee5c7dfd99d`. M05a is accepted/merged in PR #6 at
 `eeb8d2989884372fa42f4e321295aa7f3e8faa75`; see `docs/m05a/acceptance.md`.
-M02 is implemented with acceptance review pending; see `docs/m02/acceptance.md`.
-M03–M04 and M05b–M09 remain pending.
+M02 is accepted/merged in PR #7 at
+`7374557b6d264a9bfa572526a4f71233fc3aa24e`; see `docs/m02/acceptance.md`.
+M03 is implemented and locally verified with acceptance review/merge pending;
+see `docs/m03/acceptance.md`. Its owned effect graph, validated HTTP outcomes and
+required generic SSE decoder are implemented. M04 and M05b–M09 remain pending.
+M04 is next only after M03 acceptance and explicit authorization.
 Do not repeat the import or reopen M00 because the platform target changed.
 The separate `m00/characterize-baseline` branch contains intentionally failing
 probes; do not merge it. Map each failure to a verified fix or tested replacement.
@@ -37,7 +41,8 @@ application class hierarchies or rewrite third-party libraries to remove classes
 The r2 target is Hono HTTP integration on Cloudflare Workers, Vite plus the
 Cloudflare Vite plugin, project-local Wrangler, and a minimal Durable Object
 collection authority. M05a establishes only a local Hono/RxJS probe, generated
-Worker types, builds and runtime tests; Todo migration/authority/SSE remain planned.
+Worker types, builds and runtime tests; Todo migration, durable authority and
+application live SSE integration remain planned.
 The current Node HTTP application remains the migration baseline until equivalent
 behavior is verified.
 Keep its applicable lifecycle tests or explicitly document tested retirement.

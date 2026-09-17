@@ -9,8 +9,11 @@ originally developed in [rxjs-stack](https://github.com/hansschenker/rxjs-stack)
 **Implementation status, 2026-09-17: M00 is accepted and closed.** PR #2 merged at
 [`c9197b6`](https://github.com/hansschenker/rxjs-flow/commit/c9197b68591e390a0a3add4667e5dd23717d6b6e).
 M01 is accepted and merged in PR #5 at `188f21f`; M05a in PR #6 at `eeb8d29`.
-M02 adds [instance-owned state and coherent derived streams](docs/m02/acceptance.md),
-awaiting acceptance review. M03–M04 and M05b–M09 remain pending.
+M02's [instance-owned state and coherent derived streams](docs/m02/acceptance.md)
+are accepted and merged in PR #7 at `7374557`.
+M03 adds [owned effects and validated HTTP outcomes](docs/m03/acceptance.md),
+implemented and verified locally with acceptance review and merge pending.
+M04 and M05b–M09 remain pending.
 The executable baseline still uses **Node HTTP and an
 in-memory store**; the complete owned/live-state loop is not yet implemented.
 M00's dated test results and separate failing characterization remain evidence,
@@ -31,6 +34,7 @@ remain planned work. No deployed Worker or domain configuration is claimed.
 - [M00 baseline and recovery evidence](docs/baseline-rxjs-flow-m00.md)
 - [M01 browser lifetime acceptance](docs/m01/acceptance.md)
 - [M02 state, transition examples and acceptance](docs/m02/acceptance.md)
+- [M03 effect policies, HTTP outcomes and acceptance](docs/m03/acceptance.md)
 - [M05a acceptance and test evidence](docs/m05a/acceptance.md)
 - [Local Cloudflare/Hono development guide](docs/m05a/local-development.md)
 - [Historical source audit](docs/repository-audit-2026-09-15.md)
@@ -39,10 +43,10 @@ remain planned work. No deployed Worker or domain configuration is claimed.
 
 | Area | Existing implementation | Work still planned |
 |---|---|---|
-| Client | Typed finite-route client, instance-owned pure reducer, ordered transition feedback, coherent view model and custom JSX | Full effect/HTTP policies and targeted rendering (M03–M04) |
+| Client | Instance-owned state and effects, ordered mutation queue, cancellable reads, Zod-validated HTTP outcomes, coherent view model and custom JSX | M03 acceptance; keyed DOM bindings and targeted rendering (M04) |
 | HTTP server | Node Todo baseline plus a local Hono/Workers foundation probe | Compatibility-tested Todo request ownership (M05b) |
 | Shared state | In-memory Node Todo store | Logical collection authority, minimal durable commit/recovery and ordering metadata (M05c) |
-| Live updates | Node SSE route and client EventSource adapter | Owned bounded delivery, validated snapshots and reconnect semantics (M05d–M06) |
+| Live updates | Node SSE route and a subscription-owned EventSource adapter with a required decoder | Owned bounded server delivery, versioned live protocol, reconnect semantics and app integration (M05d–M06) |
 | Reference app/delivery | Existing Todo application and separate development processes | Complete browser loop, platform tests/traces and documented Cloudflare-ready build (M07–M09) |
 
 The intended flow is events → state → derived values → rendering, with external
@@ -50,8 +54,8 @@ operations returning typed results to state. Rendering must not initiate network
 writes. The platform boundary changes; the RxJS model and custom renderer remain.
 
 The recommended sequence is M01 → M05a → M02 → M03 → M04 → M05b → M05c → M05d →
-M06 → M07 → M08 → M09. M00 stays closed; starting the next milestone requires its
-own authorization. No SSR, Hono JSX, browser router or custom CLI is required for
+M06 → M07 → M08 → M09. M00 stays closed; M04 starts only after M03 acceptance and
+its own authorization. No SSR, Hono JSX, browser router or custom CLI is required for
 this completion target.
 
 ## Run the existing development application

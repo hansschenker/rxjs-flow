@@ -1,0 +1,509 @@
+{
+  "repository": "hansschenker/rxjs-flow",
+  "branch": "m03/effect-policies",
+  "starting_commit": "7374557b6d264a9bfa572526a4f71233fc3aa24e",
+  "implementation_commit": "54f08ce0629175691e66f8036d3331167dddf164",
+  "implementation_tree": "a7cb3913b96f661b0ff781cfed37aa826c57aae7",
+  "previous_pr": {
+    "number": 7,
+    "state": "closed",
+    "merged": true,
+    "merge_commit_sha": "7374557b6d264a9bfa572526a4f71233fc3aa24e",
+    "head": "04c564fce4288aa73b13eb140fd325bfa838ddd9",
+    "base": "eeb8d2989884372fa42f4e321295aa7f3e8faa75"
+  },
+  "runtime": {
+    "node": "22.22.1",
+    "npm": "11.9.0",
+    "rxjs": "7.8.2",
+    "typescript": "6.0.3",
+    "vite": "8.0.12",
+    "vitest": "4.1.6"
+  },
+  "records": [
+    {
+      "label": "baseline-node-dom",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-17T08:16:23.199954+00:00",
+      "finished": "2026-09-17T08:16:27.201755+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 test\n> vitest run\n Test Files  27 passed (27)\n      Tests  318 passed (318)"
+    },
+    {
+      "label": "http-red",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/api.test.ts"
+      ],
+      "started": "2026-09-17T08:20:02.370004+00:00",
+      "finished": "2026-09-17T08:20:08.818298+00:00",
+      "exit_code": 1,
+      "result_excerpt": "> rxjs-flow@1.0.0 test\n> vitest run src/client/api.test.ts\n Test Files  1 failed (1)\n      Tests  43 failed | 1 passed (44)\n\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 43 \u23af\u23af\u23af\u23af\u23af\u23af\u23af\nTypeError: Failed to parse URL from /api/todos\nCaused by: TypeError: Invalid URL\nSerialized Error: { code: 'ERR_INVALID_URL', input: '/api/todos' }\nAssertionError: expected \"vi.fn()\" to not be called at all, but actually been called 1 times\nAssertionError: promise rejected \"TypeError: Failed to parse URL from /api/\u2026\" instead of resolving\nCaused by: TypeError: Failed to parse URL from /api/todos\nCaused by: TypeError: Invalid URL\nSerialized Error: { code: 'ERR_INVALID_URL', input: '/api/todos' }\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'http', status: 300, \u2026(2) }\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'http', status: 301, \u2026(2) }\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'http', status: 400, \u2026(2) }\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'http', status: 401, \u2026(2) }\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'http', status: 404, \u2026(2) }\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'http', status: 409, \u2026(2) }\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'http', status: 422, \u2026(2) }\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'http', status: 500, \u2026(2) }\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'http', status: 503, \u2026(2) }\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'http', status: 599, \u2026(2) }\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'http', status: 404, \u2026(1) }\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'http', status: 500, \u2026(1) }\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'http', status: 500 }\nAssertionError: promise rejected \"TypeError: Failed to parse URL from /api/\u2026\" instead of resolving\nCaused by: TypeError: Failed to parse URL from /api/todos/1\nCaused by: TypeError: Invalid URL\nSerialized Error: { code: 'ERR_INVALID_URL', input: '/api/todos/1' }\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'decode', status: 204 }\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'decode', status: 200 }\nTypeError: defineRoute is not a function\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'decode', status: 200 }\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'decode', status: 200, \u2026(1) }\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'unsupported-response', \u2026(1) }\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'network', \u2026(2) }\nError: Cannot encode\nTypeError: Cannot read properties of undefined (reading '1')\nError: Test timed out in 5000ms.\nTypeError: Cannot read properties of undefined (reading '1')\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'http', status: 503, \u2026(1) }\nAssertionError: expected TypeError: Failed to parse URL from /api/\u2026 to match object { kind: 'network', status: 200, \u2026(1) }\nTypeError: Failed to parse URL from /api/todos\nCaused by: TypeError: Invalid URL\nSerialized Error: { code: 'ERR_INVALID_URL', input: '/api/todos' }",
+      "interpretation": "Expected regression stage before transport/response metadata implementation: 43 failed, 1 passed; one unhandled rejection from the old global fetch implementation. Resolved by the client rewrite; final HTTP and full suites pass."
+    },
+    {
+      "label": "http-green",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/api.test.ts",
+        "src/client/todo.service.test.ts",
+        "src/shared/routes.test.ts",
+        "src/claude-md.test.ts"
+      ],
+      "started": "2026-09-17T08:21:50.187004+00:00",
+      "finished": "2026-09-17T08:21:51.729184+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 test\n> vitest run src/client/api.test.ts src/client/todo.service.test.ts src/shared/routes.test.ts src/claude-md.test.ts\n Test Files  4 passed (4)\n      Tests  79 passed (79)"
+    },
+    {
+      "label": "http-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:tests"
+      ],
+      "started": "2026-09-17T08:22:02.513060+00:00",
+      "finished": "2026-09-17T08:22:06.120424+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 typecheck:tests\n> tsc -p tsconfig.test.json && tsc -p tsconfig.worker-test.json"
+    },
+    {
+      "label": "http-final",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/api.test.ts",
+        "src/client/todo.service.test.ts",
+        "src/shared/routes.test.ts",
+        "src/claude-md.test.ts"
+      ],
+      "started": "2026-09-17T08:23:08.897377+00:00",
+      "finished": "2026-09-17T08:23:10.290413+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 test\n> vitest run src/client/api.test.ts src/client/todo.service.test.ts src/shared/routes.test.ts src/claude-md.test.ts\n Test Files  4 passed (4)\n      Tests  81 passed (81)"
+    },
+    {
+      "label": "http-final-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:client"
+      ],
+      "started": "2026-09-17T08:23:27.437044+00:00",
+      "finished": "2026-09-17T08:23:28.823444+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 typecheck:client\n> tsc -p tsconfig.client.json"
+    },
+    {
+      "label": "m03-intents-focused-1",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/todo.intents.test.ts"
+      ],
+      "started": "2026-09-17T08:24:27.297855+00:00",
+      "finished": "2026-09-17T08:24:28.659660+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  1 passed (1)\n      Tests  42 passed (42)"
+    },
+    {
+      "label": "sse-focused-1",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/sse.test.ts",
+        "src/client/runtime/scope.test.ts"
+      ],
+      "started": "2026-09-17T08:26:29.304985+00:00",
+      "finished": "2026-09-17T08:26:30.765304+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  2 passed (2)\n      Tests  23 passed (23)"
+    },
+    {
+      "label": "sse-types-1",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:tests"
+      ],
+      "started": "2026-09-17T08:26:44.050207+00:00",
+      "finished": "2026-09-17T08:26:47.782386+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 typecheck:tests\n> tsc -p tsconfig.test.json && tsc -p tsconfig.worker-test.json"
+    },
+    {
+      "label": "m03-effects-focused-1",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/todo.effects.test.ts"
+      ],
+      "started": "2026-09-17T08:27:08.257493+00:00",
+      "finished": "2026-09-17T08:27:09.714553+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  1 passed (1)\n      Tests  24 passed (24)"
+    },
+    {
+      "label": "m03-review-policy-probe",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node_modules/.bin/tsx",
+        "/workspace/scratch/69635aad2014/m03-review-probe.mts"
+      ],
+      "started": "2026-09-17T08:27:21.277309+00:00",
+      "finished": "2026-09-17T08:27:21.366306+00:00",
+      "exit_code": 1,
+      "result_excerpt": "Error: listen EPERM: operation not permitted /tmp/tsx-0/6.pipe\n  code: 'EPERM',\nNode.js v22.22.1",
+      "interpretation": "Local tsx CLI IPC socket EPERM; reran via node --import tsx. No permission escalation."
+    },
+    {
+      "label": "m03-review-policy-probe-2",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "--import",
+        "tsx",
+        "/workspace/scratch/69635aad2014/m03-review-probe.mts"
+      ],
+      "started": "2026-09-17T08:27:27.621300+00:00",
+      "finished": "2026-09-17T08:27:27.991177+00:00",
+      "exit_code": 0,
+      "result_excerpt": "reentrant queue order [\"OPERATION_QUEUED 1\",\"OPERATION_QUEUED 2\",\"OPERATION_STARTED 2\",\"subscribe 2 active=1\",\"UPDATE_SUCCEEDED 2\",\"unsubscribe 2 active=0\",\"OPERATION_STARTED 1\",\"subscribe 1 active=1\"]\nqueued transport teardown order [\"OPERATION_QUEUED 1\",\"OPERATION_STARTED 1\",\"subscribe 1 active=1\",\"OPERATION_QUEUED 2\",\"UPDATE_SUCCEEDED 1\",\"unsubscribe 1 active=0\",\"OPERATION_STARTED 2\",\"subscribe 2 active=1\"]",
+      "interpretation": "Diagnostic exited zero but output exposed reversed reentrant write admission (2 before 1). This was a finding, not a passing acceptance assertion. Readiness latch plus committed regression test fixed it."
+    },
+    {
+      "label": "integrated-app",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/app.test.ts",
+        "src/client/main.test.ts",
+        "src/client/components/todo-item.test.ts",
+        "src/client/todo.state.test.ts",
+        "src/client/todo.selectors.test.ts"
+      ],
+      "started": "2026-09-17T08:27:31.529806+00:00",
+      "finished": "2026-09-17T08:27:33.285544+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  5 passed (5)\n      Tests  99 passed (99)"
+    },
+    {
+      "label": "m03-effects-focused-2",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/todo.effects.test.ts",
+        "src/client/todo.intents.test.ts"
+      ],
+      "started": "2026-09-17T08:28:57.963869+00:00",
+      "finished": "2026-09-17T08:28:59.545510+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  2 passed (2)\n      Tests  69 passed (69)"
+    },
+    {
+      "label": "m03-effects-test-types-1",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "tsc",
+        "-p",
+        "tsconfig.test.json"
+      ],
+      "started": "2026-09-17T08:29:13.106350+00:00",
+      "finished": "2026-09-17T08:29:16.855183+00:00",
+      "exit_code": 2,
+      "result_excerpt": "src/client/main.tsx(66,5): error TS18047: 'error' is possibly 'null'.\nsrc/client/main.tsx(67,9): error TS18047: 'input' is possibly 'null'.\nsrc/client/main.tsx(67,32): error TS18047: 'input' is possibly 'null'.\nsrc/client/main.tsx(68,5): error TS18047: 'form' is possibly 'null'.\nsrc/client/main.tsx(80,5): error TS18047: 'list' is possibly 'null'.\nsrc/client/main.tsx(82,6): error TS18047: 'list' is possibly 'null'.\nsrc/client/todo.effects.test.ts(73,34): error TS2322: Type '() => ColdObservable<string>' is not assignable to type '(id: string) => Observable<void>'.\nsrc/client/todo.effects.ts(140,12): error TS7006: Parameter 'error' implicitly has an 'any' type.",
+      "interpretation": "Intermediate nullable DOM captures, untyped error parameter and void marble fixture; resolved."
+    },
+    {
+      "label": "m03-effects-types-1",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "tsc",
+        "-p",
+        "tsconfig.client.json"
+      ],
+      "started": "2026-09-17T08:29:13.106960+00:00",
+      "finished": "2026-09-17T08:29:15.058886+00:00",
+      "exit_code": 2,
+      "result_excerpt": "src/client/main.tsx(66,5): error TS18047: 'error' is possibly 'null'.\nsrc/client/main.tsx(67,9): error TS18047: 'input' is possibly 'null'.\nsrc/client/main.tsx(67,32): error TS18047: 'input' is possibly 'null'.\nsrc/client/main.tsx(68,5): error TS18047: 'form' is possibly 'null'.\nsrc/client/main.tsx(80,5): error TS18047: 'list' is possibly 'null'.\nsrc/client/main.tsx(82,6): error TS18047: 'list' is possibly 'null'.\nsrc/client/todo.effects.ts(140,12): error TS7006: Parameter 'error' implicitly has an 'any' type.",
+      "interpretation": "Intermediate DOM closure narrowing and untyped error parameter; resolved."
+    },
+    {
+      "label": "m03-review-policy-probe-fixed",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "--import",
+        "tsx",
+        "/workspace/scratch/69635aad2014/m03-review-probe.mts"
+      ],
+      "started": "2026-09-17T08:29:41.142048+00:00",
+      "finished": "2026-09-17T08:29:41.493794+00:00",
+      "exit_code": 0,
+      "result_excerpt": "reentrant queue order [\"OPERATION_QUEUED 1\",\"OPERATION_QUEUED 2\",\"OPERATION_STARTED 1\",\"subscribe 1 active=1\",\"UPDATE_SUCCEEDED 1\",\"unsubscribe 1 active=0\",\"OPERATION_STARTED 2\",\"subscribe 2 active=1\"]\nqueued transport teardown order [\"OPERATION_QUEUED 1\",\"OPERATION_STARTED 1\",\"subscribe 1 active=1\",\"OPERATION_QUEUED 2\",\"UPDATE_SUCCEEDED 1\",\"unsubscribe 1 active=0\",\"OPERATION_STARTED 2\",\"subscribe 2 active=1\"]\nmutation disposed at STARTED {\"actions\":[\"OPERATION_QUEUED\",\"OPERATION_STARTED\"],\"calls\":0,\"closed\":true,\"sourceObserved\":false}",
+      "interpretation": "Diagnostic confirms FIFO1 then2, prior transport teardown before next subscription, and disposal at STARTED without activating transport. Committed automated tests cover these cases."
+    },
+    {
+      "label": "m03-effects-test-types-2",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "tsc",
+        "-p",
+        "tsconfig.test.json"
+      ],
+      "started": "2026-09-17T08:29:52.014827+00:00",
+      "finished": "2026-09-17T08:29:55.167550+00:00",
+      "exit_code": 2,
+      "result_excerpt": "src/client/main.tsx(66,5): error TS18047: 'error' is possibly 'null'.\nsrc/client/main.tsx(67,9): error TS18047: 'input' is possibly 'null'.\nsrc/client/main.tsx(67,32): error TS18047: 'input' is possibly 'null'.\nsrc/client/main.tsx(68,5): error TS18047: 'form' is possibly 'null'.\nsrc/client/main.tsx(80,5): error TS18047: 'list' is possibly 'null'.\nsrc/client/main.tsx(82,6): error TS18047: 'list' is possibly 'null'.",
+      "interpretation": "Remaining intermediate nullable DOM captures; resolved by guarded const render closure."
+    },
+    {
+      "label": "effect-app",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/effect-app.test.ts"
+      ],
+      "started": "2026-09-17T08:30:06.536698+00:00",
+      "finished": "2026-09-17T08:30:08.028093+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  1 passed (1)\n      Tests  8 passed (8)"
+    },
+    {
+      "label": "effect-app-2",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/effect-app.test.ts"
+      ],
+      "started": "2026-09-17T08:31:05.641558+00:00",
+      "finished": "2026-09-17T08:31:07.440441+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  1 passed (1)\n      Tests  8 passed (8)"
+    },
+    {
+      "label": "integrated-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:tests"
+      ],
+      "started": "2026-09-17T08:31:05.642229+00:00",
+      "finished": "2026-09-17T08:31:09.668083+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 typecheck:tests\n> tsc -p tsconfig.test.json && tsc -p tsconfig.worker-test.json"
+    },
+    {
+      "label": "final-clean-install",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "ci"
+      ],
+      "started": "2026-09-17T08:32:05.102745+00:00",
+      "finished": "2026-09-17T08:32:09.087892+00:00",
+      "exit_code": 0,
+      "result_excerpt": "added 153 packages in 4s"
+    },
+    {
+      "label": "final-node-dom",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-17T08:32:40.051665+00:00",
+      "finished": "2026-09-17T08:32:45.230674+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 test\n> vitest run\n Test Files  30 passed (30)\n      Tests  451 passed (451)"
+    },
+    {
+      "label": "final-worker-tests",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker"
+      ],
+      "started": "2026-09-17T08:32:40.051852+00:00",
+      "finished": "2026-09-17T08:32:47.084717+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 test:worker\n> vitest run --config vitest.worker.config.ts\n Test Files  1 passed (1)\n      Tests  16 passed (16)"
+    },
+    {
+      "label": "final-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started": "2026-09-17T08:32:40.052110+00:00",
+      "finished": "2026-09-17T08:32:56.577629+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 typecheck\n> npm run cf:typegen && npm run typecheck:client && npm run typecheck:worker && npm run typecheck:node && npm run typecheck:tests\n> rxjs-flow@1.0.0 cf:typegen\n> wrangler types --config wrangler.jsonc worker-configuration.d.ts --env-interface WorkerEnv\n> rxjs-flow@1.0.0 typecheck:client\n> tsc -p tsconfig.client.json\n> rxjs-flow@1.0.0 typecheck:worker\n> tsc -p tsconfig.worker.json\n> rxjs-flow@1.0.0 typecheck:node\n> tsc -p tsconfig.node.json\n> rxjs-flow@1.0.0 typecheck:tests\n> tsc -p tsconfig.test.json && tsc -p tsconfig.worker-test.json"
+    },
+    {
+      "label": "node-version",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "--version"
+      ],
+      "started": "2026-09-17T08:32:41.675929+00:00",
+      "finished": "2026-09-17T08:32:41.705508+00:00",
+      "exit_code": 0,
+      "result_excerpt": "v22.22.1"
+    },
+    {
+      "label": "npm-version",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "--version"
+      ],
+      "started": "2026-09-17T08:32:41.773601+00:00",
+      "finished": "2026-09-17T08:32:42.108730+00:00",
+      "exit_code": 0,
+      "result_excerpt": "11.9.0"
+    },
+    {
+      "label": "versions",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "ls",
+        "--depth=0"
+      ],
+      "started": "2026-09-17T08:32:42.145629+00:00",
+      "finished": "2026-09-17T08:32:43.045386+00:00",
+      "exit_code": 0,
+      "result_excerpt": "\u251c\u2500\u2500 @cloudflare/vite-plugin@1.54.11\n\u251c\u2500\u2500 @cloudflare/vitest-plugin@1.1.11\n\u251c\u2500\u2500 @img/sharp-wasm32@0.35.4 extraneous\n\u251c\u2500\u2500 @types/node@25.7.0\n\u251c\u2500\u2500 @vitest/coverage-v8@4.1.6\n\u251c\u2500\u2500 hono@4.13.8\n\u251c\u2500\u2500 jsdom@29.1.1\n\u251c\u2500\u2500 rxjs@7.8.2\n\u251c\u2500\u2500 tsx@4.21.0\n\u251c\u2500\u2500 typescript@6.0.3\n\u251c\u2500\u2500 vite@8.0.12\n\u251c\u2500\u2500 vitest@4.1.6\n\u251c\u2500\u2500 wrangler@4.133.0\n\u2514\u2500\u2500 zod@4.4.3"
+    },
+    {
+      "label": "final-worker-build",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "build:worker"
+      ],
+      "started": "2026-09-17T08:33:20.063877+00:00",
+      "finished": "2026-09-17T08:33:21.649051+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 build:worker\n> vite build --config vite.worker.config.ts\ndist/rxjs_flow_foundation/.vite/manifest.json    0.15 kB \u2502 gzip:  0.11 kB\ndist/rxjs_flow_foundation/wrangler.json          1.51 kB \u2502 gzip:  0.76 kB\ndist/rxjs_flow_foundation/index.js             103.38 kB \u2502 gzip: 25.31 kB\ndist/client/.assetsignore              0.02 kB\ndist/client/index.html                 0.61 kB \u2502 gzip:  0.37 kB\ndist/client/assets/index-DgjQSrTV.js  97.58 kB \u2502 gzip: 28.38 kB"
+    },
+    {
+      "label": "final-generated-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "cf:typecheck"
+      ],
+      "started": "2026-09-17T08:33:21.321172+00:00",
+      "finished": "2026-09-17T08:33:42.710763+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 cf:typecheck\n> wrangler types --config wrangler.jsonc worker-configuration.d.ts --env-interface WorkerEnv --check\n\u2728 Types at worker-configuration.d.ts are up to date."
+    },
+    {
+      "label": "final-preview-smoke",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "smoke:worker"
+      ],
+      "started": "2026-09-17T08:37:07.253692+00:00",
+      "finished": "2026-09-17T08:37:11.920693+00:00",
+      "exit_code": 0,
+      "result_excerpt": "{\n  \"status\": \"passed\",\n  \"runtime\": \"local workerd\",\n  \"mode\": \"built-preview\",\n  \"checks\": [\n    {\n      \"path\": \"/\",\n      \"status\": 200,\n      \"script\": \"/assets/index-DgjQSrTV.js\"\n    },\n    {\n      \"path\": \"/assets/index-DgjQSrTV.js\",\n      \"status\": 200,\n      \"bytes\": 97584\n    },\n    {\n      \"path\": \"/api/foundation\",\n      \"status\": 200,\n      \"body\": {\n        \"runtime\": \"workerd\",\n        \"message\": \"rxjs-flow foundation\"\n      }\n    },\n    {\n      \"path\": \"/api\",\n      \"status\": 404,\n      \"body\": {\n        \"error\": \"not_found\"\n      }\n    },\n    {\n      \"path\": \"/api/missing\",\n      \"status\": 404,\n      \"body\": {\n        \"error\": \"not_found\"\n      }\n    },\n    {\n      \"path\": \"/api/todos\",\n      \"status\": 404,\n      \"body\": {\n        \"error\": \"not_found\"\n      }\n    },\n    {\n      \"path\": \"/unknown-page\",\n      \"status\": 200,\n      \"script\": \"/assets/index-DgjQSrTV.js\"\n    }\n  ]\n}"
+    }
+  ],
+  "inspection_and_publication": {
+    "note": "Read-only inspection and Git synchronization below were executed outside the timestamped test recorder. Evidence/PR publication follows this file; final head and CI are recorded in the PR to avoid a self-referential commit.",
+    "commands": [
+      "git fetch origin main",
+      "git switch main",
+      "git merge --ff-only origin/main",
+      "git switch -c m03/effect-policies",
+      "git status --short",
+      "git log",
+      "git rev-parse HEAD origin/main",
+      "git remote -v",
+      "git diff --stat",
+      "git diff --check",
+      "git diff --exit-code 7374557b6d264a9bfa572526a4f71233fc3aa24e -- package.json package-lock.json src/server src/worker .github/workflows/ci.yml",
+      "git add index.html src",
+      "git diff --cached --check",
+      "git diff --cached --stat",
+      "python ../m00-payload.py",
+      "git fetch origin m03/effect-policies",
+      "git write-tree",
+      "git rev-parse origin/m03/effect-policies^{tree}",
+      "git reset --soft origin/m03/effect-policies"
+    ],
+    "repository_reads": "rg, sed, cat, Python and Git diff located/read the working agreement, canonical roadmap, architecture, source contracts, tests, recorded outputs and historical milestone evidence.",
+    "github_reads": [
+      "GET /repos/hansschenker/rxjs-flow/pulls/7",
+      "GET /repos/hansschenker/rxjs-flow/git/ref/heads/main"
+    ],
+    "github_implementation_writes": [
+      "create_tree (assert returned SHA equals staged index tree)",
+      "create_commit (single parent is verified PR #7 merge)",
+      "create_branch m03/effect-policies at implementation commit"
+    ],
+    "result": "Main unchanged at starting commit before publication; implementation tree matched remote exactly; guarded soft reset preserved unstaged documentation. Original ancestry retained; separate M00 characterization untouched."
+  },
+  "final_local_results": {
+    "node_dom_tests": 451,
+    "node_dom_files": 30,
+    "workerd_tests": 16,
+    "workerd_files": 1,
+    "total_tests": 467,
+    "all_gates_passed": true,
+    "blockers": []
+  },
+  "limitations": [
+    "Local Linux/jsdom, native Response/ReadableStream, workerd and built-preview HTTP evidence; no manual browser or Windows execution and no deployed evidence.",
+    "Worker Todo route remains 404 until M05b; same outcome suite must be verified against Hono then.",
+    "Client FIFO is per app instance, not cross-client authority; cancellation is not remote rollback.",
+    "No automatic retry/deadline; a nonsettling capability stays pending until cancelled/disposed.",
+    "SSE adapter now requires unknown decoding; no app live protocol/reconnect integration (M06).",
+    "M04 keyed rendering and later milestones remain unimplemented.",
+    "Final PR head/CI recorded in the PR; no automatic merge or milestone advancement."
+  ]
+}

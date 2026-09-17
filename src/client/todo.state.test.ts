@@ -25,7 +25,7 @@ describe('Todo initial state and intents', () => {
 	it('creates independent idle state, collection and pending arrays', () => {
 		const firstState = createInitialState();
 		const next = createInitialState();
-		expect(next).toEqual({ todos: [], draft: '', loadStatus: 'idle', pending: [], error: null, connection: 'idle' });
+		expect(next).toEqual({ todos: [], draft: '', loadStatus: 'idle', pending: [], error: null, failure: null, connection: 'idle' });
 		expect(next).not.toBe(firstState);
 		expect(next.todos).not.toBe(firstState.todos);
 		expect(next.pending).not.toBe(firstState.pending);
@@ -51,6 +51,29 @@ describe('Todo initial state and intents', () => {
 });
 
 describe('operation admission and load outcomes', () => {
+	it('remembers queued writes immediately and does not double-count their activation', () => {
+		const operation: Operation = { id: 'queued', kind: 'create', title: 'Waiting' };
+		const queued = reducer(populated(), { type: 'OPERATION_QUEUED', operation });
+		expect(queued.pending).toEqual([operation]);
+		expect(start(queued, operation)).toBe(queued);
+		const rejected = reducer(queued, { type: 'MUTATION_REJECTED', message: 'Write queue is full.' });
+		expect(rejected.pending).toBe(queued.pending);
+		expect(rejected.error).toBe('Write queue is full.');
+	});
+
+	it('preserves structured failure evidence while releasing only its pending operation', () => {
+		const pending = start(populated(), { id: 'delete', kind: 'delete', todoId: '1' });
+		const failure = freeze({ kind: 'http' as const, status: 409, message: 'Conflict',
+			details: { id: '1', reason: 'changed' }, body: { error: 'Conflict' }, cause: new Error('transport') });
+		const failed = reducer(pending, { type: 'OPERATION_FAILED', operationId: 'delete', message: 'Failed to delete todo.', failure });
+		expect(failed.failure).toEqual({ kind: 'http', status: 409, message: 'Conflict', details: failure.details, body: failure.body });
+		expect(failed.failure).not.toHaveProperty('cause');
+		expect(failed.pending).toEqual([]);
+		expect(failed.todos).toBe(pending.todos);
+		expect(start(failed, { id: 'retry', kind: 'delete', todoId: '1' }).failure).toBeNull();
+		expect(reducer(failed, { type: 'ERROR_DISMISSED' }).failure).toBeNull();
+	});
+
 	it('copies started operations, deduplicates pending IDs and clears an earlier error', () => {
 		const operation: Operation = { id: 'create-1', kind: 'create', title: 'First' };
 		const state = start({ ...populated(), error: 'Earlier failure' }, operation);
