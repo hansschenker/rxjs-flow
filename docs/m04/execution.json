@@ -1,0 +1,477 @@
+{
+  "repository": "hansschenker/rxjs-flow",
+  "branch": "m04/owned-dom",
+  "starting_commit": "c64fda113b599ff9b0b21ae3e20aeff0c473a358",
+  "implementation_commit": "2446d33aee49025ed72eb33afd0f0da1435b62c5",
+  "implementation_tree": "577b19b2443f10b5e896520c69f0dfea90b6e607",
+  "previous_pr": {
+    "number": 8,
+    "state": "closed",
+    "merged": true,
+    "merge_commit_sha": "c64fda113b599ff9b0b21ae3e20aeff0c473a358",
+    "head": "e6bee2d5741e161d3425daae178c0e34546d7f74",
+    "base": "7374557b6d264a9bfa572526a4f71233fc3aa24e"
+  },
+  "runtime": {
+    "node": "22.22.1",
+    "npm": "11.9.0",
+    "rxjs": "7.8.2",
+    "typescript": "6.0.3",
+    "vite": "8.0.12",
+    "vitest": "4.1.6"
+  },
+  "records": [
+    {
+      "label": "baseline-node-dom",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-17T08:52:42.308225+00:00",
+      "finished": "2026-09-17T08:52:46.482128+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 test\n> vitest run\n Test Files  30 passed (30)\n      Tests  451 passed (451)"
+    },
+    {
+      "label": "integrated-types-1",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:client"
+      ],
+      "started": "2026-09-17T08:57:33.963496+00:00",
+      "finished": "2026-09-17T08:57:35.475096+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 typecheck:client\n> tsc -p tsconfig.client.json"
+    },
+    {
+      "label": "m04-dom-app-initial",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/dom-app.test.ts"
+      ],
+      "started": "2026-09-17T08:57:35.851729+00:00",
+      "finished": "2026-09-17T08:57:37.591990+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  1 passed (1)\n      Tests  10 passed (10)"
+    },
+    {
+      "label": "m04-bindings-tests",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/dom/bindings.test.ts"
+      ],
+      "started": "2026-09-17T08:58:06.663469+00:00",
+      "finished": "2026-09-17T08:58:08.116876+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  1 passed (1)\n      Tests  24 passed (24)"
+    },
+    {
+      "label": "m04-bindings-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:client"
+      ],
+      "started": "2026-09-17T08:58:15.899947+00:00",
+      "finished": "2026-09-17T08:58:17.709019+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 typecheck:client\n> tsc -p tsconfig.client.json"
+    },
+    {
+      "label": "m04-keyed-initial",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/dom/keyed-list.test.ts"
+      ],
+      "started": "2026-09-17T08:58:35.564859+00:00",
+      "finished": "2026-09-17T08:58:36.973078+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  1 passed (1)\n      Tests  21 passed (21)"
+    },
+    {
+      "label": "m04-keyed-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "tsc",
+        "--noEmit",
+        "-p",
+        "tsconfig.test.json"
+      ],
+      "started": "2026-09-17T08:59:27.128549+00:00",
+      "finished": "2026-09-17T08:59:31.307667+00:00",
+      "exit_code": 0,
+      "result_excerpt": ""
+    },
+    {
+      "label": "m04-keyed-shadow",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/dom/keyed-list.test.ts"
+      ],
+      "started": "2026-09-17T08:59:27.128767+00:00",
+      "finished": "2026-09-17T08:59:29.073475+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  1 passed (1)\n      Tests  22 passed (22)"
+    },
+    {
+      "label": "integrated-app",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/app.test.ts",
+        "src/client/effect-app.test.ts",
+        "src/client/todo.selectors.test.ts",
+        "src/client/todo.model.test.ts",
+        "src/client/components/todo-item.test.ts",
+        "src/client/dom-app.test.ts"
+      ],
+      "started": "2026-09-17T08:59:35.817025+00:00",
+      "finished": "2026-09-17T08:59:37.769745+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  6 passed (6)\n      Tests  89 passed (89)"
+    },
+    {
+      "label": "review-keyed-child-disposal",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "--import",
+        "tsx",
+        "../m04-review-probe.mts"
+      ],
+      "started": "2026-09-17T09:00:03.462680+00:00",
+      "finished": "2026-09-17T09:00:04.412448+00:00",
+      "exit_code": 0,
+      "result_excerpt": "factory {\"before\":{\"dom\":\"a\",\"childClosed\":true,\"events\":[\"dispose\",\"update\"]},\"afterUnsubscribeDOM\":\"a\",\"sourceObserved\":false}\nupdate {\"before\":{\"dom\":\"a\",\"childClosed\":true,\"events\":[\"update\",\"dispose\"]},\"afterUnsubscribeDOM\":\"a\",\"sourceObserved\":false}\nbetween emissions {\"before\":{\"dom\":\"a\",\"childClosed\":true,\"events\":[\"update\",\"dispose\",\"update\"]},\"afterUnsubscribeDOM\":\"a\",\"sourceObserved\":false}",
+      "interpretation": "Diagnostic exited zero but demonstrated orphan DOM after independently closing a row scope. It was a confirmed review finding, not passing acceptance. Fixed with explicit open-row checks and three committed regression tests."
+    },
+    {
+      "label": "m04-keyed-final",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/dom/keyed-list.test.ts"
+      ],
+      "started": "2026-09-17T09:00:14.918213+00:00",
+      "finished": "2026-09-17T09:00:16.385564+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  1 passed (1)\n      Tests  23 passed (23)"
+    },
+    {
+      "label": "browser-chromium-install",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "timeout",
+        "60s",
+        "node",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/cli.js",
+        "install",
+        "chromium"
+      ],
+      "started": "2026-09-17T09:00:52.036188+00:00",
+      "finished": "2026-09-17T09:01:52.047541+00:00",
+      "exit_code": 124,
+      "result_excerpt": "Downloading Chrome for Testing 151.0.7922.34 (playwright chromium v1234) from https://cdn.playwright.dev/builds/cft/151.0.7922.34/linux64/chrome-linux64.zip\nDownloading Chrome for Testing 151.0.7922.34 (playwright chromium v1234) from https://cdn.playwright.dev/builds/cft/151.0.7922.34/linux64/chrome-linux64.zip\nError: Request to https://cdn.playwright.dev/builds/cft/151.0.7922.34/linux64/chrome-linux64.zip timed out after 30000ms",
+      "interpretation": "Environment-only Playwright Chromium installation; one bounded 60-second attempt ended in timeout, exit124. No project dependency or lockfile changes; no further installation or permission escalation."
+    },
+    {
+      "label": "review-bindings-dom-app",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "--project",
+        "dom",
+        "src/client/dom/bindings.test.ts",
+        "src/client/dom-app.test.ts"
+      ],
+      "started": "2026-09-17T09:00:57.464535+00:00",
+      "finished": "2026-09-17T09:00:59.052146+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 test\n> vitest run --project dom src/client/dom/bindings.test.ts src/client/dom-app.test.ts\n Test Files  2 passed (2)\n      Tests  34 passed (34)"
+    },
+    {
+      "label": "actual-http-page-smoke",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "../m04-browser-smoke.cjs",
+        "--http-only"
+      ],
+      "started": "2026-09-17T09:00:57.751890+00:00",
+      "finished": "2026-09-17T09:01:00.841791+00:00",
+      "exit_code": 0,
+      "result_excerpt": "{\n  \"check\": \"HTTP-only smoke\",\n  \"status\": \"passed\",\n  \"note\": \"Actual Node server and Vite proxy; no browser DOM or visual evidence.\",\n  \"traffic\": [\n    {\n      \"source\": \"actual HTTP\",\n      \"method\": \"GET\",\n      \"endpoint\": \"/api/todos\",\n      \"status\": 200\n    },\n    {\n      \"source\": \"actual HTTP\",\n      \"method\": \"POST\",\n      \"endpoint\": \"/api/todos\",\n      \"status\": 201\n    },\n    {\n      \"source\": \"actual HTTP\",\n      \"method\": \"PUT\",\n      \"endpoint\": \"/api/todos/537fb0df-b578-46c7-b62d-f4f6639a284a\",\n      \"status\": 200\n    },\n    {\n      \"source\": \"actual HTTP\",\n      \"method\": \"GET\",\n      \"endpoint\": \"/api/todos\",\n      \"status\": 200\n    },\n    {\n      \"source\": \"actual HTTP\",\n      \"method\": \"DELETE\",\n      \"endpoint\": \"/api/todos/537fb0df-b578-46c7-b62d-f4f6639a284a\",\n      \"status\": 204\n    },\n    {\n      \"source\": \"actual HTTP\",\n      \"method\": \"GET\",\n      \"endpoint\": \"/api/todos\",\n      \"status\": 200\n    }\n  ]\n}",
+      "interpretation": "Actual Node server and Vite proxy, native HTTP CRUD/statuses and served page/modules/CSS passed. This does not execute browser DOM or visual assertions. Child servers were stopped."
+    },
+    {
+      "label": "m04-keyed-child-disposal",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/dom/keyed-list.test.ts"
+      ],
+      "started": "2026-09-17T09:01:25.733446+00:00",
+      "finished": "2026-09-17T09:01:27.306223+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  1 passed (1)\n      Tests  26 passed (26)"
+    },
+    {
+      "label": "node-version",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "--version"
+      ],
+      "started": "2026-09-17T09:01:26.265191+00:00",
+      "finished": "2026-09-17T09:01:26.269360+00:00",
+      "exit_code": 0,
+      "result_excerpt": "v22.22.1"
+    },
+    {
+      "label": "npm-version",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "--version"
+      ],
+      "started": "2026-09-17T09:01:26.298044+00:00",
+      "finished": "2026-09-17T09:01:26.385289+00:00",
+      "exit_code": 0,
+      "result_excerpt": "11.9.0"
+    },
+    {
+      "label": "versions",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "ls",
+        "--depth=0"
+      ],
+      "started": "2026-09-17T09:01:26.422192+00:00",
+      "finished": "2026-09-17T09:01:26.856972+00:00",
+      "exit_code": 0,
+      "result_excerpt": "\u251c\u2500\u2500 @cloudflare/vite-plugin@1.54.11\n\u251c\u2500\u2500 @cloudflare/vitest-plugin@1.1.11\n\u251c\u2500\u2500 @img/sharp-wasm32@0.35.4 extraneous\n\u251c\u2500\u2500 @types/node@25.7.0\n\u251c\u2500\u2500 @vitest/coverage-v8@4.1.6\n\u251c\u2500\u2500 hono@4.13.8\n\u251c\u2500\u2500 jsdom@29.1.1\n\u251c\u2500\u2500 rxjs@7.8.2\n\u251c\u2500\u2500 tsx@4.21.0\n\u251c\u2500\u2500 typescript@6.0.3\n\u251c\u2500\u2500 vite@8.0.12\n\u251c\u2500\u2500 vitest@4.1.6\n\u251c\u2500\u2500 wrangler@4.133.0\n\u2514\u2500\u2500 zod@4.4.3"
+    },
+    {
+      "label": "final-clean-install",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "ci"
+      ],
+      "started": "2026-09-17T09:01:52.982848+00:00",
+      "finished": "2026-09-17T09:01:56.679231+00:00",
+      "exit_code": 0,
+      "result_excerpt": "added 153 packages in 4s"
+    },
+    {
+      "label": "m04-keyed-final-review",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/dom/keyed-list.test.ts"
+      ],
+      "started": "2026-09-17T09:02:00.912833+00:00",
+      "finished": "2026-09-17T09:02:02.400918+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  1 passed (1)\n      Tests  26 passed (26)"
+    },
+    {
+      "label": "browser-smoke-unavailable",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "../m04-browser-smoke.cjs"
+      ],
+      "started": "2026-09-17T09:02:01.362837+00:00",
+      "finished": "2026-09-17T09:02:01.677593+00:00",
+      "exit_code": 1,
+      "result_excerpt": "AssertionError [ERR_ASSERTION]: Browser verification blocked: Chromium executable missing at /root/.cache/ms-playwright/chromium-1234/chrome-linux64/chrome. No browser installation attempted.",
+      "interpretation": "Browser executable check failed before browser assertions. Original wording about no installation refers to this probe itself, not the separate download attempt. Superseded by the explicit final-unavailable record."
+    },
+    {
+      "label": "browser-smoke-final-unavailable",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "../m04-browser-smoke.cjs"
+      ],
+      "started": "2026-09-17T09:02:12.913501+00:00",
+      "finished": "2026-09-17T09:02:13.225998+00:00",
+      "exit_code": 1,
+      "result_excerpt": "AssertionError [ERR_ASSERTION]: Browser verification blocked: Chromium executable missing at /root/.cache/ms-playwright/chromium-1234/chrome-linux64/chrome. This probe does not install a browser.",
+      "interpretation": "Executable still missing. Browser assertions/screenshots did not run; this is a remaining verification limitation, not a passing browser check."
+    },
+    {
+      "label": "final-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started": "2026-09-17T09:02:19.644556+00:00",
+      "finished": "2026-09-17T09:02:41.605402+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 typecheck\n> npm run cf:typegen && npm run typecheck:client && npm run typecheck:worker && npm run typecheck:node && npm run typecheck:tests\n> rxjs-flow@1.0.0 cf:typegen\n> wrangler types --config wrangler.jsonc worker-configuration.d.ts --env-interface WorkerEnv\n> rxjs-flow@1.0.0 typecheck:client\n> tsc -p tsconfig.client.json\n> rxjs-flow@1.0.0 typecheck:worker\n> tsc -p tsconfig.worker.json\n> rxjs-flow@1.0.0 typecheck:node\n> tsc -p tsconfig.node.json\n> rxjs-flow@1.0.0 typecheck:tests\n> tsc -p tsconfig.test.json && tsc -p tsconfig.worker-test.json"
+    },
+    {
+      "label": "final-node-dom",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-17T09:02:19.649553+00:00",
+      "finished": "2026-09-17T09:02:25.732478+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 test\n> vitest run\n Test Files  33 passed (33)\n      Tests  513 passed (513)"
+    },
+    {
+      "label": "final-worker-tests",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker"
+      ],
+      "started": "2026-09-17T09:02:19.650688+00:00",
+      "finished": "2026-09-17T09:02:27.437493+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 test:worker\n> vitest run --config vitest.worker.config.ts\n Test Files  1 passed (1)\n      Tests  16 passed (16)"
+    },
+    {
+      "label": "review-keyed-child-disposal-fixed",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "--import",
+        "tsx",
+        "../m04-review-probe.mts"
+      ],
+      "started": "2026-09-17T09:02:20.715992+00:00",
+      "finished": "2026-09-17T09:02:22.649862+00:00",
+      "exit_code": 0,
+      "result_excerpt": "factory {\"before\":{\"dom\":\"\",\"childClosed\":true,\"events\":[\"dispose\",\"Keyed-list row scope was disposed outside list reconciliation\"]},\"afterUnsubscribeDOM\":\"\",\"sourceObserved\":false}\nupdate {\"before\":{\"dom\":\"\",\"childClosed\":true,\"events\":[\"update\",\"dispose\",\"Keyed-list row scope was disposed outside list reconciliation\"]},\"afterUnsubscribeDOM\":\"\",\"sourceObserved\":false}\nbetween emissions {\"before\":{\"dom\":\"\",\"childClosed\":true,\"events\":[\"update\",\"dispose\",\"Keyed-list row scope was disposed outside list reconciliation\"]},\"afterUnsubscribeDOM\":\"\",\"sourceObserved\":false}",
+      "interpretation": "Independent rerun of original three scenarios confirmed empty DOM, released source and reported render failure after fix."
+    },
+    {
+      "label": "final-worker-build",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "build:worker"
+      ],
+      "started": "2026-09-17T09:03:06.002540+00:00",
+      "finished": "2026-09-17T09:03:07.507934+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 build:worker\n> vite build --config vite.worker.config.ts\nrendering chunks...\ndist/rxjs_flow_foundation/.vite/manifest.json    0.15 kB \u2502 gzip:  0.11 kB\ndist/rxjs_flow_foundation/wrangler.json          1.51 kB \u2502 gzip:  0.76 kB\ndist/rxjs_flow_foundation/index.js             103.38 kB \u2502 gzip: 25.31 kB\nrendering chunks...\ndist/client/.assetsignore                0.02 kB\ndist/client/index.html                   1.45 kB \u2502 gzip:  0.70 kB\ndist/client/assets/index-De6qimoS.css    2.58 kB \u2502 gzip:  1.13 kB\ndist/client/assets/index-C8VqeqSo.js   102.70 kB \u2502 gzip: 30.06 kB"
+    },
+    {
+      "label": "final-generated-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "cf:typecheck"
+      ],
+      "started": "2026-09-17T09:03:06.002583+00:00",
+      "finished": "2026-09-17T09:03:15.472805+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 cf:typecheck\n> wrangler types --config wrangler.jsonc worker-configuration.d.ts --env-interface WorkerEnv --check\n\u2728 Types at worker-configuration.d.ts are up to date."
+    },
+    {
+      "label": "final-preview-smoke",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "smoke:worker"
+      ],
+      "started": "2026-09-17T09:03:46.621848+00:00",
+      "finished": "2026-09-17T09:03:51.308995+00:00",
+      "exit_code": 0,
+      "result_excerpt": "{\n  \"status\": \"passed\",\n  \"runtime\": \"local workerd\",\n  \"mode\": \"built-preview\",\n  \"checks\": [\n    {\n      \"path\": \"/\",\n      \"status\": 200,\n      \"script\": \"/assets/index-C8VqeqSo.js\"\n    },\n    {\n      \"path\": \"/assets/index-C8VqeqSo.js\",\n      \"status\": 200,\n      \"bytes\": 102701\n    },\n    {\n      \"path\": \"/api/foundation\",\n      \"status\": 200,\n      \"body\": {\n        \"runtime\": \"workerd\",\n        \"message\": \"rxjs-flow foundation\"\n      }\n    },\n    {\n      \"path\": \"/api\",\n      \"status\": 404,\n      \"body\": {\n        \"error\": \"not_found\"\n      }\n    },\n    {\n      \"path\": \"/api/missing\",\n      \"status\": 404,\n      \"body\": {\n        \"error\": \"not_found\"\n      }\n    },\n    {\n      \"path\": \"/api/todos\",\n      \"status\": 404,\n      \"body\": {\n        \"error\": \"not_found\"\n      }\n    },\n    {\n      \"path\": \"/unknown-page\",\n      \"status\": 200,\n      \"script\": \"/assets/index-C8VqeqSo.js\"\n    }\n  ]\n}"
+    }
+  ],
+  "inspection_and_publication": {
+    "note": "Read-only inspections and Git synchronization below ran outside the timestamped test recorder. Final evidence commit and PR follow this file; the final head and CI live in the PR to avoid a self-referential commit.",
+    "commands": [
+      "git fetch origin main",
+      "git switch main",
+      "git merge --ff-only origin/main",
+      "git switch -c m04/owned-dom",
+      "git status --short",
+      "git log -3 --oneline",
+      "git diff --stat",
+      "git diff --check",
+      "git diff --exit-code c64fda113b599ff9b0b21ae3e20aeff0c473a358 -- package.json package-lock.json src/server src/worker src/shared src/client/api.ts src/client/todo.effects.ts src/client/todo.intents.ts src/client/todo.state.ts src/client/runtime .github/workflows/ci.yml",
+      "git add index.html src",
+      "git diff --cached --check",
+      "git diff --cached --stat",
+      "python ../m00-payload.py",
+      "git fetch origin m04/owned-dom",
+      "git write-tree",
+      "git rev-parse origin/m04/owned-dom^{tree}",
+      "git reset --soft origin/m04/owned-dom"
+    ],
+    "repository_reads": "rg, sed, cat, Python and Git inspected the working agreement, current roadmap/architecture, existing app/model/view contracts, tests, recorder output and unchanged historical evidence.",
+    "github_reads": [
+      "GET /repos/hansschenker/rxjs-flow/pulls/8",
+      "GET /repos/hansschenker/rxjs-flow/git/ref/heads/main"
+    ],
+    "github_implementation_writes": [
+      "create_tree (checked exact staged index tree SHA)",
+      "create_commit (verified merged PR8 parent)",
+      "create_branch m04/owned-dom at implementation commit"
+    ],
+    "result": "Main unchanged at starting commit before publication; implementation tree equals remote; guarded soft reset preserved documentation; ancestry retained; M00 characterization untouched."
+  },
+  "final_local_results": {
+    "node_dom_tests": 513,
+    "node_dom_files": 33,
+    "workerd_tests": 16,
+    "workerd_files": 1,
+    "total_tests": 529,
+    "required_local_gates_passed": true,
+    "implementation_blockers": [],
+    "additional_browser_verification": "blocked: absent Chromium and timed-out environment-only download; no browser assertions or screenshots executed"
+  },
+  "limitations": [
+    "Focus/selection/identity evidence is Linux/jsdom. Real Node/Vite HTTP and built workerd preview are verified separately; neither proves browser appearance.",
+    "No manual desktop/mobile browser, screenshot, Windows execution or deployment evidence.",
+    "Node Todo storage remains in-memory; Worker /api/todos stays 404 until M05b. M05c/d/M06 durable authority and live integration remain pending.",
+    "Scalar completion retains DOM; conditional/list lifetimes retain nodes until explicit owner/lifetime disposal. External DOM removal does not automatically dispose owners.",
+    "State accumulation is shared; pure selectors execute per view consumer. There is no global atomic DOM commit or animation scheduling claim.",
+    "Reconciliation retains identities and minimizes DOM writes; no universal throughput/performance claim.",
+    "Final PR-head CI is recorded in the PR; no automatic merge or later milestone advancement."
+  ]
+}

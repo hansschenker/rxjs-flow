@@ -1,7 +1,12 @@
 # M03 — Owned effect streams and validated HTTP outcomes
 
 Date: 2026-09-17. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
-Status: implemented and locally verified; acceptance review/merge pending.
+Status: accepted/merged in [PR #8](https://github.com/hansschenker/rxjs-flow/pull/8)
+at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`.
+
+The implementation, execution results and limits below are historical M03 evidence
+at its recorded commits. They do not describe subsequent milestone changes;
+see [M04 acceptance](../m04/acceptance.md) for the targeted DOM rendering checkpoint.
 
 ## Provenance and scope
 

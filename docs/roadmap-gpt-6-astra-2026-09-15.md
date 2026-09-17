@@ -8,7 +8,7 @@ Updated: 2026-09-17. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**. F
 **Original audited source baseline:** `cbc91eefbccdeaf17221d06c75bdd237fe5e5499` on the source repository's `main`.  
 **Inspected destination baseline for this revision:** `c9197b68591e390a0a3add4667e5dd23717d6b6e` on `rxjs-flow/main`.
 
-**Implementation status, 2026-09-17:** M00 is accepted and closed by merged PR #2 at the destination baseline above. M01 is accepted/merged in PR #5 at `188f21f`. M05a is accepted/merged in PR #6 at `eeb8d29`. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [implemented and locally verified, with acceptance review/merge pending](m03/acceptance.md). M04 and M05b–M09 remain pending. The executable implementation still uses Node HTTP/in-memory Todo storage. Hono, Wrangler, Worker build/preview and runtime tests form a local foundation; Todo HTTP migration and Durable Object persistence remain planned. The r2 plan adoption changed documentation only; subsequent M01/M05a/M02/M03 checkpoints implement browser lifetime/state ownership, extracted effect policies, validated HTTP outcomes, a required generic SSE decoder and the local platform foundation. Keyed DOM rendering remains M04; live protocol and application integration remain M06. The ChatGPT Project reference copy remains separately unverified.
+**Implementation status, 2026-09-17:** M00 is accepted and closed by merged PR #2 at the destination baseline above. M01 is accepted/merged in PR #5 at `188f21f`. M05a is accepted/merged in PR #6 at `eeb8d29`. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is implemented; [acceptance review/merge pending](m04/acceptance.md). M05b–M09 remain pending. The executable implementation still uses Node HTTP/in-memory Todo storage. Hono, Wrangler, Worker build/preview and runtime tests form a local foundation; Todo HTTP migration and Durable Object persistence remain planned. The r2 plan adoption changed documentation only; subsequent M01/M05a/M02/M03/M04 checkpoints implement browser lifetime/state ownership, extracted effect policies, validated HTTP outcomes, a required generic SSE decoder, targeted DOM bindings with keyed rows and the local platform foundation. Live protocol and application integration remain M06. The ChatGPT Project reference copy remains separately unverified.
 
 This is a continuation of the existing application, not a fresh scaffold, repository rename, history reset or import from `rxjs-fullstack`. It explicitly amends r1's permanent Node HTTP and in-memory-only target assumptions. Preserve domain behavior and tested contracts while moving the platform boundary through reviewable steps. No runtime replacement occurs in this documentation change.
 
@@ -94,8 +94,8 @@ Node retirement is an explicit later decision: retain the baseline until corresp
 | M00 | Verified import, baseline and reconciled status | — | Accepted/closed; PR #2 merged at `c9197b6` |
 | M01 | Explicit application/component/source lifetimes | M00 | Accepted/merged; PR #5 at `188f21f` |
 | M02 | Instance-owned state and coherent derived streams | M01 | Accepted/merged; [PR #7 at `7374557`](m02/acceptance.md) |
-| M03 | Effect policies and correct HTTP outcomes | M02 | Implemented and locally verified; [acceptance review/merge pending](m03/acceptance.md) |
-| M04 | Owned, targeted reactive DOM rendering | M02, M03 | Pending |
+| M03 | Effect policies and correct HTTP outcomes | M02 | Accepted/merged; [PR #8 at `c64fda1`](m03/acceptance.md) |
+| M04 | Owned, targeted reactive DOM rendering | M02, M03 | Implemented; [acceptance review/merge pending](m04/acceptance.md) |
 | M05 | Cloudflare/Hono request, authority and SSE correctness | M05a–M05d | Pending |
 | M05a | Cloudflare/Hono development and build foundation | M01 | Accepted/merged; PR #6 at `eeb8d29` |
 | M05b | HTTP compatibility and request ownership | M05a | Pending |
@@ -174,8 +174,9 @@ Accepted and merged in PR #7 at `7374557b6d264a9bfa572526a4f71233fc3aa24e`.
 **Implementation checkpoint, 2026-09-17:** [acceptance evidence](m03/acceptance.md)
 records extracted owned effects, bounded mutation admission, recoverable correlated
 outcomes, validated HTTP responses, abort through body consumption and the required
-generic SSE decoder. Implementation and local verification are complete; acceptance
-review/merge is pending. Keyed DOM rendering remains M04, and the application live
+generic SSE decoder. Accepted and merged in PR #8 at
+`c64fda113b599ff9b0b21ae3e20aeff0c473a358`. Targeted DOM ownership is recorded in
+the M04 checkpoint below, and the application live
 protocol/reconnect integration remains M06. No later milestone starts automatically.
 
 **Purpose:** events describe intent, pure functions determine meaning, and effect streams implement explicit execution policies.
@@ -206,6 +207,14 @@ Start with one simple ordered mutation queue. Per-entity queues are a later opti
 **Acceptance tests:** all relevant non-2xx statuses become failure events; valid 204 succeeds; malformed bodies fail safely; cancel-before-headers and cancel-during-body release resources; policy marble tests assert inner subscription intervals; a failed request does not disable the next intent; no duplicate request from additional consumers. **Visible evidence:** a recoverable operation failure and an obsolete-read cancellation.
 
 ## M04 — Render from streams with targeted DOM ownership
+
+**Implementation checkpoint, 2026-09-17:** implemented; acceptance review/merge
+pending. [Acceptance evidence](m04/acceptance.md) and the
+[minimal binding sample](m04/minimal-sample.md) document a stable shell, owned
+scalar bindings and keyed rows with child scopes. `todo.view.tsx` owns rendering;
+the app root connects its streams. Synchronous targeted commits preserve node
+identity, focus and selection, and removing rows/views releases their ownership.
+M05b is next only after M04 acceptance and explicit authorization.
 
 **Purpose:** make rendering an explicit sink without turning every state emission into a full reconstruction.
 
@@ -413,4 +422,4 @@ Keep documentation, dependency/toolchain changes, platform adapters, storage aut
 
 After a roadmap amendment is merged/accepted, refresh the ChatGPT Project reference copy with this same filename and revision. Until that refresh is confirmed, report it as pending rather than claiming automatic Project synchronization. GitHub branch content is not proof that main or the Project copy has changed.
 
-**Next implementation session:** complete M03 acceptance review and verify the current repository state, then begin M04 only when authorized. M00, M01, M05a and M02 remain accepted/closed. Continue with M04 before M05b–M05d in the recommended serial order. No later milestone starts automatically.
+**Next implementation session:** complete M04 acceptance review and verify the current repository state, then begin M05b only when authorized. M00, M01, M05a, M02 and M03 remain accepted/closed. Continue with M05b before M05c–M05d in the recommended serial order. No later milestone starts automatically.
