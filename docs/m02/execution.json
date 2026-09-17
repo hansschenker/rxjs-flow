@@ -1,0 +1,437 @@
+{
+  "repository": "hansschenker/rxjs-flow",
+  "branch": "m02/instance-state",
+  "starting_commit": "eeb8d2989884372fa42f4e321295aa7f3e8faa75",
+  "implementation_commit": "52c930c99ffa6edb5f28db5889ba25981b901951",
+  "implementation_tree": "42fd0335532862eda2609b726fb515b70312d65d",
+  "previous_pr": {
+    "number": 6,
+    "state": "closed",
+    "merged": true,
+    "merge_commit_sha": "eeb8d2989884372fa42f4e321295aa7f3e8faa75",
+    "head": "128a00a5cdce921cabdde2c99b4bc0a4da654754",
+    "base": "188f21ff307ff7d2146d9f90b24e5ee5c7dfd99d"
+  },
+  "runtime": {
+    "node": "22.22.1",
+    "npm": "11.9.0",
+    "rxjs": "7.8.2",
+    "typescript": "6.0.3",
+    "vite": "8.0.12",
+    "vitest": "4.1.6"
+  },
+  "records": [
+    {
+      "label": "baseline-node-dom",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-17T07:55:38.441519+00:00",
+      "finished": "2026-09-17T07:55:41.561322+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 test\n> vitest run\n Test Files  24 passed (24)\n      Tests  236 passed (236)"
+    },
+    {
+      "label": "versions",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "ls",
+        "--depth=0"
+      ],
+      "started": "2026-09-17T07:58:20.083537+00:00",
+      "finished": "2026-09-17T07:58:20.462658+00:00",
+      "exit_code": 0,
+      "result_excerpt": "\u251c\u2500\u2500 @cloudflare/vite-plugin@1.54.11\n\u251c\u2500\u2500 @cloudflare/vitest-plugin@1.1.11\n\u251c\u2500\u2500 @img/sharp-wasm32@0.35.4 extraneous\n\u251c\u2500\u2500 @types/node@25.7.0\n\u251c\u2500\u2500 @vitest/coverage-v8@4.1.6\n\u251c\u2500\u2500 hono@4.13.8\n\u251c\u2500\u2500 jsdom@29.1.1\n\u251c\u2500\u2500 rxjs@7.8.2\n\u251c\u2500\u2500 tsx@4.21.0\n\u251c\u2500\u2500 typescript@6.0.3\n\u251c\u2500\u2500 vite@8.0.12\n\u251c\u2500\u2500 vitest@4.1.6\n\u251c\u2500\u2500 wrangler@4.133.0\n\u2514\u2500\u2500 zod@4.4.3"
+    },
+    {
+      "label": "program-green",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/runtime/program.test.ts"
+      ],
+      "started": "2026-09-17T07:58:57.145218+00:00",
+      "finished": "2026-09-17T07:58:58.596359+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  1 passed (1)\n      Tests  13 passed (13)"
+    },
+    {
+      "label": "program-final",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/runtime/program.test.ts"
+      ],
+      "started": "2026-09-17T08:00:05.187352+00:00",
+      "finished": "2026-09-17T08:00:06.555916+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  1 passed (1)\n      Tests  16 passed (16)"
+    },
+    {
+      "label": "integrated-client-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:client"
+      ],
+      "started": "2026-09-17T08:00:24.783810+00:00",
+      "finished": "2026-09-17T08:00:25.745163+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 typecheck:client\n> tsc -p tsconfig.client.json"
+    },
+    {
+      "label": "integrated-app-tests",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/app.test.ts",
+        "src/client/main.test.ts"
+      ],
+      "started": "2026-09-17T08:00:26.065181+00:00",
+      "finished": "2026-09-17T08:00:27.805527+00:00",
+      "exit_code": 1,
+      "result_excerpt": " \u276f |dom| src/client/app.test.ts (25 tests | 2 failed) 96ms\n Test Files  1 failed | 1 passed (2)\n      Tests  2 failed | 24 passed (26)\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 2 \u23af\u23af\u23af\u23af\u23af\u23af\u23af\n FAIL  |dom| src/client/app.test.ts > M02 app-owned model > publishes initial, pending load and synchronous result to an existing consumer\nAssertionError: expected [ 'idle', 'idle', 'loading', 'ready' ] to deeply equal [ 'idle', 'loading', 'ready' ]\n FAIL  |dom| src/client/app.test.ts > M02 app-owned model > keeps two simultaneously mounted apps independent\nError: Todo app requires #todo-list, #error-msg, #add-form and #title-input.\n     38|    throw new Error('Todo app requires #todo-list, #error-msg, #add-for\u2026"
+    },
+    {
+      "label": "integrated-app-tests-2",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/app.test.ts",
+        "src/client/main.test.ts"
+      ],
+      "started": "2026-09-17T08:01:52.918017+00:00",
+      "finished": "2026-09-17T08:01:54.437761+00:00",
+      "exit_code": 1,
+      "result_excerpt": " \u276f |dom| src/client/app.test.ts (25 tests | 1 failed) 103ms\n Test Files  1 failed | 1 passed (2)\n      Tests  1 failed | 25 passed (26)\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af\n FAIL  |dom| src/client/app.test.ts > M02 app-owned model > publishes initial, pending load and synchronous result to an existing consumer\nAssertionError: expected [ 'idle', 'idle', 'loading', 'ready' ] to deeply equal [ 'idle', 'loading', 'ready' ]"
+    },
+    {
+      "label": "provenance",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "git",
+        "log",
+        "-5",
+        "--format=fuller"
+      ],
+      "started": "2026-09-17T08:02:06.407668+00:00",
+      "finished": "2026-09-17T08:02:06.410815+00:00",
+      "exit_code": 0,
+      "result_excerpt": ""
+    },
+    {
+      "label": "m02-model-focused-1",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/todo.state.test.ts",
+        "src/client/todo.selectors.test.ts",
+        "src/client/todo.model.test.ts"
+      ],
+      "started": "2026-09-17T08:03:26.968983+00:00",
+      "finished": "2026-09-17T08:03:28.302933+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 test\n> vitest run src/client/todo.state.test.ts src/client/todo.selectors.test.ts src/client/todo.model.test.ts\n Test Files  3 passed (3)\n      Tests  70 passed (70)"
+    },
+    {
+      "label": "m02-model-types-1",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:tests"
+      ],
+      "started": "2026-09-17T08:03:44.568350+00:00",
+      "finished": "2026-09-17T08:03:48.065816+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 typecheck:tests\n> tsc -p tsconfig.test.json && tsc -p tsconfig.worker-test.json"
+    },
+    {
+      "label": "node-version",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "--version"
+      ],
+      "started": "2026-09-17T08:04:16.621511+00:00",
+      "finished": "2026-09-17T08:04:16.629159+00:00",
+      "exit_code": 0,
+      "result_excerpt": "v22.22.1"
+    },
+    {
+      "label": "npm-version",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "--version"
+      ],
+      "started": "2026-09-17T08:04:16.659233+00:00",
+      "finished": "2026-09-17T08:04:16.748157+00:00",
+      "exit_code": 0,
+      "result_excerpt": "11.9.0"
+    },
+    {
+      "label": "final-clean-install",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "ci"
+      ],
+      "started": "2026-09-17T08:04:33.123552+00:00",
+      "finished": "2026-09-17T08:04:36.761447+00:00",
+      "exit_code": 0,
+      "result_excerpt": "added 153 packages in 4s"
+    },
+    {
+      "label": "final-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started": "2026-09-17T08:04:53.996673+00:00",
+      "finished": "2026-09-17T08:05:09.375538+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 typecheck\n> npm run cf:typegen && npm run typecheck:client && npm run typecheck:worker && npm run typecheck:node && npm run typecheck:tests\n> rxjs-flow@1.0.0 cf:typegen\n> wrangler types --config wrangler.jsonc worker-configuration.d.ts --env-interface WorkerEnv\n> rxjs-flow@1.0.0 typecheck:client\n> tsc -p tsconfig.client.json\n> rxjs-flow@1.0.0 typecheck:worker\n> tsc -p tsconfig.worker.json\n> rxjs-flow@1.0.0 typecheck:node\n> tsc -p tsconfig.node.json\n> rxjs-flow@1.0.0 typecheck:tests\n> tsc -p tsconfig.test.json && tsc -p tsconfig.worker-test.json"
+    },
+    {
+      "label": "final-node-dom",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-17T08:04:55.290967+00:00",
+      "finished": "2026-09-17T08:04:59.263161+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 test\n> vitest run\n Test Files  27 passed (27)\n      Tests  318 passed (318)"
+    },
+    {
+      "label": "final-worker-tests",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker"
+      ],
+      "started": "2026-09-17T08:04:56.669782+00:00",
+      "finished": "2026-09-17T08:05:01.739781+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 test:worker\n> vitest run --config vitest.worker.config.ts\n Test Files  1 passed (1)\n      Tests  16 passed (16)"
+    },
+    {
+      "label": "final-worker-build",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "build:worker"
+      ],
+      "started": "2026-09-17T08:05:22.224786+00:00",
+      "finished": "2026-09-17T08:05:23.644878+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 build:worker\n> vite build --config vite.worker.config.ts\ndist/rxjs_flow_foundation/.vite/manifest.json    0.15 kB \u2502 gzip:  0.11 kB\ndist/rxjs_flow_foundation/wrangler.json          1.51 kB \u2502 gzip:  0.76 kB\ndist/rxjs_flow_foundation/index.js             103.38 kB \u2502 gzip: 25.31 kB\ndist/client/.assetsignore              0.02 kB\ndist/client/index.html                 0.55 kB \u2502 gzip:  0.35 kB\ndist/client/assets/index-qnSNZDtz.js  33.59 kB \u2502 gzip: 10.88 kB"
+    },
+    {
+      "label": "final-generated-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "cf:typecheck"
+      ],
+      "started": "2026-09-17T08:05:23.512461+00:00",
+      "finished": "2026-09-17T08:05:35.730658+00:00",
+      "exit_code": 0,
+      "result_excerpt": "> rxjs-flow@1.0.0 cf:typecheck\n> wrangler types --config wrangler.jsonc worker-configuration.d.ts --env-interface WorkerEnv --check\n\u2728 Types at worker-configuration.d.ts are up to date."
+    },
+    {
+      "label": "final-preview-smoke",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "smoke:worker"
+      ],
+      "started": "2026-09-17T08:06:03.291742+00:00",
+      "finished": "2026-09-17T08:06:08.061432+00:00",
+      "exit_code": 0,
+      "result_excerpt": "\n> rxjs-flow@1.0.0 smoke:worker\n> node scripts/smoke-worker.mjs\n\n{\n  \"status\": \"passed\",\n  \"runtime\": \"local workerd\",\n  \"mode\": \"built-preview\",\n  \"checks\": [\n    {\n      \"path\": \"/\",\n      \"status\": 200,\n      \"script\": \"/assets/index-qnSNZDtz.js\"\n    },\n    {\n      \"path\": \"/assets/index-qnSNZDtz.js\",\n      \"status\": 200,\n      \"bytes\": 33596\n    },\n    {\n      \"path\": \"/api/foundation\",\n      \"status\": 200,\n      \"body\": {\n        \"runtime\": \"workerd\",\n        \"message\": \"rxjs-flow foundation\"\n      }\n    },\n    {\n      \"path\": \"/api\",\n      \"status\": 404,\n      \"body\": {\n        \"error\": \"not_found\"\n      }\n    },\n    {\n      \"path\": \"/api/missing\",\n      \"status\": 404,\n      \"body\": {\n        \"error\": \"not_found\"\n      }\n    },\n    {\n      \"path\": \"/api/todos\",\n      \"status\": 404,\n      \"body\": {\n        \"error\": \"not_found\"\n      }\n    },\n    {\n      \"path\": \"/unknown-page\",\n      \"status\": 200,\n      \"script\": \"/assets/index-qnSNZDtz.js\"\n    }\n  ]\n}\n(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)"
+    },
+    {
+      "label": "final-diff-check",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "started": "2026-09-17T08:06:05.239448+00:00",
+      "finished": "2026-09-17T08:06:05.246377+00:00",
+      "exit_code": 0,
+      "result_excerpt": ""
+    },
+    {
+      "label": "unchanged-boundaries",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "eeb8d2989884372fa42f4e321295aa7f3e8faa75",
+        "--",
+        "package.json",
+        "package-lock.json",
+        "src/server",
+        "src/shared",
+        "src/worker",
+        "src/client/api.ts",
+        "src/client/todo.service.ts",
+        "src/client/sse.ts",
+        ".github/workflows/ci.yml"
+      ],
+      "started": "2026-09-17T08:06:05.281620+00:00",
+      "finished": "2026-09-17T08:06:05.284320+00:00",
+      "exit_code": 0,
+      "result_excerpt": ""
+    }
+  ],
+  "additional_commands": [
+    {
+      "command": [
+        "git",
+        "fetch",
+        "origin",
+        "main"
+      ],
+      "result": "Verified current main equals starting commit before branch creation and again before publication."
+    },
+    {
+      "command": [
+        "git",
+        "switch",
+        "main"
+      ],
+      "result": "Clean previous M05a branch; main fast-forwarded."
+    },
+    {
+      "command": [
+        "git",
+        "merge",
+        "--ff-only",
+        "origin/main"
+      ],
+      "result": "Pass; preserved imported history."
+    },
+    {
+      "command": [
+        "git",
+        "switch",
+        "-c",
+        "m02/instance-state"
+      ],
+      "result": "Dedicated local branch created from starting commit."
+    },
+    {
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/runtime/program.test.ts"
+      ],
+      "result": "Tests-first direct run before program.ts existed: missing ./program, 1 failed suite, 0 tests; no recorder timestamp. Node 22 PATH supplied; Vitest displayed local time 13:27:42."
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "typecheck:client"
+      ],
+      "result": "Intermediate direct runtime review: main.tsx Action.title narrowing errors; resolved by typed intent guard before recorded final typecheck."
+    },
+    {
+      "command": [
+        "git",
+        "add",
+        "src/client"
+      ],
+      "result": "Staged 11 implementation/test files only for the implementation commit."
+    },
+    {
+      "command": [
+        "python",
+        "../m00-payload.py"
+      ],
+      "result": "Built destination-only tree payload from the index and compared returned GitHub tree SHA with git write-tree."
+    },
+    {
+      "command": [
+        "git",
+        "fetch",
+        "origin",
+        "m02/instance-state"
+      ],
+      "result": "Fetched published implementation for local synchronization."
+    },
+    {
+      "command": [
+        "git",
+        "reset",
+        "--soft",
+        "origin/m02/instance-state"
+      ],
+      "result": "Executed only after local index tree equaled remote branch tree; preserves unstaged documentation edits."
+    },
+    {
+      "command": [
+        "git",
+        "add",
+        "AGENTS.md",
+        "CLAUDE.md",
+        "README.md",
+        "docs"
+      ],
+      "result": "Staged only milestone evidence/status updates after verifying implementation source unchanged."
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "result": "Documentation publication whitespace gate."
+    }
+  ],
+  "inspection_commands": [
+    "git status --short --branch",
+    "git log",
+    "git show",
+    "git diff",
+    "git rev-parse",
+    "git remote get-url --push origin",
+    "rg",
+    "rg --files",
+    "cat",
+    "sed",
+    "read-only GitHub PR #6 fetch",
+    "installed RxJS source read"
+  ],
+  "publication": "GitHub create_tree/create_commit/create_branch, followed by docs-only commit/update_ref and create_pull_request. Final-head CI evidence is recorded in the PR; no merge or deployment.",
+  "verification_limits": "Local Linux/jsdom tests, actual workerd tests and built-preview HTTP smoke. No real-browser UI/Windows run, remote deployment or validated wire snapshot ingestion. M03 HTTP decoding/effect policies, M04 keyed DOM and M06 live revisions remain pending."
+}

@@ -1,8 +1,8 @@
-import { NEVER, Observable, Subject, of, throwError } from 'rxjs';
+import { EMPTY, NEVER, Observable, Subject, of, throwError } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Todo } from '../shared/types';
 import { createTodoApp, mountTodoApp, type TodoService } from './main';
-import { action$, dispatch } from './todo.state';
+import type { State } from './todo.state';
 
 const todo: Todo = { id: '1', title: 'First', completed: false, createdAt: '2026-09-17T00:00:00Z' };
 const second: Todo = { ...todo, id: '2', title: 'Second' };
@@ -42,6 +42,104 @@ beforeEach(() => {
 	error = document.querySelector('#error-msg')!;
 });
 
+describe('M02 app-owned model', () => {
+	it('publishes initial, pending load and synchronous result to an existing consumer', () => {
+		const { app } = create();
+		const states: State[] = [];
+		app.state$.subscribe(state => states.push(state));
+		expect(states).toEqual([]);
+		app.start(document.body);
+		expect(states.map(state => state.loadStatus)).toEqual(['idle', 'loading', 'ready']);
+		expect(states.map(state => state.pending.length)).toEqual([0, 1, 0]);
+		expect(states.at(-1)?.todos).toEqual([todo, second]);
+	});
+
+	it('keeps two simultaneously mounted apps independent', () => {
+		const otherHost = document.createElement('section');
+		const otherRoot = otherHost.attachShadow({ mode: 'open' });
+		otherRoot.innerHTML = '<form id="add-form"><input id="title-input"></form><ul id="todo-list"></ul><p id="error-msg"></p>';
+		document.body.append(otherHost);
+		const { app: first } = create();
+		const { app: secondApp, api } = create();
+		api.getAll$.mockReturnValue(of([{ ...second, title: 'Other collection' }]));
+		first.start(document.body);
+		secondApp.start(otherRoot);
+		submit('Local draft');
+		expect(list.textContent).toContain('Created');
+		expect(otherRoot.querySelector('#todo-list')!.textContent).toBe('Other collectionDelete');
+		expect(api.create$).not.toHaveBeenCalled();
+		first.dispose();
+		otherRoot.querySelector('button')!.click();
+		expect(api.remove$).toHaveBeenCalledExactlyOnceWith('2');
+		expect(otherRoot.querySelector('#todo-list')!.childElementCount).toBe(0);
+	});
+
+	it('keeps a newer draft when an older pending create succeeds', () => {
+		const pending = new Subject<Todo>();
+		const { app, api } = create();
+		api.create$.mockReturnValue(pending);
+		const states: State[] = [];
+		app.state$.subscribe(state => states.push(state));
+		app.start(document.body);
+		submit('First draft');
+		expect(states.at(-1)?.pending).toEqual([expect.objectContaining({ kind: 'create', title: 'First draft' })]);
+		input.value = 'Newer draft';
+		input.dispatchEvent(new Event('input'));
+		pending.next({ ...todo, id: '3', title: 'First draft' });
+		pending.complete();
+		expect(input.value).toBe('Newer draft');
+		expect(states.at(-1)?.pending).toEqual([]);
+	});
+
+	it.each(['update', 'delete'] as const)('shows recoverable %s failure and releases pending state', kind => {
+		const { app, api } = create();
+		const states: State[] = [];
+		app.state$.subscribe(state => states.push(state));
+		app.start(document.body);
+		if (kind === 'update') {
+			api.update$.mockReturnValueOnce(throwError(() => new Error('offline')));
+			const checkbox = list.querySelector('input')!;
+			checkbox.checked = true;
+			checkbox.dispatchEvent(new Event('change'));
+			expect(list.querySelector('input')!.checked).toBe(false);
+		} else {
+			api.remove$.mockReturnValueOnce(throwError(() => new Error('offline')));
+			list.querySelector('button')!.click();
+		}
+		expect(states.some(state => state.pending.some(operation => operation.kind === kind))).toBe(true);
+		expect(states.at(-1)?.pending).toEqual([]);
+		expect(error.textContent).toBe(`Failed to ${kind} todo.`);
+		expect(list.childElementCount).toBe(2);
+		submit('Recovery');
+		expect(error.textContent).toBe('');
+		expect(list.textContent).toContain('Created');
+	});
+
+	it('records an empty create completion as failure and keeps the draft', () => {
+		const { app, api } = create();
+		api.create$.mockReturnValueOnce(EMPTY);
+		const states: State[] = [];
+		app.state$.subscribe(state => states.push(state));
+		app.start(document.body);
+		submit('Keep me');
+		expect(states.at(-1)?.pending).toEqual([]);
+		expect(input.value).toBe('Keep me');
+		expect(error.textContent).toBe('Failed to create todo. No result received.');
+		expect(list.childElementCount).toBe(2);
+		submit();
+		expect(api.create$).toHaveBeenCalledTimes(2);
+	});
+
+	it('can be disposed by the initial state consumer before any external activation', () => {
+		const { app, api } = create();
+		app.state$.subscribe(() => app.dispose());
+		app.start(document.body);
+		expect(api.getAll$).not.toHaveBeenCalled();
+		expect(submit().defaultPrevented).toBe(false);
+		expect(list.childElementCount).toBe(0);
+	});
+});
+
 afterEach(() => {
 	for (const app of apps.splice(0)) app.dispose();
 	vi.restoreAllMocks();
@@ -52,10 +150,12 @@ afterEach(() => {
 describe('M01 app activation and disposal', () => {
 	it('constructs without querying a root or activating a service', () => {
 		const query = vi.spyOn(document.body, 'querySelector');
-		const { api } = create();
+		const { app, api } = create();
+		const state = vi.fn();
+		app.state$.subscribe(state);
 		expect(query).not.toHaveBeenCalled();
 		expect(api.getAll$).not.toHaveBeenCalled();
-		expect(action$.observed).toBe(false);
+		expect(state).not.toHaveBeenCalled();
 	});
 
 	it('starts once with one submit listener and renders synchronous startup results', () => {
@@ -67,18 +167,22 @@ describe('M01 app activation and disposal', () => {
 		expect(attach.mock.calls.filter(([type]) => type === 'submit')).toHaveLength(1);
 		expect(list.textContent).toContain('First');
 		expect(list.textContent).toContain('Second');
-		expect(action$.observed).toBe(true);
+		const current = vi.fn();
+		app.state$.subscribe(current).unsubscribe();
+		expect(current).toHaveBeenCalledWith(expect.objectContaining({ todos: [todo, second], loadStatus: 'ready' }));
 	});
 
 	it('releases the state connection, listeners and child DOM on repeated disposal', () => {
 		const detach = vi.spyOn(form, 'removeEventListener');
 		const { app, api } = create();
+		const completed = vi.fn();
+		app.state$.subscribe({ complete: completed });
 		app.start(document.body);
 		app.dispose();
 		app.dispose();
 		expect(detach.mock.calls.filter(([type]) => type === 'submit')).toHaveLength(1);
 		expect(list.childElementCount).toBe(0);
-		expect(action$.observed).toBe(false);
+		expect(completed).toHaveBeenCalledOnce();
 		submit();
 		app.start(document.body);
 		expect(api.getAll$).toHaveBeenCalledOnce();
@@ -165,7 +269,7 @@ describe('M01 app activation and disposal', () => {
 		expect(list.childElementCount).toBe(0);
 	});
 
-	it('does not initiate writes on rendering and owns updates across incidental row rebuilds', () => {
+	it('does not initiate writes on rendering and owns updates across collection row rebuilds', () => {
 		const pending = new Subject<Todo>();
 		const { app, api } = create();
 		api.update$.mockReturnValue(pending);
@@ -177,7 +281,12 @@ describe('M01 app activation and disposal', () => {
 		checkbox.checked = true;
 		checkbox.dispatchEvent(new Event('change'));
 		expect(api.update$).toHaveBeenCalledExactlyOnceWith('1', { completed: true });
-		dispatch({ type: 'SET_ERROR', message: 'view rebuilt' });
+		input.value = 'New draft';
+		input.dispatchEvent(new Event('input'));
+		expect(list.querySelector('input')).toBe(checkbox);
+		expect(checkbox.checked).toBe(true);
+		submit('Another todo');
+		expect(list.querySelector('input')).not.toBe(checkbox);
 		expect(pending.observed).toBe(true);
 		pending.next({ ...todo, completed: true });
 		expect(list.querySelector('input')!.checked).toBe(true);

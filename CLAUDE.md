@@ -7,8 +7,9 @@ Development target: `hansschenker/rxjs-flow`. Read [AGENTS.md](AGENTS.md), the
 
 M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e` (PR #2).
 M01 is accepted/merged in PR #5 at `188f21ff307ff7d2146d9f90b24e5ee5c7dfd99d`.
-M05a is implemented with [acceptance review pending](docs/m05a/acceptance.md).
-M02–M04 and M05b–M09 remain pending. Use a dedicated branch and PR; do not start a milestone,
+M05a is accepted/merged in PR #6 at `eeb8d2989884372fa42f4e321295aa7f3e8faa75`.
+M02 is implemented with [acceptance review pending](docs/m02/acceptance.md).
+M03–M04 and M05b–M09 remain pending. Use a dedicated branch and PR; do not start a milestone,
 merge, publish, deploy, create remote resources or change `netxpert.ch` without
 appropriate explicit authorization. `rxjs-stack` and `rxjs-fullstack` are historical/
 separate repositories, not implementation targets.
@@ -20,8 +21,8 @@ Todo migration, authority and live integration remain planned. Keep Node
 as the baseline during the tested transition. Hono does not replace our renderer.
 Do not use mutable Worker-global state as authority or pass Hono context into reducers.
 
-After M05a acceptance, the next implementation is M02 when authorized, then M03–M04
-and remaining M05 substeps as specified in the roadmap. No permanent Node-only constraint or
+After M02 acceptance, the next implementation is M03 when authorized, followed by
+M04 and remaining M05 substeps as specified in the roadmap. No permanent Node-only constraint or
 instruction to reopen M00 is in force. Do not merge the intentionally failing
 `m00/characterize-baseline` probes.
 
@@ -29,8 +30,8 @@ instruction to reopen M00 is in force. Do not merge the intentionally failing
 
 The commands and examples below describe the inherited implementation, not the
 r2 target contract or acceptance of its known lifecycle/outcome gaps. In particular,
-module-global client state, positional replay defaults and full rerendering are
-starting points to be corrected in M01–M04. Preserve tested behavior while changing
+module-global client state and positional replay defaults were replaced in M02;
+full list replacement on collection changes remains for M04. Preserve tested behavior while changing
 its ownership. The unmodified earlier guide is archived at
 [CLAUDE-before-cloudflare-r2-2026-09-17.md](docs/archive/CLAUDE-before-cloudflare-r2-2026-09-17.md).
 Existing `src/claude-md.test.ts` examples remain baseline tests; no test code is changed
@@ -157,18 +158,19 @@ contract. Type inference never replaces runtime validation of external input.
 | File | Responsibility |
 |---|---|
 | `src/client/h.ts` | Custom JSX factory (`h`) — no React |
-| `src/client/todo.state.ts` | MVU state: `Subject` → `scan(reducer)` → `shareReplay(1)` |
+| `src/client/todo.state.ts` | Readonly state, typed intents/facts and pure reducer |
+| `src/client/todo.model.ts` / `todo.selectors.ts` | Instance factory; coherent view model and explicit equality |
+| `src/client/runtime/program.ts` | Root-owned `scan`, state replay, FIFO ingress and transition records |
 | `src/client/todo.service.ts` | Typed client wrappers via `createClient` |
 | `src/client/api.ts` | `createClient(routes)` — generates typed Observable methods from the contract tree |
-| `src/client/main.tsx` | Entry: wires DOM events to `dispatch`, subscribes `state$` to re-render |
+| `src/client/main.tsx` | Inert app factory; connects views/feedback before external inputs and startup |
 
-The inherited client MVU pattern, to be replaced by owned instances in M02:
-
-```typescript
-export const action$ = new Subject<Action>();
-export const state$  = action$.pipe(scan(reducer, initialState), startWith(initialState), shareReplay(1));
-export const dispatch = (action: Action): void => action$.next(action);
-```
+The M02 model is inert until its owner starts it. Subscribe feedback and views
+before start; then activate external inputs. After disposal, construct a fresh
+instance. Effects consume `{ message, previous, state }` transition records;
+late state consumers receive the current snapshot, but transitions do not replay.
+The [M02 checkpoint](docs/m02/acceptance.md) defines ordering and reset behavior.
+Transport decoding and the full extracted effect policy remain M03 work.
 
 ### Generated typed client
 

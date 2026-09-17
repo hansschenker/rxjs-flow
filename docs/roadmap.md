@@ -10,8 +10,9 @@ Read it with the [architecture contract](dataflow-architecture.md),
 [M00 baseline evidence](baseline-rxjs-flow-m00.md).
 
 M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e` (PR #2).
-M01 is accepted/merged in PR #5 at `188f21f`. M05a has [local foundation evidence](m05a/acceptance.md)
-awaiting review. M02–M04 and M05b–M09 remain pending. Todo still uses Node HTTP;
+M01 is accepted/merged in PR #5 at `188f21f`; M05a in PR #6 at `eeb8d29`.
+M02 has [state/transition evidence awaiting review](m02/acceptance.md).
+M03–M04 and M05b–M09 remain pending. Todo still uses Node HTTP;
 the local Worker probe does not implement Todo migration, persistence or live state.
 
 Recommended order: M01 → M05a → M02 → M03 → M04 → M05b → M05c → M05d → M06 → M07

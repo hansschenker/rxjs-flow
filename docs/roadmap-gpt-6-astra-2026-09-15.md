@@ -8,7 +8,7 @@ Updated: 2026-09-17. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**. F
 **Original audited source baseline:** `cbc91eefbccdeaf17221d06c75bdd237fe5e5499` on the source repository's `main`.  
 **Inspected destination baseline for this revision:** `c9197b68591e390a0a3add4667e5dd23717d6b6e` on `rxjs-flow/main`.
 
-**Implementation status, 2026-09-17:** M00 is accepted and closed by merged PR #2 at the destination baseline above. M01 is accepted/merged in PR #5 at `188f21f`. M05a has [local foundation evidence awaiting review](m05a/acceptance.md). M02–M04 and M05b–M09 remain pending. The executable implementation still uses Node HTTP/in-memory Todo storage. Hono, Wrangler, Worker build/preview and runtime tests now form a local foundation; Todo HTTP migration and Durable Object persistence remain planned. The r2 plan adoption changed documentation only; subsequent M01/M05a checkpoints implement browser ownership and the local platform foundation and does not claim that the ChatGPT Project reference copy has been refreshed.
+**Implementation status, 2026-09-17:** M00 is accepted and closed by merged PR #2 at the destination baseline above. M01 is accepted/merged in PR #5 at `188f21f`. M05a is accepted/merged in PR #6 at `eeb8d29`. M02 has [state/transition evidence awaiting review](m02/acceptance.md). M03–M04 and M05b–M09 remain pending. The executable implementation still uses Node HTTP/in-memory Todo storage. Hono, Wrangler, Worker build/preview and runtime tests now form a local foundation; Todo HTTP migration and Durable Object persistence remain planned. The r2 plan adoption changed documentation only; subsequent M01/M05a/M02 checkpoints implement browser lifetime/state ownership and the local platform foundation. The ChatGPT Project reference copy remains separately unverified.
 
 This is a continuation of the existing application, not a fresh scaffold, repository rename, history reset or import from `rxjs-fullstack`. It explicitly amends r1's permanent Node HTTP and in-memory-only target assumptions. Preserve domain behavior and tested contracts while moving the platform boundary through reviewable steps. No runtime replacement occurs in this documentation change.
 
@@ -93,11 +93,11 @@ Node retirement is an explicit later decision: retain the baseline until corresp
 |---|---|---|---|
 | M00 | Verified import, baseline and reconciled status | — | Accepted/closed; PR #2 merged at `c9197b6` |
 | M01 | Explicit application/component/source lifetimes | M00 | Accepted/merged; PR #5 at `188f21f` |
-| M02 | Instance-owned state and coherent derived streams | M01 | Pending |
+| M02 | Instance-owned state and coherent derived streams | M01 | Implemented; [acceptance review pending](m02/acceptance.md) |
 | M03 | Effect policies and correct HTTP outcomes | M02 | Pending |
 | M04 | Owned, targeted reactive DOM rendering | M02, M03 | Pending |
 | M05 | Cloudflare/Hono request, authority and SSE correctness | M05a–M05d | Pending |
-| M05a | Cloudflare/Hono development and build foundation | M01 | Implemented; [acceptance review pending](m05a/acceptance.md) |
+| M05a | Cloudflare/Hono development and build foundation | M01 | Accepted/merged; PR #6 at `eeb8d29` |
 | M05b | HTTP compatibility and request ownership | M05a | Pending |
 | M05c | Durable shared Todo authority | M05b | Pending; explicit added scope |
 | M05d | Owned SSE and bounded authority-to-client delivery | M05b, M05c | Pending |
@@ -401,4 +401,4 @@ Keep documentation, dependency/toolchain changes, platform adapters, storage aut
 
 After a roadmap amendment is merged/accepted, refresh the ChatGPT Project reference copy with this same filename and revision. Until that refresh is confirmed, report it as pending rather than claiming automatic Project synchronization. GitHub branch content is not proof that main or the Project copy has changed.
 
-**Next implementation session:** verify M05a acceptance and current repository state, then begin M02 when authorized. M00 and M01 remain closed. Continue M02–M04 before M05b–M05d in the recommended serial order. No later milestone starts automatically.
+**Next implementation session:** verify M02 acceptance and current repository state, then begin M03 when authorized. M00, M01 and M05a remain closed. Continue M02–M04 before M05b–M05d in the recommended serial order. No later milestone starts automatically.
