@@ -8,9 +8,9 @@ originally developed in [rxjs-stack](https://github.com/hansschenker/rxjs-stack)
 
 **Implementation status, 2026-09-17: M00 is accepted and closed.** PR #2 merged at
 [`c9197b6`](https://github.com/hansschenker/rxjs-flow/commit/c9197b68591e390a0a3add4667e5dd23717d6b6e).
-M01 is accepted and merged in PR #5 at `188f21f`. M05a adds the locally verified
-[Cloudflare/Hono foundation](docs/m05a/acceptance.md), awaiting acceptance review.
-M02–M04 and M05b–M09 remain pending.
+M01 is accepted and merged in PR #5 at `188f21f`; M05a in PR #6 at `eeb8d29`.
+M02 adds [instance-owned state and coherent derived streams](docs/m02/acceptance.md),
+awaiting acceptance review. M03–M04 and M05b–M09 remain pending.
 The executable baseline still uses **Node HTTP and an
 in-memory store**; the complete owned/live-state loop is not yet implemented.
 M00's dated test results and separate failing characterization remain evidence,
@@ -30,6 +30,7 @@ remain planned work. No deployed Worker or domain configuration is claimed.
 - [Cloudflare/Hono runtime decision](docs/runtime-cloudflare-hono.md)
 - [M00 baseline and recovery evidence](docs/baseline-rxjs-flow-m00.md)
 - [M01 browser lifetime acceptance](docs/m01/acceptance.md)
+- [M02 state, transition examples and acceptance](docs/m02/acceptance.md)
 - [M05a acceptance and test evidence](docs/m05a/acceptance.md)
 - [Local Cloudflare/Hono development guide](docs/m05a/local-development.md)
 - [Historical source audit](docs/repository-audit-2026-09-15.md)
@@ -38,7 +39,7 @@ remain planned work. No deployed Worker or domain configuration is claimed.
 
 | Area | Existing implementation | Work still planned |
 |---|---|---|
-| Client | Typed finite-route client, pure reducer, custom JSX, owned startup/disposal and CRUD wiring | Instance state, effect feedback and targeted rendering (M02–M04) |
+| Client | Typed finite-route client, instance-owned pure reducer, ordered transition feedback, coherent view model and custom JSX | Full effect/HTTP policies and targeted rendering (M03–M04) |
 | HTTP server | Node Todo baseline plus a local Hono/Workers foundation probe | Compatibility-tested Todo request ownership (M05b) |
 | Shared state | In-memory Node Todo store | Logical collection authority, minimal durable commit/recovery and ordering metadata (M05c) |
 | Live updates | Node SSE route and client EventSource adapter | Owned bounded delivery, validated snapshots and reconnect semantics (M05d–M06) |

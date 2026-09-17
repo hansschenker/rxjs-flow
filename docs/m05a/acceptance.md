@@ -1,7 +1,8 @@
 # M05a — Cloudflare/Hono foundation acceptance
 
 Date: 2026-09-17. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
-Status: implemented and locally verified; acceptance review/merge pending.
+Status: accepted/merged in PR #6 at `eeb8d2989884372fa42f4e321295aa7f3e8faa75`.
+The local execution evidence below was recorded before that merge.
 The [local workflow](local-development.md) is the runnable checkpoint guide.
 
 ## Provenance and scope

@@ -7,7 +7,7 @@ Date: 2026-09-17. Plan revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
 **Inspected implementation baseline:** `c9197b68591e390a0a3add4667e5dd23717d6b6e` (`main`, M00 closeout, PR #2). M00 stays accepted. M01–M09 remain pending. The original application uses Node HTTP and an in-memory Todo store.
 
 **Subsequent implementation checkpoint:** M01 merged in PR #5 at `188f21f`.
-M05a now has [local foundation evidence awaiting review](m05a/acceptance.md):
+M05a is accepted/merged in PR #6 at `eeb8d29`, with [local foundation evidence](m05a/acceptance.md):
 a Hono/RxJS probe, generated types, Vite/Worker builds, workerd tests and local
 preview. The inspected planning baseline above is historical. Todo migration,
 durable authority, live synchronization and deployment remain unimplemented.
