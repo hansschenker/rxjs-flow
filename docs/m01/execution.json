@@ -1,0 +1,194 @@
+{
+  "starting_commit": "d749f83e79de3b4632a3776539f82d35f0c6676e",
+  "implementation_commit": "7cd4b412ab7e536e86609a7d4ec2964bb093e64c",
+  "implementation_tree": "d08d7937962f9f77007287f80f67253f5889aa46",
+  "toolchain": {
+    "node": "22.22.1",
+    "npm": "11.9.0",
+    "rxjs": "7.8.2",
+    "typescript": "6.0.3",
+    "vite": "8.0.12",
+    "vitest": "4.1.6",
+    "jsdom": "29.1.1"
+  },
+  "records": [
+    {
+      "label": "toolchain",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "--input-type=module",
+        "-e",
+        "import { readFileSync } from \"node:fs\"; const names = [\"rxjs\", \"typescript\", \"vite\", \"vitest\", \"jsdom\"]; console.log(JSON.stringify({node: process.version, packages: Object.fromEntries(names.map(name => [name, JSON.parse(readFileSync(\"node_modules/\" + name + \"/package.json\", \"utf8\")).version]))}, null, 2));"
+      ],
+      "started": "2026-09-17T07:16:29.742958+00:00",
+      "finished": "2026-09-17T07:16:29.797692+00:00",
+      "exit_code": 0,
+      "result_excerpt": ""
+    },
+    {
+      "label": "npm-version",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "--version"
+      ],
+      "started": "2026-09-17T07:16:29.829339+00:00",
+      "finished": "2026-09-17T07:16:29.915176+00:00",
+      "exit_code": 0,
+      "result_excerpt": "11.9.0"
+    },
+    {
+      "label": "baseline-install",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "ci"
+      ],
+      "started": "2026-09-17T07:07:16.696158+00:00",
+      "finished": "2026-09-17T07:07:30.288608+00:00",
+      "exit_code": 0,
+      "result_excerpt": "added 114 packages in 13s"
+    },
+    {
+      "label": "baseline-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started": "2026-09-17T07:07:44.334901+00:00",
+      "finished": "2026-09-17T07:07:47.287553+00:00",
+      "exit_code": 0,
+      "result_excerpt": ""
+    },
+    {
+      "label": "baseline-tests",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/claude-md.test.ts",
+        "src/client/api.test.ts",
+        "src/client/components/todo-item.test.ts",
+        "src/client/h.test.ts",
+        "src/client/sse.test.ts",
+        "src/client/todo.service.test.ts",
+        "src/client/todo.state.test.ts",
+        "src/server/core/app.test.ts",
+        "src/server/core/errors.test.ts",
+        "src/server/core/http.test.ts",
+        "src/server/core/middleware.test.ts",
+        "src/server/core/response.test.ts",
+        "src/server/core/router.test.ts",
+        "src/server/core/testing.test.ts",
+        "src/server/core/validator.test.ts",
+        "src/server/http.integration.test.ts",
+        "src/server/todos/todo.effect.test.ts",
+        "src/server/todos/todo.store.test.ts",
+        "src/shared/routes.test.ts"
+      ],
+      "started": "2026-09-17T07:07:47.327024+00:00",
+      "finished": "2026-09-17T07:07:51.459147+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  19 passed (19)\n      Tests  180 passed (180)"
+    },
+    {
+      "label": "app-red",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/main.test.ts"
+      ],
+      "started": "2026-09-17T07:08:59.271456+00:00",
+      "finished": "2026-09-17T07:09:00.606500+00:00",
+      "exit_code": 1,
+      "result_excerpt": " Test Files  1 failed (1)\n      Tests  1 failed (1)\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af\n FAIL  src/client/main.test.ts > M01 inert feature import > does not touch the DOM, subscribe, or start a request on import\nAssertionError: expected \"vi.fn()\" to not be called at all, but actually been called 1 times"
+    },
+    {
+      "label": "owned-rows-red",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/components/todo-item.test.ts"
+      ],
+      "started": "2026-09-17T07:10:55.320947+00:00",
+      "finished": "2026-09-17T07:10:56.546617+00:00",
+      "exit_code": 1,
+      "result_excerpt": " Test Files  1 failed (1)\n      Tests  5 failed | 6 passed (11)\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 5 \u23af\u23af\u23af\u23af\u23af\u23af\u23af\n FAIL  src/client/components/todo-item.test.ts > TodoItem > captures the checkbox value synchronously as a typed intent\nAssertionError: expected \"vi.fn()\" to be called with arguments: [ true ]\n FAIL  src/client/components/todo-item.test.ts > TodoItem > calls onDelete when the Delete button is clicked\nAssertionError: expected \"vi.fn()\" to be called with arguments: [ '1' ]\n FAIL  src/client/components/todo-item.test.ts > TodoItem > removes both listeners and ignores events from a disposed detached row\n FAIL  src/client/components/todo-item.test.ts > TodoItem > removes one owned row without stopping its sibling\n FAIL  src/client/components/todo-item.test.ts > TodoItem > does not attach listeners to an already disposed scope"
+    },
+    {
+      "label": "owned-rows-green",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/components/todo-item.test.ts"
+      ],
+      "started": "2026-09-17T07:11:15.889226+00:00",
+      "finished": "2026-09-17T07:11:17.124209+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  1 passed (1)\n      Tests  11 passed (11)"
+    },
+    {
+      "label": "app-green",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/client/main.test.ts",
+        "src/client/app.test.ts"
+      ],
+      "started": "2026-09-17T07:14:09.320683+00:00",
+      "finished": "2026-09-17T07:14:10.866192+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  2 passed (2)\n      Tests  19 passed (19)"
+    },
+    {
+      "label": "implementation-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started": "2026-09-17T07:14:10.900942+00:00",
+      "finished": "2026-09-17T07:14:13.840236+00:00",
+      "exit_code": 0,
+      "result_excerpt": ""
+    },
+    {
+      "label": "full-tests",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-17T07:15:03.534750+00:00",
+      "finished": "2026-09-17T07:15:08.529004+00:00",
+      "exit_code": 0,
+      "result_excerpt": " Test Files  23 passed (23)\n      Tests  219 passed (219)"
+    },
+    {
+      "label": "browser-build",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "vite",
+        "build"
+      ],
+      "started": "2026-09-17T07:15:03.534492+00:00",
+      "finished": "2026-09-17T07:15:04.302777+00:00",
+      "exit_code": 0,
+      "result_excerpt": "dist/index.html                 0.55 kB \u2502 gzip: 0.35 kB\ndist/assets/index-CEEzI5Dt.js  29.24 kB \u2502 gzip: 9.61 kB\n\u2713 built in 221ms"
+    }
+  ]
+}
