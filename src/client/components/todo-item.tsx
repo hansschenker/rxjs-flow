@@ -1,16 +1,29 @@
 import { h } from '../h';
 import type { Todo } from '../../shared/types';
+import type { Scope } from '../runtime/scope';
+import { domEvent$ } from '../runtime/sources';
 
 interface Props {
 	todo: Todo;
-	onToggle: () => void;
-	onDelete: () => void;
+	scope: Scope;
+	onToggle: (completed: boolean) => void;
+	onDelete: (id: string) => void;
 }
 
-export const TodoItem = ({ todo, onToggle, onDelete }: Props): HTMLElement => (
-	<li className={todo.completed ? 'completed' : undefined}>
-		<input type="checkbox" checked={todo.completed} onChange={onToggle} />
-		<span>{todo.title}</span>
-		<button onClick={onDelete}>Delete</button>
-	</li>
-);
+/** The component scope owns both its event listeners and the row DOM. */
+export function TodoItem({ todo, scope, onToggle, onDelete }: Props): HTMLElement {
+	const checkbox = <input type="checkbox" checked={todo.completed} /> as HTMLInputElement;
+	const button = <button>Delete</button>;
+	const row = (
+		<li className={todo.completed ? 'completed' : undefined}>
+			{checkbox}
+			<span>{todo.title}</span>
+			{button}
+		</li>
+	);
+
+	scope.subscribe(domEvent$(checkbox, 'change', () => checkbox.checked), { next: onToggle });
+	scope.subscribe(domEvent$(button, 'click', () => todo.id), { next: onDelete });
+	scope.add(() => row.remove());
+	return row;
+}

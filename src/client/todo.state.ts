@@ -27,5 +27,10 @@ export const reducer = (state: State, action: Action): State => {
 };
 
 export const action$ = new Subject<Action>();
-export const state$ = action$.pipe(scan(reducer, initialState), startWith(initialState), shareReplay(1));
+// The mounted app's binding holds this connection. Last-owner disposal releases
+// accumulation and replay; the instance-owned state model is the M02 milestone.
+export const state$ = action$.pipe(
+	scan(reducer, initialState), startWith(initialState),
+	shareReplay({ bufferSize: 1, refCount: true }),
+);
 export const dispatch = (action: Action): void => action$.next(action);
