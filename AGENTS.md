@@ -14,7 +14,8 @@ assumptions or completed milestones.
 
 M00 is accepted and closed: recovery PR #1 merged at
 `27f8f2cbcc7ba68ff6bc1062ebf25cc46f363769`; closeout PR #2 merged at
-`c9197b68591e390a0a3add4667e5dd23717d6b6e`. M01–M09 remain pending.
+`c9197b68591e390a0a3add4667e5dd23717d6b6e`. M01 implementation is ready for
+acceptance review; see `docs/m01/acceptance.md`. M02–M09 remain pending.
 Do not repeat the import or reopen M00 because the platform target changed.
 The separate `m00/characterize-baseline` branch contains intentionally failing
 probes; do not merge it. Map each failure to a verified fix or tested replacement.

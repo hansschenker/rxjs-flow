@@ -4,7 +4,7 @@ Design revision: 2026-09-17. Target revision: **rxjs-flow migration r2 — Cloud
 
 Applies to the ChatGPT Project **`rxjs-flow`** and development repository **`hansschenker/rxjs-flow`**. Read with the [canonical roadmap](roadmap-gpt-6-astra-2026-09-15.md) and [Cloudflare/Hono runtime decision](runtime-cloudflare-hono.md). The historical source `rxjs-stack` and separate `rxjs-fullstack` repositories are not development targets.
 
-**Status:** target behavior, not a claim that the current implementation satisfies it. M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e`; M01–M09 and Cloudflare/Hono integration remain pending. This documentation revision does not implement or deploy a Worker. The [r1 contract](archive/dataflow-architecture-r1-2026-09-15.md) and M00 evidence are preserved.
+**Status:** target behavior, not a claim that the current implementation satisfies it. M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e`; M01 has [implementation evidence awaiting acceptance review](m01/acceptance.md). M02–M09 and Cloudflare/Hono integration remain pending. No Worker is implemented or deployed. The [r1 contract](archive/dataflow-architecture-r1-2026-09-15.md) and M00 evidence are preserved.
 
 r2 retains the reactive core, rendering and transport-correctness requirements while replacing the permanent Node-server assumption with an explicit Hono/Workers boundary and a minimal durable shared-state authority. Platform facts and primary references are separated from these project requirements in the runtime decision.
 

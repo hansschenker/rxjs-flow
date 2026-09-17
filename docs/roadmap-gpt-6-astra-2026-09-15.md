@@ -8,7 +8,7 @@ Updated: 2026-09-17. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**. F
 **Original audited source baseline:** `cbc91eefbccdeaf17221d06c75bdd237fe5e5499` on the source repository's `main`.  
 **Inspected destination baseline for this revision:** `c9197b68591e390a0a3add4667e5dd23717d6b6e` on `rxjs-flow/main`.
 
-**Implementation status, 2026-09-17:** M00 is accepted and closed by merged PR #2 at the destination baseline above. M01–M09, including all new M05 substeps, remain pending. The executable implementation is still the imported Node HTTP/in-memory Todo application. Hono, Cloudflare Workers, Wrangler integration and Durable Object persistence are selected targets, not implemented capabilities. This revision changes documentation only and does not claim that the ChatGPT Project reference copy has been refreshed.
+**Implementation status, 2026-09-17:** M00 is accepted and closed by merged PR #2 at the destination baseline above. M01 has [implementation evidence awaiting acceptance review](m01/acceptance.md). M02–M09, including all new M05 substeps, remain pending. The executable implementation still uses Node HTTP/in-memory Todo storage. Hono, Cloudflare Workers, Wrangler integration and Durable Object persistence are selected targets, not implemented capabilities. The r2 plan adoption changed documentation only; the subsequent M01 checkpoint changes browser ownership and does not claim that the ChatGPT Project reference copy has been refreshed.
 
 This is a continuation of the existing application, not a fresh scaffold, repository rename, history reset or import from `rxjs-fullstack`. It explicitly amends r1's permanent Node HTTP and in-memory-only target assumptions. Preserve domain behavior and tested contracts while moving the platform boundary through reviewable steps. No runtime replacement occurs in this documentation change.
 
@@ -92,7 +92,7 @@ Node retirement is an explicit later decision: retain the baseline until corresp
 | ID | Outcome | Depends on | Status |
 |---|---|---|---|
 | M00 | Verified import, baseline and reconciled status | — | Accepted/closed; PR #2 merged at `c9197b6` |
-| M01 | Explicit application/component/source lifetimes | M00 | Pending |
+| M01 | Explicit application/component/source lifetimes | M00 | Implemented; [acceptance review pending](m01/acceptance.md) |
 | M02 | Instance-owned state and coherent derived streams | M01 | Pending |
 | M03 | Effect policies and correct HTTP outcomes | M02 | Pending |
 | M04 | Owned, targeted reactive DOM rendering | M02, M03 | Pending |
@@ -121,6 +121,11 @@ Tests accompany every milestone. M05a starts Workers-runtime testing; M08 is not
 **r2 treatment:** preserve all executed evidence and the separate intentionally failing characterization branch. Supersede only future Node-only hosting assumptions. Current implementation failures still have owners: M01 startup/disposal, M03 HTTP outcomes, M05b request isolation, M05d SSE cleanup. A subsequent platform replacement must account for those requirements rather than deleting failing cases without explanation.
 
 ## M01 — Make lifetime and source ownership explicit
+
+**Implementation checkpoint, 2026-09-17:** browser ownership is implemented and
+locally verified; [acceptance evidence](m01/acceptance.md) records the exact starting
+and implementation commits, 219-test result and remaining boundaries. Review/merge
+is pending. The r2 order is unchanged: M01, then M05a, then M02–M04.
 
 **Purpose:** every subscription and external resource has an owner before further abstraction is added.
 

@@ -6,7 +6,8 @@ Development target: `hansschenker/rxjs-flow`. Read [AGENTS.md](AGENTS.md), the
 [runtime decision](docs/runtime-cloudflare-hono.md) before changes.
 
 M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e` (PR #2).
-M01–M09 remain pending. Use a dedicated branch and PR; do not start a milestone,
+M01 implementation is ready for acceptance review; see [its evidence](docs/m01/acceptance.md).
+M02–M09 remain pending. Use a dedicated branch and PR; do not start a milestone,
 merge, publish, deploy, create remote resources or change `netxpert.ch` without
 appropriate explicit authorization. `rxjs-stack` and `rxjs-fullstack` are historical/
 separate repositories, not implementation targets.

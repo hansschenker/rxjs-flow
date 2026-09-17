@@ -8,7 +8,9 @@ originally developed in [rxjs-stack](https://github.com/hansschenker/rxjs-stack)
 
 **Implementation status, 2026-09-17: M00 is accepted and closed.** PR #2 merged at
 [`c9197b6`](https://github.com/hansschenker/rxjs-flow/commit/c9197b68591e390a0a3add4667e5dd23717d6b6e).
-M01–M09 remain pending. The executable baseline still uses **Node HTTP and an
+M01 browser ownership is implemented on this branch and awaits acceptance review;
+see the [M01 acceptance record](docs/m01/acceptance.md). M02–M09 remain pending.
+The executable baseline still uses **Node HTTP and an
 in-memory store**; the complete owned/live-state loop is not yet implemented.
 M00's dated test results and separate failing characterization remain evidence,
 not a claim that every planned behavior works.
@@ -16,8 +18,8 @@ not a claim that every planned behavior works.
 **Planning revision: rxjs-flow migration r2 — Cloudflare/Hono.** The selected target
 uses Hono for HTTP integration, Cloudflare Workers for execution, a minimal Durable
 Object authority for shared Todo state, Vite for builds and Wrangler for Cloudflare
-operations. These integrations are planned work; this revision changes documents,
-not runtime code, dependencies, deployment configuration or domain settings.
+operations. These integrations remain planned work. M01 changes browser lifetimes;
+it adds no platform dependencies, deployment configuration or domain settings.
 
 ## Project documents
 
@@ -25,13 +27,14 @@ not runtime code, dependencies, deployment configuration or domain settings.
 - [Dataflow architecture contract](docs/dataflow-architecture.md)
 - [Cloudflare/Hono runtime decision](docs/runtime-cloudflare-hono.md)
 - [M00 baseline and recovery evidence](docs/baseline-rxjs-flow-m00.md)
+- [M01 browser lifetime acceptance](docs/m01/acceptance.md)
 - [Historical source audit](docs/repository-audit-2026-09-15.md)
 
 ## Existing foundation and planned work
 
 | Area | Existing implementation | Work still planned |
 |---|---|---|
-| Client | Typed finite-route client, pure reducer, custom JSX and CRUD wiring | Owned startup/disposal, instance state, effect feedback and targeted rendering (M01–M04) |
+| Client | Typed finite-route client, pure reducer, custom JSX, owned startup/disposal and CRUD wiring | Instance state, effect feedback and targeted rendering (M02–M04) |
 | HTTP server | Node Observable HTTP source, routes, middleware, auth and Zod validation | Hono/Workers foundation and compatibility-tested request ownership (M05a–M05b) |
 | Shared state | In-memory Node Todo store | Logical collection authority, minimal durable commit/recovery and ordering metadata (M05c) |
 | Live updates | Node SSE route and client EventSource adapter | Owned bounded delivery, validated snapshots and reconnect semantics (M05d–M06) |
