@@ -142,21 +142,30 @@ describe('createScope()', () => {
 			addEventListener: (type: string, listener: (event: MessageEvent) => void) => {
 				listeners.set(type, listener);
 			},
+			removeEventListener: vi.fn((type: string) => { listeners.delete(type); }),
 			onerror: null as ((event: Event) => void) | null,
 			close: vi.fn(),
 		};
-		const construct = vi.fn(function () { return connection; });
-		vi.stubGlobal('EventSource', construct);
+		const construct = vi.fn(() => connection);
+		function decodeNumber(value: unknown): number {
+			if (typeof value !== 'number') throw new TypeError('Expected a number');
+			return value;
+		}
 		const scope = createScope();
-		const source = fromEventSource<number>('/todos/stream', 'todos');
+		const source = fromEventSource('/todos/stream', 'todos', decodeNumber, {
+			createEventSource: construct,
+		});
 		const receive = vi.fn();
 		expect(construct).not.toHaveBeenCalled();
 		scope.subscribe(source, { next: receive });
 		expect(construct).toHaveBeenCalledExactlyOnceWith('/todos/stream');
-		listeners.get('todos')?.(new MessageEvent('todos', { data: '1' }));
+		const retainedMessage = listeners.get('todos');
+		retainedMessage?.(new MessageEvent('todos', { data: '1' }));
 		scope.dispose();
 		scope.dispose();
-		listeners.get('todos')?.(new MessageEvent('todos', { data: '2' }));
+		retainedMessage?.(new MessageEvent('todos', { data: '2' }));
+		expect(connection.removeEventListener).toHaveBeenCalledExactlyOnceWith('todos', retainedMessage);
+		expect(connection.onerror).toBeNull();
 		expect(connection.close).toHaveBeenCalledOnce();
 		expect(receive).toHaveBeenCalledExactlyOnceWith(1);
 	});

@@ -17,8 +17,7 @@ describe('TodoItem', () => {
 
 	const createItem = (props: Partial<Parameters<typeof TodoItem>[0]> = {}) => TodoItem({
 		todo: baseTodo,
-		onToggle: () => {},
-		onDelete: () => {},
+		onIntent: () => {},
 		scope: root.child(),
 		...props,
 	});
@@ -58,30 +57,29 @@ describe('TodoItem', () => {
 	});
 
 	it('captures the checkbox value synchronously as a typed intent', () => {
-		const onToggle = vi.fn();
-		const el = createItem({ onToggle });
+		const onIntent = vi.fn();
+		const el = createItem({ onIntent });
 		const input = el.querySelector('input') as HTMLInputElement;
 		input.checked = true;
 		input.dispatchEvent(new Event('change'));
 		input.checked = false;
-		expect(onToggle).toHaveBeenCalledTimes(1);
-		expect(onToggle).toHaveBeenCalledWith(true);
+		expect(onIntent).toHaveBeenCalledTimes(1);
+		expect(onIntent).toHaveBeenCalledWith({ type: 'TOGGLE_REQUESTED', id: baseTodo.id, completed: true });
 	});
 
-	it('calls onDelete when the Delete button is clicked', () => {
-		const onDelete = vi.fn();
-		const el = createItem({ onDelete });
+	it('calls onIntent when the Delete button is clicked', () => {
+		const onIntent = vi.fn();
+		const el = createItem({ onIntent });
 		const button = el.querySelector('button') as HTMLButtonElement;
 		button.dispatchEvent(new Event('click'));
-		expect(onDelete).toHaveBeenCalledTimes(1);
-		expect(onDelete).toHaveBeenCalledWith(baseTodo.id);
+		expect(onIntent).toHaveBeenCalledTimes(1);
+		expect(onIntent).toHaveBeenCalledWith({ type: 'DELETE_REQUESTED', id: baseTodo.id });
 	});
 
 	it('removes both listeners and ignores events from a disposed detached row', () => {
 		const scope = root.child();
-		const onToggle = vi.fn();
-		const onDelete = vi.fn();
-		const el = createItem({ scope, onToggle, onDelete });
+		const onIntent = vi.fn();
+		const el = createItem({ scope, onIntent });
 		document.body.appendChild(el);
 		const input = el.querySelector('input')!;
 		const button = el.querySelector('button')!;
@@ -96,16 +94,15 @@ describe('TodoItem', () => {
 
 		expect(removeChange).toHaveBeenCalledTimes(1);
 		expect(removeClick).toHaveBeenCalledTimes(1);
-		expect(onToggle).not.toHaveBeenCalled();
-		expect(onDelete).not.toHaveBeenCalled();
+		expect(onIntent).not.toHaveBeenCalled();
 	});
 
 	it('removes one owned row without stopping its sibling', () => {
 		const firstScope = root.child();
 		const firstToggle = vi.fn();
 		const secondToggle = vi.fn();
-		const first = createItem({ scope: firstScope, onToggle: firstToggle });
-		const second = createItem({ todo: { ...baseTodo, id: '2' }, onToggle: secondToggle });
+		const first = createItem({ scope: firstScope, onIntent: firstToggle });
+		const second = createItem({ todo: { ...baseTodo, id: '2' }, onIntent: secondToggle });
 		document.body.append(first, second);
 
 		firstScope.dispose();
@@ -118,7 +115,7 @@ describe('TodoItem', () => {
 		expect(first.isConnected).toBe(false);
 		expect(second.isConnected).toBe(true);
 		expect(firstToggle).not.toHaveBeenCalled();
-		expect(secondToggle).toHaveBeenCalledExactlyOnceWith(true);
+		expect(secondToggle).toHaveBeenCalledExactlyOnceWith({ type: 'TOGGLE_REQUESTED', id: '2', completed: true });
 	});
 
 	it('does not attach listeners to an already disposed scope', () => {

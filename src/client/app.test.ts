@@ -108,7 +108,7 @@ describe('M02 app-owned model', () => {
 		}
 		expect(states.some(state => state.pending.some(operation => operation.kind === kind))).toBe(true);
 		expect(states.at(-1)?.pending).toEqual([]);
-		expect(error.textContent).toBe(`Failed to ${kind} todo.`);
+		expect(error.textContent).toBe('offline');
 		expect(list.childElementCount).toBe(2);
 		submit('Recovery');
 		expect(error.textContent).toBe('');
@@ -124,7 +124,7 @@ describe('M02 app-owned model', () => {
 		submit('Keep me');
 		expect(states.at(-1)?.pending).toEqual([]);
 		expect(input.value).toBe('Keep me');
-		expect(error.textContent).toBe('Failed to create todo. No result received.');
+		expect(error.textContent).toBe('No result received for create request.');
 		expect(list.childElementCount).toBe(2);
 		submit();
 		expect(api.create$).toHaveBeenCalledTimes(2);
@@ -250,7 +250,7 @@ describe('M01 app activation and disposal', () => {
 		expect(api.create$).not.toHaveBeenCalled();
 		api.create$.mockReturnValueOnce(throwError(() => new Error('offline')));
 		submit();
-		expect(error.textContent).toBe('Failed to create todo.');
+		expect(error.textContent).toBe('offline');
 		submit();
 		expect(api.create$).toHaveBeenCalledTimes(2);
 		expect(list.textContent).toContain('Created');
@@ -285,7 +285,8 @@ describe('M01 app activation and disposal', () => {
 		input.dispatchEvent(new Event('input'));
 		expect(list.querySelector('input')).toBe(checkbox);
 		expect(checkbox.checked).toBe(true);
-		submit('Another todo');
+		api.getAll$.mockReturnValueOnce(of([todo, second, { ...todo, id: '3', title: 'Refreshed' }]));
+		app.refresh();
 		expect(list.querySelector('input')).not.toBe(checkbox);
 		expect(pending.observed).toBe(true);
 		pending.next({ ...todo, completed: true });
