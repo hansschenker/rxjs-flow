@@ -1,0 +1,1994 @@
+{
+  "milestone": "M05d",
+  "roadmap_revision": "rxjs-flow migration r2 — Cloudflare/Hono",
+  "repository": "hansschenker/rxjs-flow",
+  "branch": "m05d/owned-sse",
+  "starting_commit": "d5500da407611e7856e9e67481a08e15e530aece",
+  "starting_commit_evidence": "GitHub PR #11 verified merged; local origin/main and GitHub main ref agreed. Main was reverified at this commit before publication. Original imported implementation/history remain preserved.",
+  "implementation_commit": "5614e7a84cfbe1bf7b3e81538138a26deb79c427",
+  "implementation_tree": "a04c13ce2a4edb70aa0ccac6dec13e91df55ae20",
+  "inspection_commands": {
+    "capture": "Grouped inspection record reported by the coordinating agent; command timestamps and exit codes were not captured by the execution runner and are not invented here.",
+    "commands": [
+      "Git status and remote inspection; exact arguments not captured",
+      "git fetch origin main",
+      "Git log/current base/history inspection; exact log formatting arguments not captured",
+      "Create dedicated m05d/owned-sse branch from verified origin/main",
+      "GitHub API reads: /repos/hansschenker/rxjs-flow/pulls/11, /git/ref/heads/main and /actions/runs/35348851104",
+      "Read AGENTS.md, canonical roadmap, architecture/runtime decision, M05a/M05b/M05c acceptance and immutable M00 concerns with rg/cat/sed.",
+      "Read server SSE/finite-response ownership, authority/storage, Worker/DO adapters, tests, CI and installed Cloudflare APIs with rg/cat/sed."
+    ]
+  },
+  "toolchain": {
+    "node": "22.22.1",
+    "npm": "11.9.0",
+    "rxjs": "7.8.2",
+    "typescript": "6.0.3",
+    "hono": "4.13.8",
+    "vite": "8.0.12",
+    "vitest": "4.1.6",
+    "wrangler": "4.133.0",
+    "cloudflare_vite_plugin": "1.54.11",
+    "cloudflare_vitest_plugin": "1.1.11",
+    "workerd": "1.20260916.1",
+    "scratch_browser": {
+      "chromium": "153.0.8010.0",
+      "playwright": "1.62.1",
+      "npm_binary_package": "@sparticuz/chromium153.0.0",
+      "installed_in_repository": false
+    },
+    "application_dependencies": "package.json and package-lock.json unchanged; existing installed dependency tree reused locally; clean installation remains a separate PR CI gate"
+  },
+  "baseline": {
+    "node_dom": {
+      "command_label": "baseline-node-dom",
+      "exit_code": 0,
+      "files": 38,
+      "tests": 629,
+      "evidence_kind": "Initial 629-test Node/DOM suite rerun after HEAD verification; implementation could already be starting in parallel, so this is not claimed as a frozen pristine starting-tree run"
+    },
+    "workerd": {
+      "tests": 108,
+      "files": 4,
+      "rerun_for_pristine_m05d_baseline": false,
+      "evidence_kind": "Reused exact prior M05c evidence and verified PR #11 final-head CI; not a newly executed pristine workerd baseline",
+      "m05c_implementation_commit": "48b9a8a71de5167f9de9fa94fbb3109b07a3c055",
+      "pr11_head": "b4a1921a0c38d9dc553390405514e56c462246e8",
+      "pr11_head_tree": "6d68f8e12ac5504187ea3ba465929bc40a317a30",
+      "ci_run": 35348851104,
+      "ci_url": "https://github.com/hansschenker/rxjs-flow/actions/runs/35348851104",
+      "ci_conclusion": "success",
+      "current_workerd_rerun": "final-workerd"
+    }
+  },
+  "commands": [
+    {
+      "label": "baseline-node-dom",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-18T13:27:44.981899+00:00",
+      "finished": "2026-09-18T13:27:49.997496+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "Test Files  38 passed (38)",
+        "Tests  629 passed (629)"
+      ],
+      "log_sha256": "67fa06264b1733d0da8d5b889ce37491a1436b4443a3d98efa45e319dfa02045",
+      "log_bytes": 7410
+    },
+    {
+      "label": "node-sse-red",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/server/core/node-sse.test.ts"
+      ],
+      "started": "2026-09-18T13:31:29.914403+00:00",
+      "finished": "2026-09-18T13:31:36.925727+00:00",
+      "exit_code": 1,
+      "result_summary": [
+        "Test Files  1 failed (1)",
+        "Tests  10 failed | 2 passed (12)"
+      ],
+      "log_sha256": "7bbab7a6e2398cf2a5e6610e42e977f6cac0176923560bd84d623ee07566f0ed",
+      "log_bytes": 10784,
+      "failure_excerpt": "FAIL  |node| src/server/core/node-sse.test.ts > retained Node bounded SSE owner > fails FIFO overflow visibly rather than silently discarding domain events\nAssertionError: expected \"vi.fn()\" to be called once, but got 4 times\nFAIL  |node| src/server/core/node-sse.test.ts > retained Node bounded SSE owner > bounds encoded pending bytes independently of the event count\nAssertionError: expected false to be true // Object.is equality\nFAIL  |node| src/server/core/node-sse.test.ts > retained Node bounded SSE owner > rejects a frame by encoded UTF-8 byte size before writing it\nAssertionError: expected \"vi.fn()\" to not be called at all, but actually been called 1 times\nFAIL  |node| src/server/core/node-sse.test.ts > retained Node bounded SSE owner > closes canceled backpressure waits and releases source/listeners without another write\nAssertionError: expected \"vi.fn()\" to be called once, but got 2 times\nFAIL  |node| src/server/core/node-sse.test.ts > retained Node bounded SSE owner > never subscribes to an already closed transport or aborted response signal\nAssertionError: expected \"vi.fn()\" to not be called at all, but actually been called 1 times\nFAIL  |node| src/server/core/node-sse.test.ts > retained Node bounded SSE owner > handles synchronous error and producer failure after headers by destroying the response\nAssertionError: expected \"vi.fn()\" to be called once, but got 0 times\nFAIL  |node| src/server/core/node-sse.test.ts > retained Node bounded SSE owner > handles write errors and malformed JSON frames without escaping the observer\nAssertionError: expected \"vi.fn()\" to be called once, but got 0 times"
+    },
+    {
+      "label": "authority-watch",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/server/todos/todo.authority.test.ts"
+      ],
+      "started": "2026-09-18T13:31:47.349678+00:00",
+      "finished": "2026-09-18T13:31:48.202091+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "Test Files  1 passed (1)",
+        "Tests  67 passed (67)"
+      ],
+      "log_sha256": "a682475819a6fda30afc01fd6d89ae3a36948189ee3c8dca11795e289a1dea6f",
+      "log_bytes": 936
+    },
+    {
+      "label": "platform-live-first",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker",
+        "--",
+        "src/worker/todo-live.test.ts"
+      ],
+      "started": "2026-09-18T13:32:11.004523+00:00",
+      "finished": "2026-09-18T13:32:20.231631+00:00",
+      "exit_code": 1,
+      "result_summary": [
+        "Test Files  1 failed (1)",
+        "Tests  1 failed | 17 passed (18)"
+      ],
+      "log_sha256": "3d79d0802625c04a240bea90277756cb9d390e5c7a6226f93f9a41fffae42ab6",
+      "log_bytes": 4341,
+      "failure_excerpt": "FAIL  src/worker/todo-live.test.ts > Durable Object to Worker to live response in workerd > surfaces local authority eviction and reconnects to the same durable history with a fresh stream\nError: Test timed out in 5000ms."
+    },
+    {
+      "label": "authority-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:node"
+      ],
+      "started": "2026-09-18T13:32:14.740184+00:00",
+      "finished": "2026-09-18T13:32:16.735593+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "b68306b110a6899050313bfd39c71c6e39719c94b29b9e3d5e08ffa453ec0c81",
+      "log_bytes": 336
+    },
+    {
+      "label": "integrated-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started": "2026-09-18T13:32:28.802243+00:00",
+      "finished": "2026-09-18T13:33:00.096694+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "baaccd1f2444947303d3db8080c95d1b749096c9c957ba10ac2969111c2e335a",
+      "log_bytes": 3937
+    },
+    {
+      "label": "node-sse-green",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/server/core/node-sse.test.ts",
+        "src/server/core/http.test.ts",
+        "src/server/node-lifecycle.test.ts"
+      ],
+      "started": "2026-09-18T13:32:49.790658+00:00",
+      "finished": "2026-09-18T13:32:50.932081+00:00",
+      "exit_code": 1,
+      "result_summary": [
+        "Test Files  1 failed | 2 passed (3)",
+        "Tests  1 failed | 42 passed (43)"
+      ],
+      "log_sha256": "022380262d35c0691c4e6b9558d3cb66ee8a588b625f41f74b8a89131607c271",
+      "log_bytes": 2234,
+      "failure_excerpt": "FAIL  |node| src/server/core/http.test.ts > formatSseChunk() > includes id field before event and data\nAssertionError: expected 'event: ping\\nid: 42\\ndata: null\\n\\n' to be 'id: 42\\nevent: ping\\ndata: null\\n\\n' // Object.is equality"
+    },
+    {
+      "label": "sse-owned-first",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker",
+        "--",
+        "src/worker/owned-byte-stream.test.ts"
+      ],
+      "started": "2026-09-18T13:32:53.209918+00:00",
+      "finished": "2026-09-18T13:32:57.733862+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "Test Files  1 passed (1)",
+        "Tests  23 passed (23)"
+      ],
+      "log_sha256": "dd793db27c7dc05c126daf74ff9af870924e158e1056d30a59cbed42f313833c",
+      "log_bytes": 1441
+    },
+    {
+      "label": "authority-finalizer-red",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/server/todos/todo.authority.test.ts"
+      ],
+      "started": "2026-09-18T13:32:58.772917+00:00",
+      "finished": "2026-09-18T13:32:59.683658+00:00",
+      "exit_code": 1,
+      "result_summary": [
+        "Test Files  1 failed (1)",
+        "Tests  1 failed | 67 passed (68)"
+      ],
+      "log_sha256": "fe71a9603429c540ee103acd5cf1d6efe8f30fecbb81bdb827ae87fe555aa7d5",
+      "log_bytes": 2064,
+      "failure_excerpt": "FAIL  |node| src/server/todos/todo.authority.test.ts > owned live Todo authority registrations > does not let one throwing consumer finalizer prevent another interruption or queue cleanup\nAssertionError: expected [Function] to not throw an error but 'UnsubscriptionError: 1 errors occurre…' was thrown"
+    },
+    {
+      "label": "platform-types-first",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:tests"
+      ],
+      "started": "2026-09-18T13:33:08.808338+00:00",
+      "finished": "2026-09-18T13:33:14.480528+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "699c3f15cc8c3b9ceac638ae61028bceb4da4a256b45e4860260f7edee1d0e91",
+      "log_bytes": 373
+    },
+    {
+      "label": "authority-finalizer-green",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/server/todos/todo.authority.test.ts"
+      ],
+      "started": "2026-09-18T13:33:20.627942+00:00",
+      "finished": "2026-09-18T13:33:21.483161+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "Test Files  1 passed (1)",
+        "Tests  68 passed (68)"
+      ],
+      "log_sha256": "ed07979efe875ccfa1248e97c3deb7e0a81d3cf6fdd68123f5025f0ef3dfe799",
+      "log_bytes": 936
+    },
+    {
+      "label": "authority-test-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "tsc",
+        "-p",
+        "tsconfig.test.json"
+      ],
+      "started": "2026-09-18T13:33:37.455049+00:00",
+      "finished": "2026-09-18T13:33:40.985230+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "5d7f812094357687dfca171211e4aad260f6e38628d9f57a36d53cb2ad7c1dbd",
+      "log_bytes": 273
+    },
+    {
+      "label": "platform-eviction-trace",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker",
+        "--",
+        "src/worker/todo-live.test.ts",
+        "-t",
+        "surfaces local authority eviction"
+      ],
+      "started": "2026-09-18T13:33:46.065857+00:00",
+      "finished": "2026-09-18T13:33:55.402232+00:00",
+      "exit_code": 1,
+      "result_summary": [
+        "Test Files  1 failed (1)",
+        "Tests  1 failed | 17 skipped (18)"
+      ],
+      "log_sha256": "d1cd4844c144db0daa7f0b8105bba2a8594cadcc15b4aed8d5734a0c51e05bf1",
+      "log_bytes": 3198,
+      "failure_excerpt": "FAIL  src/worker/todo-live.test.ts > Durable Object to Worker to live response in workerd > surfaces local authority eviction and reconnects to the same durable history with a fresh stream\nError: Test timed out in 5000ms."
+    },
+    {
+      "label": "checkpoint-client-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:client"
+      ],
+      "started": "2026-09-18T13:33:58.480915+00:00",
+      "finished": "2026-09-18T13:33:59.946697+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "fd2cd25473be3900c72d6525225a860027341ddded986f7223e8095f370befc3",
+      "log_bytes": 340
+    },
+    {
+      "label": "platform-eviction-drain",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker",
+        "--",
+        "src/worker/todo-live.test.ts",
+        "-t",
+        "surfaces local authority eviction"
+      ],
+      "started": "2026-09-18T13:34:18.855630+00:00",
+      "finished": "2026-09-18T13:34:52.962443+00:00",
+      "exit_code": 1,
+      "result_summary": [
+        "Test Files  1 failed (1)",
+        "Tests  1 failed | 17 skipped (18)"
+      ],
+      "log_sha256": "f83597f436b4115b6b7d0d5ccb89ff946b2449b519cca308eca44a0f70ea8186",
+      "log_bytes": 2780,
+      "failure_excerpt": "FAIL  src/worker/todo-live.test.ts > Durable Object to Worker to live response in workerd > surfaces local authority eviction and reconnects to the same durable history with a fresh stream\nError: Timed out waiting to evict Durable Object: it still has active references."
+    },
+    {
+      "label": "sse-hono-first",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker",
+        "--",
+        "src/worker/http-adapter.test.ts"
+      ],
+      "started": "2026-09-18T13:34:29.561852+00:00",
+      "finished": "2026-09-18T13:34:34.087565+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "Test Files  1 passed (1)",
+        "Tests  39 passed (39)"
+      ],
+      "log_sha256": "8b85351f77fac7a02c776c025e848b99fa2e1eaa9abba97dabde4d07fe3afe86",
+      "log_bytes": 1437
+    },
+    {
+      "label": "node-sse-focused",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/server/core/node-sse.test.ts",
+        "src/server/core/http.test.ts",
+        "src/server/node-lifecycle.test.ts",
+        "src/server/node-sse.integration.test.ts"
+      ],
+      "started": "2026-09-18T13:34:30.058827+00:00",
+      "finished": "2026-09-18T13:34:31.119462+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "Test Files  4 passed (4)",
+        "Tests  46 passed (46)"
+      ],
+      "log_sha256": "436109ba91e8b6b83b3001beeffb5d5e3da6f83ad421b97274e30cf7be2192a2",
+      "log_bytes": 1558
+    },
+    {
+      "label": "node-sse-test-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "tsc",
+        "-p",
+        "tsconfig.test.json"
+      ],
+      "started": "2026-09-18T13:34:42.661196+00:00",
+      "finished": "2026-09-18T13:34:46.971200+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "5d7f812094357687dfca171211e4aad260f6e38628d9f57a36d53cb2ad7c1dbd",
+      "log_bytes": 273
+    },
+    {
+      "label": "node-sse-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:node"
+      ],
+      "started": "2026-09-18T13:34:42.666395+00:00",
+      "finished": "2026-09-18T13:34:45.134623+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "b68306b110a6899050313bfd39c71c6e39719c94b29b9e3d5e08ffa453ec0c81",
+      "log_bytes": 336
+    },
+    {
+      "label": "checkpoint-dev",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "scripts/m05d-checkpoint.mjs"
+      ],
+      "started": "2026-09-18T13:34:43.061527+00:00",
+      "finished": "2026-09-18T13:34:56.282876+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "9e105b822b0645d13d1b6f1f92ad54063f90c8de71421aed86ad56b8cb965be1",
+      "log_bytes": 2159,
+      "checkpoint_result": {
+        "status": "passed",
+        "runtime": "local workerd",
+        "mode": "development",
+        "storage": "isolated temporary directory; removed after runtime shutdown",
+        "checks": [
+          {
+            "path": "/",
+            "status": 200,
+            "script": "/src/client/browser.ts"
+          },
+          {
+            "path": "/src/client/browser.ts",
+            "status": 200,
+            "bytes": 974
+          },
+          {
+            "path": "/api/foundation",
+            "status": 200,
+            "body": {
+              "runtime": "workerd",
+              "message": "rxjs-flow foundation"
+            }
+          },
+          {
+            "path": "/api",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/missing",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/api/todos",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/todos",
+            "statuses": [
+              200,
+              201,
+              200,
+              400,
+              422,
+              400,
+              200,
+              204,
+              404
+            ],
+            "mode": "durable local Todo CRUD and failure isolation"
+          },
+          {
+            "path": "/unknown-page",
+            "status": 200,
+            "script": "/src/client/browser.ts"
+          },
+          {
+            "check": "two actual HTTP SSE consumers",
+            "initialSame": true,
+            "sharedCommitDelivered": true,
+            "responseBodyCancellation": true,
+            "otherConsumerContinues": true,
+            "reconnectIncludesInterveningCommit": true,
+            "retainedSnapshotsPerConsumer": 1,
+            "maxFrameBytes": 131072,
+            "observedFrameHighWaterBytes": 306
+          },
+          {
+            "check": "full runtime interruption and new stream",
+            "terminal": [
+              {
+                "kind": "error",
+                "error": "TypeError: terminated"
+              },
+              {
+                "kind": "error",
+                "error": "TypeError: terminated"
+              }
+            ],
+            "persistedSnapshotRecovered": true,
+            "newCommitDelivered": true,
+            "checkpointReadLoopsActive": 0
+          }
+        ]
+      }
+    },
+    {
+      "label": "sse-types-first",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:tests"
+      ],
+      "started": "2026-09-18T13:34:56.654239+00:00",
+      "finished": "2026-09-18T13:35:02.341295+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "699c3f15cc8c3b9ceac638ae61028bceb4da4a256b45e4860260f7edee1d0e91",
+      "log_bytes": 373
+    },
+    {
+      "label": "platform-live-no-evict",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker",
+        "--",
+        "src/worker/todo-live.test.ts",
+        "-t",
+        "^(?!.*surfaces local authority eviction)"
+      ],
+      "started": "2026-09-18T13:35:02.229083+00:00",
+      "finished": "2026-09-18T13:35:06.373794+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "Test Files  1 passed (1)",
+        "Tests  19 passed | 1 skipped (20)"
+      ],
+      "log_sha256": "43cd59bc8ab2029d6d770f57539c479131f0de83d3c9cdf459b12ae317ff8005",
+      "log_bytes": 8527
+    },
+    {
+      "label": "checkpoint-build",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "build:worker"
+      ],
+      "started": "2026-09-18T13:35:27.312071+00:00",
+      "finished": "2026-09-18T13:35:28.873315+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "dist/rxjs_flow_foundation/.vite/manifest.json    0.15 kB │ gzip:  0.11 kB",
+        "dist/rxjs_flow_foundation/wrangler.json          1.72 kB │ gzip:  0.88 kB",
+        "dist/rxjs_flow_foundation/index.js             299.02 kB │ gzip: 65.73 kB",
+        "dist/client/.assetsignore                    0.02 kB",
+        "dist/client/index.html                       1.53 kB │ gzip:  0.72 kB",
+        "dist/client/m05d-live.html                   4.39 kB │ gzip:  1.67 kB",
+        "dist/client/assets/index-De6qimoS.css        2.58 kB │ gzip:  1.13 kB",
+        "dist/client/assets/m05d-live-B8BjtYAN.js     2.35 kB │ gzip:  1.14 kB",
+        "dist/client/assets/index-BdBuYiHt.js        42.52 kB │ gzip: 13.86 kB",
+        "dist/client/assets/todo.schema-BdyBcTxe.js  60.00 kB │ gzip: 16.38 kB"
+      ],
+      "log_sha256": "0298126e35dd15aa11c0262a3fda5546ffa74691c46d75f96eb173a027bb77bb",
+      "log_bytes": 2061
+    },
+    {
+      "label": "platform-live-green",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker",
+        "--",
+        "src/worker/todo-live.test.ts",
+        "src/worker/todo-authority.test.ts"
+      ],
+      "started": "2026-09-18T13:35:29.702969+00:00",
+      "finished": "2026-09-18T13:35:34.480902+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "Test Files  2 passed (2)",
+        "Tests  42 passed (42)"
+      ],
+      "log_sha256": "543b5fc09880129ba4c0b24c3965f93d81a4e1d656642f598c2f8eb66d61fbb0",
+      "log_bytes": 9342
+    },
+    {
+      "label": "checkpoint-built",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "scripts/m05d-checkpoint.mjs",
+        "--preview"
+      ],
+      "started": "2026-09-18T13:35:43.601875+00:00",
+      "finished": "2026-09-18T13:35:46.682145+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "09851a1b27754396d4a4652b2a97c9c2188e486c84a06fc53e6657606922a48b",
+      "log_bytes": 2326,
+      "checkpoint_result": {
+        "status": "passed",
+        "runtime": "local workerd",
+        "mode": "built-worker-local",
+        "storage": "isolated temporary directory; removed after runtime shutdown",
+        "checks": [
+          {
+            "path": "/",
+            "status": 200,
+            "script": "/assets/index-BdBuYiHt.js"
+          },
+          {
+            "path": "/assets/index-BdBuYiHt.js",
+            "status": 200,
+            "bytes": 42526
+          },
+          {
+            "path": "/api/foundation",
+            "status": 200,
+            "body": {
+              "runtime": "workerd",
+              "message": "rxjs-flow foundation"
+            }
+          },
+          {
+            "path": "/api",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/missing",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/api/todos",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/todos",
+            "statuses": [
+              200,
+              201,
+              200,
+              400,
+              422,
+              400,
+              200,
+              204,
+              404
+            ],
+            "mode": "durable local Todo CRUD and failure isolation"
+          },
+          {
+            "path": "/unknown-page",
+            "status": 200,
+            "script": "/assets/index-BdBuYiHt.js"
+          },
+          {
+            "check": "standalone browser checkpoint served",
+            "path": "/m05d-live.html",
+            "script": "/assets/m05d-live-B8BjtYAN.js"
+          },
+          {
+            "check": "two actual HTTP SSE consumers",
+            "initialSame": true,
+            "sharedCommitDelivered": true,
+            "responseBodyCancellation": true,
+            "otherConsumerContinues": true,
+            "reconnectIncludesInterveningCommit": true,
+            "retainedSnapshotsPerConsumer": 1,
+            "maxFrameBytes": 131072,
+            "observedFrameHighWaterBytes": 306
+          },
+          {
+            "check": "full runtime interruption and new stream",
+            "terminal": [
+              {
+                "kind": "error",
+                "error": "TypeError: terminated"
+              },
+              {
+                "kind": "error",
+                "error": "TypeError: terminated"
+              }
+            ],
+            "persistedSnapshotRecovered": true,
+            "newCommitDelivered": true,
+            "checkpointReadLoopsActive": 0
+          }
+        ]
+      }
+    },
+    {
+      "label": "node-sse-final",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/server/core/node-sse.test.ts",
+        "src/server/core/http.test.ts",
+        "src/server/node-lifecycle.test.ts",
+        "src/server/node-sse.integration.test.ts"
+      ],
+      "started": "2026-09-18T13:35:46.492810+00:00",
+      "finished": "2026-09-18T13:35:47.529180+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "Test Files  4 passed (4)",
+        "Tests  49 passed (49)"
+      ],
+      "log_sha256": "6ff967dec0739dc4d421afbccf1155c875161b5a4b1b4cadeb0e6e64bb764542",
+      "log_bytes": 1558
+    },
+    {
+      "label": "platform-types-final",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:tests"
+      ],
+      "started": "2026-09-18T13:35:56.084905+00:00",
+      "finished": "2026-09-18T13:36:01.891239+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "699c3f15cc8c3b9ceac638ae61028bceb4da4a256b45e4860260f7edee1d0e91",
+      "log_bytes": 373
+    },
+    {
+      "label": "browser-npm-package",
+      "cwd": "/workspace/scratch/69635aad2014/m05d-browser-fallback",
+      "command": [
+        "npm",
+        "pack",
+        "@sparticuz/chromium",
+        "--pack-destination",
+        "/workspace/scratch/69635aad2014/m05d-browser-fallback",
+        "--ignore-scripts"
+      ],
+      "started": "2026-09-18T13:36:48.928262+00:00",
+      "finished": "2026-09-18T13:37:04.994213+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "5a1217d4b1f98caf5f3871e7d1f7f3bc6ab03d4d943b16c276d96b85a597ced3",
+      "log_bytes": 1257
+    },
+    {
+      "label": "final-node-dom",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-18T13:37:13.440301+00:00",
+      "finished": "2026-09-18T13:37:19.384244+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "Test Files  40 passed (40)",
+        "Tests  671 passed (671)"
+      ],
+      "log_sha256": "49da38724c1e8ac1e9e2a9f543dc6e499cb1c7d64a0eb6e38346bd8710f6465e",
+      "log_bytes": 7762
+    },
+    {
+      "label": "final-workerd",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker"
+      ],
+      "started": "2026-09-18T13:37:14.825060+00:00",
+      "finished": "2026-09-18T13:37:24.578533+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "Test Files  6 passed (6)",
+        "Tests  158 passed (158)"
+      ],
+      "log_sha256": "3dae301aa930eb5d043d95713884058eda0d8b1cb71f2e605a5e6cfd1655278a",
+      "log_bytes": 10130
+    },
+    {
+      "label": "final-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started": "2026-09-18T13:37:16.162382+00:00",
+      "finished": "2026-09-18T13:37:37.245622+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "baaccd1f2444947303d3db8080c95d1b749096c9c957ba10ac2969111c2e335a",
+      "log_bytes": 3937
+    },
+    {
+      "label": "browser-launch",
+      "cwd": "/workspace/scratch/69635aad2014/m05d-browser-fallback",
+      "command": [
+        "node",
+        "probe.mjs"
+      ],
+      "started": "2026-09-18T13:37:39.458244+00:00",
+      "finished": "2026-09-18T13:37:39.835468+00:00",
+      "exit_code": 1,
+      "result_summary": [],
+      "log_sha256": "2bf1c1ce9aa9c6f63a3ebf88ebf91c5d0c6645e598ec99817b3a907d95413961",
+      "log_bytes": 6848,
+      "failure_excerpt": "browserType.launch: Target page, context or browser has been closed"
+    },
+    {
+      "label": "final-build",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "build:worker"
+      ],
+      "started": "2026-09-18T13:37:48.128422+00:00",
+      "finished": "2026-09-18T13:37:49.584490+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "dist/rxjs_flow_foundation/.vite/manifest.json    0.15 kB │ gzip:  0.11 kB",
+        "dist/rxjs_flow_foundation/wrangler.json          1.72 kB │ gzip:  0.88 kB",
+        "dist/rxjs_flow_foundation/index.js             299.02 kB │ gzip: 65.73 kB",
+        "dist/client/.assetsignore                    0.02 kB",
+        "dist/client/index.html                       1.53 kB │ gzip:  0.72 kB",
+        "dist/client/m05d-live.html                   4.39 kB │ gzip:  1.67 kB",
+        "dist/client/assets/index-De6qimoS.css        2.58 kB │ gzip:  1.13 kB",
+        "dist/client/assets/m05d-live-B8BjtYAN.js     2.35 kB │ gzip:  1.14 kB",
+        "dist/client/assets/index-BdBuYiHt.js        42.52 kB │ gzip: 13.86 kB",
+        "dist/client/assets/todo.schema-BdyBcTxe.js  60.00 kB │ gzip: 16.38 kB"
+      ],
+      "log_sha256": "a8850a79c60aa7d07e3912c4a97c03ad87bcee8aa91294be44e3107ec0e57976",
+      "log_bytes": 2062
+    },
+    {
+      "label": "final-generated-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "cf:typecheck"
+      ],
+      "started": "2026-09-18T13:37:48.130092+00:00",
+      "finished": "2026-09-18T13:37:57.622921+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "ed6e6bcb40af59160d72e1b2044bc77b7ec4a058893be8b09964009ac80de44d",
+      "log_bytes": 1036
+    },
+    {
+      "label": "browser-launch-single",
+      "cwd": "/workspace/scratch/69635aad2014/m05d-browser-fallback",
+      "command": [
+        "node",
+        "probe.mjs"
+      ],
+      "started": "2026-09-18T13:37:49.036415+00:00",
+      "finished": "2026-09-18T13:37:49.422182+00:00",
+      "exit_code": 1,
+      "result_summary": [],
+      "log_sha256": "1512816913dcaccbdbbdf85529e7a2f43d682dd3129d9d6c24f1d84ef94f1ee7",
+      "log_bytes": 6983,
+      "failure_excerpt": "browserType.launch: Target page, context or browser has been closed"
+    },
+    {
+      "label": "final-smoke-preview",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "smoke:worker"
+      ],
+      "started": "2026-09-18T13:38:15.749224+00:00",
+      "finished": "2026-09-18T13:38:17.419547+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "fd44782a6e4a5e25e8ac3612c974de229a5d2bd68499155c26b05aad383d3bc2",
+      "log_bytes": 1681,
+      "checkpoint_result": {
+        "status": "passed",
+        "runtime": "local workerd",
+        "mode": "built-preview",
+        "storage": "isolated temporary directory; removed after runtime shutdown",
+        "checks": [
+          {
+            "path": "/",
+            "status": 200,
+            "script": "/assets/index-BdBuYiHt.js"
+          },
+          {
+            "path": "/assets/index-BdBuYiHt.js",
+            "status": 200,
+            "bytes": 42526
+          },
+          {
+            "path": "/api/foundation",
+            "status": 200,
+            "body": {
+              "runtime": "workerd",
+              "message": "rxjs-flow foundation"
+            }
+          },
+          {
+            "path": "/api",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/missing",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/api/todos",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/todos",
+            "status": 503,
+            "mode": "collection access disabled",
+            "body": {
+              "error": "Todo access is not configured"
+            }
+          },
+          {
+            "path": "/unknown-page",
+            "status": 200,
+            "script": "/assets/index-BdBuYiHt.js"
+          }
+        ]
+      }
+    },
+    {
+      "label": "final-smoke-dev",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "smoke:worker",
+        "--",
+        "--dev"
+      ],
+      "started": "2026-09-18T13:38:17.007667+00:00",
+      "finished": "2026-09-18T13:38:20.126295+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "75f98371c50763e14c9c864abd1019375ff80381eac42dac66cc17af915fcb9d",
+      "log_bytes": 1743,
+      "checkpoint_result": {
+        "status": "passed",
+        "runtime": "local workerd",
+        "mode": "development",
+        "storage": "isolated temporary directory; removed after runtime shutdown",
+        "checks": [
+          {
+            "path": "/",
+            "status": 200,
+            "script": "/src/client/browser.ts"
+          },
+          {
+            "path": "/src/client/browser.ts",
+            "status": 200,
+            "bytes": 974
+          },
+          {
+            "path": "/api/foundation",
+            "status": 200,
+            "body": {
+              "runtime": "workerd",
+              "message": "rxjs-flow foundation"
+            }
+          },
+          {
+            "path": "/api",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/missing",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/api/todos",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/todos",
+            "statuses": [
+              200,
+              201,
+              200,
+              400,
+              422,
+              400,
+              200,
+              204,
+              404
+            ],
+            "mode": "durable local Todo CRUD and failure isolation"
+          },
+          {
+            "path": "/unknown-page",
+            "status": 200,
+            "script": "/src/client/browser.ts"
+          }
+        ]
+      }
+    },
+    {
+      "label": "final-restart-dev",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "scripts/m05c-checkpoint.mjs"
+      ],
+      "started": "2026-09-18T13:38:18.320782+00:00",
+      "finished": "2026-09-18T13:38:24.638517+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "b631bd92454c74aa21e5b921773902cc6076b81bb9bce6df206a5eaf0f9ea5bd",
+      "log_bytes": 1858,
+      "checkpoint_result": {
+        "status": "passed",
+        "runtime": "local workerd",
+        "mode": "development",
+        "storage": "isolated temporary directory; removed after runtime shutdown",
+        "checks": [
+          {
+            "path": "/",
+            "status": 200,
+            "script": "/src/client/browser.ts"
+          },
+          {
+            "path": "/src/client/browser.ts",
+            "status": 200,
+            "bytes": 974
+          },
+          {
+            "path": "/api/foundation",
+            "status": 200,
+            "body": {
+              "runtime": "workerd",
+              "message": "rxjs-flow foundation"
+            }
+          },
+          {
+            "path": "/api",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/missing",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/api/todos",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/todos",
+            "statuses": [
+              200,
+              201,
+              200,
+              400,
+              422,
+              400,
+              200,
+              204,
+              404
+            ],
+            "mode": "durable local Todo CRUD and failure isolation"
+          },
+          {
+            "path": "/unknown-page",
+            "status": 200,
+            "script": "/src/client/browser.ts"
+          },
+          {
+            "check": "two independent HTTP callers",
+            "concurrentCreates": 2,
+            "concurrentUpdates": 2,
+            "sameCommittedCollection": true,
+            "ids": [
+              "ff8f2362-40cf-4e38-a375-dc39cb0c0439",
+              "c938719c-7f61-42ee-bce8-a924e55f2b7b"
+            ]
+          },
+          {
+            "check": "full local process restart",
+            "preservedTodoCount": 2,
+            "sameCommittedContents": true,
+            "newCallers": 2,
+            "checkpointTodosRemoved": 2
+          }
+        ]
+      }
+    },
+    {
+      "label": "final-restart-built",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "scripts/m05c-checkpoint.mjs",
+        "--preview"
+      ],
+      "started": "2026-09-18T13:38:19.616174+00:00",
+      "finished": "2026-09-18T13:38:22.788977+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "8912600e96cb06deb69fb85075130b8c3e713321164796f82d7381c61b79d3a3",
+      "log_bytes": 1876,
+      "checkpoint_result": {
+        "status": "passed",
+        "runtime": "local workerd",
+        "mode": "built-worker-local",
+        "storage": "isolated temporary directory; removed after runtime shutdown",
+        "checks": [
+          {
+            "path": "/",
+            "status": 200,
+            "script": "/assets/index-BdBuYiHt.js"
+          },
+          {
+            "path": "/assets/index-BdBuYiHt.js",
+            "status": 200,
+            "bytes": 42526
+          },
+          {
+            "path": "/api/foundation",
+            "status": 200,
+            "body": {
+              "runtime": "workerd",
+              "message": "rxjs-flow foundation"
+            }
+          },
+          {
+            "path": "/api",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/missing",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/api/todos",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/todos",
+            "statuses": [
+              200,
+              201,
+              200,
+              400,
+              422,
+              400,
+              200,
+              204,
+              404
+            ],
+            "mode": "durable local Todo CRUD and failure isolation"
+          },
+          {
+            "path": "/unknown-page",
+            "status": 200,
+            "script": "/assets/index-BdBuYiHt.js"
+          },
+          {
+            "check": "two independent HTTP callers",
+            "concurrentCreates": 2,
+            "concurrentUpdates": 2,
+            "sameCommittedCollection": true,
+            "ids": [
+              "13ef2e10-95e8-4747-957a-ef2cc9e55db3",
+              "b33d0653-530a-4b64-b19f-5452e0ecfaab"
+            ]
+          },
+          {
+            "check": "full local process restart",
+            "preservedTodoCount": 2,
+            "sameCommittedContents": true,
+            "newCallers": 2,
+            "checkpointTodosRemoved": 2
+          }
+        ]
+      }
+    },
+    {
+      "label": "browser-binary-verify",
+      "cwd": "/workspace/scratch/69635aad2014/m05d-browser-fallback",
+      "command": [
+        "node",
+        "check-binary.mjs"
+      ],
+      "started": "2026-09-18T13:38:26.508482+00:00",
+      "finished": "2026-09-18T13:38:28.149404+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "{\"decompressedBytes\":209022176,\"diskBytes\":181409595,\"sectionHeaderOffset\":209019744}"
+      ],
+      "log_sha256": "cfc0fcb517bc7090e12744f000f664f9858ce7bee010676c09124e65de0ea145",
+      "log_bytes": 260
+    },
+    {
+      "label": "browser-launch-verified",
+      "cwd": "/workspace/scratch/69635aad2014/m05d-browser-fallback",
+      "command": [
+        "node",
+        "probe.mjs"
+      ],
+      "started": "2026-09-18T13:38:39.185325+00:00",
+      "finished": "2026-09-18T13:38:39.756769+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "{\"browser\":\"153.0.8010.0\"}"
+      ],
+      "log_sha256": "e8e170bf90eca934590fa0e799245e519c3e97523ae7303e94cea0ddaa2a12f9",
+      "log_bytes": 201
+    },
+    {
+      "label": "node-sse-descriptor-red",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/server/node-sse.integration.test.ts"
+      ],
+      "started": "2026-09-18T13:39:00.466851+00:00",
+      "finished": "2026-09-18T13:39:01.413229+00:00",
+      "exit_code": 1,
+      "result_summary": [
+        "Test Files  1 failed (1)",
+        "Tests  4 failed | 3 passed (7)"
+      ],
+      "log_sha256": "10db9bcc8bdf3da0d90c6a736d6802689b081c9939bd349c3ff757efffbd3c4d",
+      "log_bytes": 4343,
+      "failure_excerpt": "FAIL  |node| src/server/node-sse.integration.test.ts > retained Node SSE real response lifetimes > rejects stream status 204 before headers and source activation\nAssertionError: expected 204 to be 500 // Object.is equality\nFAIL  |node| src/server/node-sse.integration.test.ts > retained Node SSE real response lifetimes > rejects stream status 205 before headers and source activation\nAssertionError: expected 205 to be 500 // Object.is equality\nFAIL  |node| src/server/node-sse.integration.test.ts > retained Node SSE real response lifetimes > rejects stream status 304 before headers and source activation\nAssertionError: expected 304 to be 500 // Object.is equality\nFAIL  |node| src/server/node-sse.integration.test.ts > retained Node SSE real response lifetimes > rejects an invalid stream policy before headers and source activation\nAssertionError: expected 200 to be 500 // Object.is equality"
+    },
+    {
+      "label": "node-sse-descriptor-green",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/server/core/node-sse.test.ts",
+        "src/server/core/http.test.ts",
+        "src/server/node-lifecycle.test.ts",
+        "src/server/node-sse.integration.test.ts"
+      ],
+      "started": "2026-09-18T13:39:26.224030+00:00",
+      "finished": "2026-09-18T13:39:27.244920+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "Test Files  4 passed (4)",
+        "Tests  54 passed (54)"
+      ],
+      "log_sha256": "d244cfadc28563b3ade7bfa8301b1109cbe9887aa70a50d3538b8bf3c692e85e",
+      "log_bytes": 1558
+    },
+    {
+      "label": "node-sse-descriptor-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:node"
+      ],
+      "started": "2026-09-18T13:39:36.739308+00:00",
+      "finished": "2026-09-18T13:39:38.997459+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "b68306b110a6899050313bfd39c71c6e39719c94b29b9e3d5e08ffa453ec0c81",
+      "log_bytes": 336
+    },
+    {
+      "label": "node-sse-descriptor-test-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "tsc",
+        "-p",
+        "tsconfig.test.json"
+      ],
+      "started": "2026-09-18T13:39:36.740563+00:00",
+      "finished": "2026-09-18T13:39:40.950839+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "5d7f812094357687dfca171211e4aad260f6e38628d9f57a36d53cb2ad7c1dbd",
+      "log_bytes": 273
+    },
+    {
+      "label": "browser-eventsource",
+      "cwd": "/workspace/scratch/69635aad2014/m05d-browser-fallback",
+      "command": [
+        "node",
+        "browser-check.mjs"
+      ],
+      "started": "2026-09-18T13:39:48.151593+00:00",
+      "finished": "2026-09-18T13:39:51.431860+00:00",
+      "exit_code": 1,
+      "result_summary": [],
+      "log_sha256": "e2cc2bc5afe6e8db388c09c77c65788a8e88aa9bff83d8ca84a68380820541ff",
+      "log_bytes": 13298,
+      "failure_excerpt": ""
+    },
+    {
+      "label": "final-node-dom-reviewed",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-18T13:39:52.896989+00:00",
+      "finished": "2026-09-18T13:39:57.909807+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "Test Files  40 passed (40)",
+        "Tests  676 passed (676)"
+      ],
+      "log_sha256": "bfc9053ecdcd470fa6f881a1c65f703df72a4b614d24ec049f3ab19fe48f9959",
+      "log_bytes": 7762
+    },
+    {
+      "label": "browser-page-software-graphics",
+      "cwd": "/workspace/scratch/69635aad2014/m05d-browser-fallback",
+      "command": [
+        "node",
+        "probe.mjs"
+      ],
+      "started": "2026-09-18T13:40:30.988879+00:00",
+      "finished": "2026-09-18T13:40:31.465991+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "{\"browser\":\"153.0.8010.0\"}"
+      ],
+      "log_sha256": "120b67fb96190e975ba0034e877d9d169d10334894e7d2513b3b1eb2bb361f73",
+      "log_bytes": 214
+    },
+    {
+      "label": "browser-eventsource-final",
+      "cwd": "/workspace/scratch/69635aad2014/m05d-browser-fallback",
+      "command": [
+        "node",
+        "browser-check.mjs"
+      ],
+      "started": "2026-09-18T13:40:36.855840+00:00",
+      "finished": "2026-09-18T13:40:42.099919+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "7bbac7ec12a87ca165887876fc746eaa97d95a5406b6e584e2e43b930ac22310",
+      "log_bytes": 2943,
+      "checkpoint_result": {
+        "status": "passed",
+        "runtime": "local workerd",
+        "mode": "built-worker-local",
+        "storage": "isolated temporary directory; removed after runtime shutdown",
+        "checks": [
+          {
+            "path": "/",
+            "status": 200,
+            "script": "/assets/index-BdBuYiHt.js"
+          },
+          {
+            "path": "/assets/index-BdBuYiHt.js",
+            "status": 200,
+            "bytes": 42526
+          },
+          {
+            "path": "/api/foundation",
+            "status": 200,
+            "body": {
+              "runtime": "workerd",
+              "message": "rxjs-flow foundation"
+            }
+          },
+          {
+            "path": "/api",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/missing",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/api/todos",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/todos",
+            "statuses": [
+              200,
+              201,
+              200,
+              400,
+              422,
+              400,
+              200,
+              204,
+              404
+            ],
+            "mode": "durable local Todo CRUD and failure isolation"
+          },
+          {
+            "path": "/unknown-page",
+            "status": 200,
+            "script": "/assets/index-BdBuYiHt.js"
+          },
+          {
+            "check": "standalone browser checkpoint served",
+            "path": "/m05d-live.html",
+            "script": "/assets/m05d-live-B8BjtYAN.js"
+          },
+          {
+            "check": "two actual HTTP SSE consumers",
+            "initialSame": true,
+            "sharedCommitDelivered": true,
+            "responseBodyCancellation": true,
+            "otherConsumerContinues": true,
+            "reconnectIncludesInterveningCommit": true,
+            "retainedSnapshotsPerConsumer": 1,
+            "maxFrameBytes": 131072,
+            "observedFrameHighWaterBytes": 306
+          },
+          {
+            "check": "full runtime interruption and new stream",
+            "terminal": [
+              {
+                "kind": "error",
+                "error": "TypeError: terminated"
+              },
+              {
+                "kind": "error",
+                "error": "TypeError: terminated"
+              }
+            ],
+            "persistedSnapshotRecovered": true,
+            "newCommitDelivered": true,
+            "checkpointReadLoopsActive": 0
+          },
+          {
+            "check": "actual browser native EventSource",
+            "browser": "153.0.8010.0",
+            "builtWorkerAndAssets": true,
+            "twoSimultaneousConsumers": true,
+            "mutationViaVisibleForm": true,
+            "disconnectedConsumerStops": true,
+            "otherConsumerContinues": true,
+            "freshReconnectSnapshot": true,
+            "fullProcessInterruptionVisible": true,
+            "persistedSnapshotRecovered": true,
+            "liveCommitAfterRestart": true,
+            "streamRequests": 5,
+            "eventCounts": {
+              "a": 5,
+              "b": 5
+            },
+            "uncaughtBrowserErrors": 0,
+            "finalPanelsDisconnected": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "browser-reproducible",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "scripts/m05d-browser-checkpoint.mjs"
+      ],
+      "started": "2026-09-18T13:41:48.645658+00:00",
+      "finished": "2026-09-18T13:41:54.037678+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "33752000b1d610b6c182d6e20a9fac5bd4728bd46400b226c071449576b7ae68",
+      "log_bytes": 2943,
+      "checkpoint_result": {
+        "status": "passed",
+        "runtime": "local workerd",
+        "mode": "built-worker-local",
+        "storage": "isolated temporary directory; removed after runtime shutdown",
+        "checks": [
+          {
+            "path": "/",
+            "status": 200,
+            "script": "/assets/index-BdBuYiHt.js"
+          },
+          {
+            "path": "/assets/index-BdBuYiHt.js",
+            "status": 200,
+            "bytes": 42526
+          },
+          {
+            "path": "/api/foundation",
+            "status": 200,
+            "body": {
+              "runtime": "workerd",
+              "message": "rxjs-flow foundation"
+            }
+          },
+          {
+            "path": "/api",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/missing",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/api/todos",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/todos",
+            "statuses": [
+              200,
+              201,
+              200,
+              400,
+              422,
+              400,
+              200,
+              204,
+              404
+            ],
+            "mode": "durable local Todo CRUD and failure isolation"
+          },
+          {
+            "path": "/unknown-page",
+            "status": 200,
+            "script": "/assets/index-BdBuYiHt.js"
+          },
+          {
+            "check": "standalone browser checkpoint served",
+            "path": "/m05d-live.html",
+            "script": "/assets/m05d-live-B8BjtYAN.js"
+          },
+          {
+            "check": "two actual HTTP SSE consumers",
+            "initialSame": true,
+            "sharedCommitDelivered": true,
+            "responseBodyCancellation": true,
+            "otherConsumerContinues": true,
+            "reconnectIncludesInterveningCommit": true,
+            "retainedSnapshotsPerConsumer": 1,
+            "maxFrameBytes": 131072,
+            "observedFrameHighWaterBytes": 306
+          },
+          {
+            "check": "full runtime interruption and new stream",
+            "terminal": [
+              {
+                "kind": "error",
+                "error": "TypeError: terminated"
+              },
+              {
+                "kind": "error",
+                "error": "TypeError: terminated"
+              }
+            ],
+            "persistedSnapshotRecovered": true,
+            "newCommitDelivered": true,
+            "checkpointReadLoopsActive": 0
+          },
+          {
+            "check": "actual browser native EventSource",
+            "browser": "153.0.8010.0",
+            "builtWorkerAndAssets": true,
+            "twoSimultaneousConsumers": true,
+            "mutationViaVisibleForm": true,
+            "disconnectedConsumerStops": true,
+            "otherConsumerContinues": true,
+            "freshReconnectSnapshot": true,
+            "fullProcessInterruptionVisible": true,
+            "persistedSnapshotRecovered": true,
+            "liveCommitAfterRestart": true,
+            "streamRequests": 5,
+            "eventCounts": {
+              "a": 5,
+              "b": 5
+            },
+            "uncaughtBrowserErrors": 0,
+            "finalPanelsDisconnected": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "browser-portable-final",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "scripts/m05d-browser-checkpoint.mjs"
+      ],
+      "started": "2026-09-18T13:42:04.967667+00:00",
+      "finished": "2026-09-18T13:42:10.297161+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "33752000b1d610b6c182d6e20a9fac5bd4728bd46400b226c071449576b7ae68",
+      "log_bytes": 2943,
+      "checkpoint_result": {
+        "status": "passed",
+        "runtime": "local workerd",
+        "mode": "built-worker-local",
+        "storage": "isolated temporary directory; removed after runtime shutdown",
+        "checks": [
+          {
+            "path": "/",
+            "status": 200,
+            "script": "/assets/index-BdBuYiHt.js"
+          },
+          {
+            "path": "/assets/index-BdBuYiHt.js",
+            "status": 200,
+            "bytes": 42526
+          },
+          {
+            "path": "/api/foundation",
+            "status": 200,
+            "body": {
+              "runtime": "workerd",
+              "message": "rxjs-flow foundation"
+            }
+          },
+          {
+            "path": "/api",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/missing",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/api/todos",
+            "status": 404,
+            "body": {
+              "error": "Not found"
+            }
+          },
+          {
+            "path": "/api/todos",
+            "statuses": [
+              200,
+              201,
+              200,
+              400,
+              422,
+              400,
+              200,
+              204,
+              404
+            ],
+            "mode": "durable local Todo CRUD and failure isolation"
+          },
+          {
+            "path": "/unknown-page",
+            "status": 200,
+            "script": "/assets/index-BdBuYiHt.js"
+          },
+          {
+            "check": "standalone browser checkpoint served",
+            "path": "/m05d-live.html",
+            "script": "/assets/m05d-live-B8BjtYAN.js"
+          },
+          {
+            "check": "two actual HTTP SSE consumers",
+            "initialSame": true,
+            "sharedCommitDelivered": true,
+            "responseBodyCancellation": true,
+            "otherConsumerContinues": true,
+            "reconnectIncludesInterveningCommit": true,
+            "retainedSnapshotsPerConsumer": 1,
+            "maxFrameBytes": 131072,
+            "observedFrameHighWaterBytes": 306
+          },
+          {
+            "check": "full runtime interruption and new stream",
+            "terminal": [
+              {
+                "kind": "error",
+                "error": "TypeError: terminated"
+              },
+              {
+                "kind": "error",
+                "error": "TypeError: terminated"
+              }
+            ],
+            "persistedSnapshotRecovered": true,
+            "newCommitDelivered": true,
+            "checkpointReadLoopsActive": 0
+          },
+          {
+            "check": "actual browser native EventSource",
+            "browser": "153.0.8010.0",
+            "builtWorkerAndAssets": true,
+            "twoSimultaneousConsumers": true,
+            "mutationViaVisibleForm": true,
+            "disconnectedConsumerStops": true,
+            "otherConsumerContinues": true,
+            "freshReconnectSnapshot": true,
+            "fullProcessInterruptionVisible": true,
+            "persistedSnapshotRecovered": true,
+            "liveCommitAfterRestart": true,
+            "streamRequests": 5,
+            "eventCounts": {
+              "a": 5,
+              "b": 5
+            },
+            "uncaughtBrowserErrors": 0,
+            "finalPanelsDisconnected": true
+          }
+        ]
+      },
+      "environment_overrides": {
+        "PLAYWRIGHT_MODULE_PATH": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+        "CHROMIUM_EXECUTABLE_PATH": "/workspace/scratch/69635aad2014/m05d-browser-fallback/chromium",
+        "M05D_CHROMIUM_ARGS": "[\"--no-sandbox\",\"--disable-dev-shm-usage\",\"--single-process\",\"--no-zygote\",\"--use-gl=angle\",\"--use-angle=swiftshader\",\"--enable-unsafe-swiftshader\"]"
+      }
+    },
+    {
+      "label": "final-diff-check",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "started": "2026-09-18T13:43:01.737086+00:00",
+      "finished": "2026-09-18T13:43:01.744913+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_bytes": 0
+    }
+  ],
+  "failure_dispositions": {
+    "node-sse-red": "Expected regression: 10 failed/2 passed exposed unbounded writes, absent drain ownership, missing queue/frame bounds and terminal cleanup defects. Subsequent focused and complete suites verify fixes.",
+    "node-sse-green": "One retained formatter compatibility assertion failed: shared encoding emitted event before id. Restored the existing id-before-event byte order; focused and final Node suites pass.",
+    "node-sse-descriptor-red": "Expected reviewer regression: statuses 204/205/304 and invalid streamPolicy activated streaming work despite invalid descriptors. Validation moved before headers/source activation; green focused suite has 54 passing tests in four files, plus Content-Length stripping coverage.",
+    "authority-finalizer-red": "One regression exposed a throwing consumer finalizer escaping authority.dispose and preventing another subscriber or queued operation from being released. Isolated interruption/unsubscription faults and continued cleanup; green suite passes all 68 authority tests.",
+    "platform-live-first": "17 passed/1 failed: the eviction test attempted to evict an authority with an active HTTP stream; the default five-second test timeout expired. Subsequent scoped diagnosis identifies a helper precondition, not orphaned-stream behavior.",
+    "platform-eviction-trace": "Scoped reproduction of active-stream eviction reached the test five-second timeout; superseded by the helper-drain investigation and separated interruption/reconstruction tests.",
+    "platform-eviction-drain": "The helper waited 30 seconds and rejected because the Durable Object still had active references. Final tests use state.abort for active interruption, and cancel then evict then reconnect for reconstruction. Full local process shutdown separately proves actual socket interruption. No lease was added; no stale-delivery finding is claimed.",
+    "browser-eventsource": "Scratch Chromium launched but page creation failed because extracted software-graphics libraries were missing. Extracted bundled SwiftShader from the same npm package; actual browser-eventsource-final passed the complete native EventSource scenario.",
+    "browser-launch": "Scratch bundled Chromium initially failed launch. Binary verification found extraction had not produced the full file; corrected extraction and verified launch are separate subsequent commands. No application dependency or production configuration changed.",
+    "browser-launch-single": "Changing scratch launch flags did not fix the incomplete binary. Verification found 181409595 disk bytes versus 209022176 decompressed bytes. Corrected extraction before launch; browser-launch-verified reports Chromium153.0.8010.0."
+  },
+  "uncaptured_environment_attempts": [
+    {
+      "command": "PLAYWRIGHT_BROWSERS_PATH=/workspace/scratch/69635aad2014/m05d-browsers /workspace/scratch/69635aad2014/m00-node22/node_modules/node-linux-x64/bin/node /opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/cli.js install chromium --only-shell",
+      "outcome": "Standard Chromium CDN timeout/502, followed by stale Playwright install lock; fallback npm binary package used.",
+      "capture": "Agent-reported command and disposition; timestamps/exit not captured."
+    },
+    {
+      "commands": [
+        "node extract.mjs",
+        "node check-binary.mjs",
+        "node extract-graphics.mjs",
+        "tar -xf swiftshader.tar -C /workspace/scratch/69635aad2014/m05d-browser-fallback"
+      ],
+      "cwd": "/workspace/scratch/69635aad2014/m05d-browser-fallback",
+      "outcome": "Initial streaming decompression truncated the binary; full synchronous brotli decode supplied209022176 bytes. Software-graphics libraries extracted from same npm tarball; launch and complete actual-browser checkpoint then passed.",
+      "capture": "Agent-reported scratch recovery chronology; check-binary captured separately as browser-binary-verify; timestamps/exits not invented for uncaptured commands."
+    }
+  ],
+  "expected_diagnostics": "Injected workerd source failure, state.abort and native cancellation print runtime error diagnostics. The final workerd runner reports 158/158 passed and no unhandled test failure. A transport error following intentional process shutdown is the expected successful interruption assertion, not a failed checkpoint.",
+  "resource_evidence": {
+    "worker_response_terminal": {
+      "active": 0,
+      "listener": 0,
+      "pendingEvents": 0,
+      "pendingBytes": 0
+    },
+    "authority_subscribers": "2 connected -> 1 after A cancels -> 0 after B cancels; committed revision2 remains readable; before-first-read cancellation also releases1->0.",
+    "authority_bounds": {
+      "operations_total": 32,
+      "active_operations": 1,
+      "live_subscribers_including_setup": 32,
+      "todos": 1000,
+      "snapshot_bytes": 122880
+    },
+    "live_queue_bounds": {
+      "fifo_pending_frames": 16,
+      "fifo_pending_bytes": 262144,
+      "max_public_frame_bytes": 131072,
+      "latest_snapshot_pending_frames": 1,
+      "authority_ndjson_max_frame_bytes": 122881
+    },
+    "node_socket_lifecycle": "2 active ->1 after A closes ->2 after A reconnects ->0 at app stop; same port rebound; 33rd stream gets503 without activation until capacity released.",
+    "scope": "Application-owned queues/subscriptions/listeners only; not platform/socket buffers or production capacity."
+  },
+  "evidence_limits": [
+    "Pure authority and controlled Node backpressure tests, workerd stream/DO tests, real local HTTP checkpoints and browser evidence have different scopes.",
+    "Pristine workerd baseline was not rerun; prior exact-head CI is explicit. Current workerd suite was executed locally.",
+    "The active-reference eviction helper rejects active-stream eviction. Hard state.abort and full local process shutdown prove interruption separately; cancel/evict/reconnect proves reconstruction.",
+    "Local tests do not force Cloudflare global routing or establish remote outage recovery, production capacity or deployed persistence.",
+    "The public todos bare-array protocol is preserved. M06 versioning/reconnect ownership/Todo application integration remain pending.",
+    "No remote resources, remote migrations, merge, deployment, release, package publication or account/domain changes performed.",
+    "Application dependencies unchanged; scratch browser tooling is not an installed repository dependency or a new CI browser gate.",
+    "ChatGPT Project reference-copy synchronization remains separately unverified."
+  ],
+  "final": {
+    "node_dom": {
+      "command_label": "final-node-dom-reviewed",
+      "exit_code": 0,
+      "files": 40,
+      "tests": 676
+    },
+    "preceding_node_dom": {
+      "command_label": "final-node-dom",
+      "exit_code": 0,
+      "files": 40,
+      "tests": 671
+    },
+    "workerd": {
+      "command_label": "final-workerd",
+      "exit_code": 0,
+      "files": 6,
+      "tests": 158
+    },
+    "typecheck": {
+      "command_label": "final-typecheck",
+      "exit_code": 0
+    },
+    "generated_types": {
+      "command_label": "final-generated-types",
+      "exit_code": 0
+    },
+    "build": {
+      "command_label": "final-build",
+      "exit_code": 0
+    },
+    "default_preview": {
+      "command_label": "final-smoke-preview",
+      "exit_code": 0
+    },
+    "development_http": {
+      "command_label": "final-smoke-dev",
+      "exit_code": 0
+    },
+    "durable_restart_development": {
+      "command_label": "final-restart-dev",
+      "exit_code": 0
+    },
+    "durable_restart_built": {
+      "command_label": "final-restart-built",
+      "exit_code": 0
+    },
+    "live_development": {
+      "command_label": "checkpoint-dev",
+      "exit_code": 0
+    },
+    "live_built": {
+      "command_label": "checkpoint-built",
+      "exit_code": 0
+    },
+    "actual_browser": {
+      "command_label": "browser-eventsource-final",
+      "exit_code": 0,
+      "browser": "153.0.8010.0",
+      "playwright": "1.62.1",
+      "stream_requests": 5,
+      "snapshots_each_consumer": 5,
+      "uncaught_browser_errors": 0,
+      "final_panels_disconnected": true
+    },
+    "portable_browser_probe": {
+      "command_label": "browser-portable-final",
+      "exit_code": 0,
+      "script_sha256": "4a8dfe7e3a8ff0a050a0940792b70d82d0abf52ce8cca2c3bdab25f2b118d9a9"
+    },
+    "diff_check": {
+      "command_label": "final-diff-check",
+      "exit_code": 0
+    },
+    "reviewed_node_types": [
+      {
+        "command_label": "node-sse-descriptor-types",
+        "exit_code": 0
+      },
+      {
+        "command_label": "node-sse-descriptor-test-types",
+        "exit_code": 0
+      }
+    ],
+    "tests_total": 834,
+    "acceptance_criteria": "9/9 M05d clauses locally verified; parentM05 acceptance review pending",
+    "blockers": []
+  },
+  "publication": {
+    "repository": "hansschenker/rxjs-flow",
+    "branch": "m05d/owned-sse",
+    "implementation_commit": "5614e7a84cfbe1bf7b3e81538138a26deb79c427",
+    "implementation_tree": "a04c13ce2a4edb70aa0ccac6dec13e91df55ae20",
+    "prepublication_main_reverified": "d5500da407611e7856e9e67481a08e15e530aece",
+    "merge_performed": false,
+    "deployment_performed": false,
+    "evidence_followup": "Separate evidence/documentation commit adds the optional browser probe; runtime implementation and its HTTP checkpoints are identified by the implementation commit above. No repository browser dependency or browser CI gate added.",
+    "final_head_ci": "Pending at evidence commit; final exact-head result will be recorded in the PR. No passing CI claim is made in this ledger."
+  }
+}

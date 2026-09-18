@@ -3,6 +3,8 @@ import { firstValueFrom } from 'rxjs';
 import { HttpError } from '../server/core/errors';
 import { createTodoAuthority, type TodoAuthorityCommand, type TodoAuthorityResult } from '../server/todos/todo.authority';
 import { createDurableTodoStorage } from './todo-storage';
+import { createTodoLiveResponse } from './todo-live-response';
+import { TODO_WATCH_PATH } from './todo-live';
 
 export type TodoAuthorityReply =
 	| { ok: true; result: TodoAuthorityResult }
@@ -35,5 +37,13 @@ export class TodoCollection extends DurableObject<unknown> {
 			}
 			return { ok: false, status: 503, message: 'Todo authority is unavailable', details: { outcome: 'unknown' } };
 		}
+	}
+
+	/** Reachable only through a namespace capability selected after access policy. */
+	fetch(request: Request): Response {
+		if (request.method !== 'GET' || new URL(request.url).pathname !== TODO_WATCH_PATH) {
+			return Response.json({ error: 'not_found' }, { status: 404 });
+		}
+		return createTodoLiveResponse(this.authority.watch$(), request.signal);
 	}
 }

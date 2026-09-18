@@ -15,9 +15,12 @@ M03 is [accepted/merged in PR #8](docs/m03/acceptance.md) at
 M04 is [accepted/merged in PR #9](docs/m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`.
 The [minimal binding sample](docs/m04/minimal-sample.md) explains the rendering contract.
 M05b is [accepted/merged in PR #10](docs/m05b/acceptance.md) at `1cfbaeca0cede3a08c90631e16cf6bdf2fa750c8`.
-M05c is implemented; [review/merge pending](docs/m05c/acceptance.md).
-The [local checkpoint](docs/m05c/local-development.md) demonstrates durable Todos
-across independent callers and runtime restarts. M05d–M09 remain pending. Use a dedicated branch and PR; do not start a milestone,
+M05c is [accepted/merged in PR #11](docs/m05c/acceptance.md) at
+`d5500da407611e7856e9e67481a08e15e530aece`. M05d implements bounded, owned SSE;
+[acceptance review/merge is pending](docs/m05d/acceptance.md). The
+[live checkpoint](docs/m05d/local-development.md) demonstrates two live consumers
+and independent disconnect/reconnect. The Todo application still requires Refresh
+for another caller's changes until M06 integrates live state. M06–M09 remain pending. Use a dedicated branch and PR; do not start a milestone,
 merge, publish, deploy, create remote resources or change `netxpert.ch` without
 appropriate explicit authorization. `rxjs-stack` and `rxjs-fullstack` are historical/
 separate repositories, not implementation targets.
@@ -26,13 +29,14 @@ The r2 target is RxJS 7 + TypeScript + existing custom JSX, Hono HTTP integratio
 on Cloudflare Workers, Vite/Cloudflare build tooling, project-local Wrangler, and
 a minimal Durable Object authority. M05a now provides the local platform foundation;
 M05b adds owned finite Todo HTTP; M05c adds bounded collection authority, attached
-SQLite persistence and reconstruction. Worker live delivery and application live
-integration remain M05d/M06. Keep Node
+SQLite persistence and reconstruction. M05d adds race-free authority registration
+and bounded response-owned live delivery. The application live protocol and
+integration remain M06. Keep Node
 as the baseline during the tested transition. Hono does not replace our renderer.
 Do not use mutable Worker-global state as authority or pass Hono context into reducers.
 
-After M05c acceptance, the next implementation is M05d when authorized, followed by
-M06 as specified in the roadmap. No permanent Node-only constraint or
+After M05d acceptance, the next implementation is M06 when authorized, as
+specified in the roadmap. No permanent Node-only constraint or
 instruction to reopen M00 is in force. Do not merge the intentionally failing
 `m00/characterize-baseline` probes.
 
@@ -238,8 +242,9 @@ const snapshots$ = fromEventSource('/api/todos/stream', 'todos', value => todoLi
 
 Constructing this Observable is inert. Each subscription owns its connection;
 unsubscribe, transport failure or decode failure removes listeners and closes it.
-This adapter is not yet connected to the Todo app; M06 owns its live protocol,
-recovery rules and integration after the remaining M05 substeps.
+The same legacy bare-array `todos` event is available from the M05d Worker route.
+This adapter is not yet connected to the Todo app; M06 owns its versioned live
+protocol, recovery rules and integration.
 
 ### JSX configuration
 

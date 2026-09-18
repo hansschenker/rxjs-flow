@@ -6,6 +6,7 @@ import { createRequestOperation, type RequestOutcome } from '../server/core/requ
 import { applyRoute, flattenRoutes, get, type Route, type RouteDefinition } from '../server/core/router';
 import { json } from '../server/core/response';
 import type { AppContext, Effect, HttpRequest, HttpResponse, Middleware } from '../server/core/types';
+import { prepareSseResponse } from './sse-response';
 
 export interface HonoAppOptions {
 	services?: Record<string, unknown>;
@@ -82,7 +83,7 @@ export function readRequestBody$(request: Request, signal: AbortSignal): Observa
 
 /** Finite descriptor conversion belongs inside the operation's error boundary. */
 export function finiteResponse(response: HttpResponse): Response {
-	if (response.stream) throw new HttpError(501, 'Streaming responses are not supported by this adapter');
+	if (response.stream) throw new TypeError('Streaming responses require a separate live body owner');
 	const status = response.status ?? 200;
 	const headers = new Headers(response.headers);
 	if (!headers.has('content-type')) headers.set('content-type', 'application/json');
@@ -100,8 +101,19 @@ export function cancelUnreadBody(request: Request): void {
 	void request.body.cancel().catch(() => { /* Failure is already reported by its operation. */ });
 }
 
-function outcomeResponse(outcome: RequestOutcome<Response>, request: Request): Response {
-	if (outcome.kind === 'success') return outcome.value;
+interface PreparedResponse {
+	response: Response;
+	start?: () => void;
+}
+
+function outcomeResponse(outcome: RequestOutcome<PreparedResponse>, request: Request): Response {
+	if (outcome.kind === 'success') {
+		// The finite descriptor has passed cardinality, construction and deadline
+		// checks. Source failures from here terminate the body, including synchronous
+		// source errors; they never attempt a second JSON/header response.
+		outcome.value.start?.();
+		return outcome.value.response;
+	}
 	cancelUnreadBody(request);
 	return Response.json(outcome.body, { status: outcome.status });
 }
@@ -112,7 +124,8 @@ function ready$(): ReturnType<Effect> { return of(json({ status: 'ready' })); }
 /**
  * Hono matches the flattened, authoritative route definitions. Its Context never
  * crosses into an Effect; RxJS Middleware remains an OperatorFunction explicitly
- * applied to the request stream. A request owns one finite subscription.
+ * applied to the request stream. A request owns one finite subscription; an
+ * accepted streaming descriptor activates a separate response-owned subscription.
  */
 export function createHonoApp(definitions: RouteDefinition[], options: HonoAppOptions = {}) {
 	const context: AppContext = { services: options.services ?? {}, state: {} };
@@ -124,7 +137,7 @@ export function createHonoApp(definitions: RouteDefinition[], options: HonoAppOp
 
 	function respond(hono: Context, selected?: Route): Promise<Response> {
 		const incoming = hono.req.raw;
-		const operation = createRequestOperation<Response>({
+		const operation = createRequestOperation<PreparedResponse>({
 			signal: incoming.signal,
 			deadlineMs: options.deadlineMs,
 			scheduler: options.scheduler,
@@ -162,7 +175,11 @@ export function createHonoApp(definitions: RouteDefinition[], options: HonoAppOp
 							);
 							return wrapped(input$);
 						}),
-						map(finiteResponse),
+						map(descriptor => {
+							if (!descriptor.stream) return { response: finiteResponse(descriptor) };
+							const prepared = prepareSseResponse(descriptor, incoming.signal);
+							return { response: prepared.response, start: prepared.live.start };
+						}),
 					);
 				});
 			},

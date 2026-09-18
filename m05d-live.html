@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>rxjs-flow · Live connection checkpoint</title>
+    <style>
+      :root { color-scheme: light; font: 16px/1.55 system-ui, sans-serif; color: #1b3040; background: #f3f6f8; }
+      * { box-sizing: border-box; }
+      body { margin: 0; }
+      main { max-width: 1040px; padding: 48px 24px; margin: auto; }
+      .eyebrow { color: #34745a; font-size: .8rem; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+      h1 { font-size: clamp(1.8rem, 4vw, 2.65rem); line-height: 1.15; letter-spacing: -.035em; margin: 12px 0 20px; }
+      h2 { margin: 0; font-size: 1.15rem; }
+      p { max-width: 76ch; }
+      .muted { color: #566c7c; }
+      .consumers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin: 28px 0; }
+      section, form { padding: 24px; border: 1px solid #d9e3e8; border-radius: 16px; background: #fff; }
+      .status { margin: 12px 0; min-height: 3em; }
+      .counts { font-size: .9rem; color: #566c7c; }
+      button, input { font: inherit; border-radius: 8px; padding: 9px 14px; }
+      button { cursor: pointer; border: 1px solid #2d6650; color: #fff; background: #2d6650; }
+      button.secondary { background: #fff; color: #2d6650; }
+      button:disabled { cursor: default; opacity: .45; }
+      button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid #6facce; outline-offset: 3px; }
+      .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+      input { border: 1px solid #a6b9c6; min-width: 0; flex: 1; }
+      label { display: block; font-weight: 650; margin-bottom: 10px; }
+      pre { overflow: auto; max-height: 280px; min-height: 130px; padding: 14px; background: #f4f7f8; border-radius: 8px; font-size: .78rem; }
+      .result { min-height: 1.55em; margin: 14px 0 0; }
+      a { color: #236544; }
+      @media (max-width: 640px) { main { padding: 28px 16px; } .consumers { grid-template-columns: 1fr; } section, form { padding: 18px; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="eyebrow">M05d · Live connection checkpoint</div>
+      <h1>One collection. Two live connections.</h1>
+      <p class="muted">Connect both consumers, then save a Todo. Disconnect A and save another: B keeps receiving updates. Reconnect A to read the latest saved collection.</p>
+      <div class="consumers">
+        <section aria-labelledby="a-heading" data-consumer="a">
+          <h2 id="a-heading">Consumer A</h2>
+          <p class="status" data-status role="status">Disconnected</p>
+          <div class="actions"><button data-connect>Connect A</button><button class="secondary" data-disconnect disabled>Disconnect A</button></div>
+          <p class="counts">Snapshots received: <strong data-count>0</strong></p>
+          <pre data-snapshot aria-label="Consumer A latest snapshot">No snapshot received.</pre>
+        </section>
+        <section aria-labelledby="b-heading" data-consumer="b">
+          <h2 id="b-heading">Consumer B</h2>
+          <p class="status" data-status role="status">Disconnected</p>
+          <div class="actions"><button data-connect>Connect B</button><button class="secondary" data-disconnect disabled>Disconnect B</button></div>
+          <p class="counts">Snapshots received: <strong data-count>0</strong></p>
+          <pre data-snapshot aria-label="Consumer B latest snapshot">No snapshot received.</pre>
+        </section>
+      </div>
+      <form id="create-todo">
+        <label for="todo-title">Save a Todo to this local collection</label>
+        <div class="actions"><input id="todo-title" name="title" placeholder="A shared live update" maxlength="200" required /><button type="submit">Save Todo</button></div>
+        <p class="result" id="write-status" role="status"></p>
+      </form>
+      <p class="muted">Stopping the local server interrupts both connections. Start it again and reconnect to see the persisted collection. This page reconnects only when you press Connect; it displays each connection's latest full snapshot.</p>
+      <p><a href="/">Return to the Todo application</a></p>
+    </main>
+    <script type="module" src="/src/checkpoints/m05d-live.ts"></script>
+  </body>
+</html>

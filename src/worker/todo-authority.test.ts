@@ -256,9 +256,17 @@ describe('collection access before Durable Object selection', () => {
 		expect(configuration.getByName).not.toHaveBeenCalled();
 	});
 
-	it('keeps Worker streaming unavailable without starting a live subscriber', async () => {
+	it('opens the authorized live collection and releases it when its body is cancelled', async () => {
 		const configuration = bindings();
 		const response = await fetch(new Request('http://localhost/api/todos/stream'), configuration.env);
-		expect(response.status).toBe(501);
+		expect(response.status).toBe(200);
+		expect(response.headers.get('content-type')).toContain('text/event-stream');
+		const reader = response.body!.getReader();
+		expect(new TextDecoder().decode((await reader.read()).value)).toContain('event: todos');
+		await reader.cancel();
+		const stub = env.TODO_COLLECTIONS.getByName(configuration.env.TODO_COLLECTION_ID);
+		await expect.poll(() => runInDurableObject(stub, instance =>
+			(instance as unknown as { authority: { resourceCounts(): { subscribers: number } } }).authority.resourceCounts().subscribers,
+		)).toBe(0);
 	});
 });

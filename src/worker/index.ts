@@ -4,7 +4,8 @@ import {
 	type Observable,
 } from 'rxjs';
 import { foundationPath, type FoundationResult } from '../shared/foundation';
-import { get, flattenRoutes } from '../server/core/router';
+import { get } from '../server/core/router';
+import type { SseEvent } from '../server/core/types';
 import { createTodoRoutes } from '../server/todos/todo.routes';
 import type { TodoStore } from '../server/todos/todo.store-factory';
 import type { TodoRepository } from '../server/todos/todo.repository';
@@ -12,6 +13,7 @@ import { HttpError } from '../server/core/errors';
 import { cancelUnreadBody, createHonoApp } from './http-adapter';
 import { authorizeTodoCollection, type TodoAccessBindings } from './todo-access';
 import { createDurableTodoRepository } from './todo-repository';
+import { createDurableTodoLive } from './todo-live';
 import type { TodoCollection } from './todo-collection';
 export { TodoCollection } from './todo-collection';
 
@@ -70,27 +72,21 @@ export interface WorkerAppOptions {
 	/** Explicitly injected capability; construction never creates a collection. */
 	todoStore?: TodoStore;
 	todoRepository?: TodoRepository;
+	todoLive$?: Observable<SseEvent>;
 	foundationLabel?: string;
 }
 
-/** Request capabilities are explicit; Worker streaming remains a later boundary. */
+/** Construction is inert; finite requests and live bodies own their capabilities. */
 export function createWorkerApp(options: WorkerAppOptions = {}) {
-	const todoRoutes = flattenRoutes(createTodoRoutes()).map(route => ({
-		...route,
-		effect: route.path === '/todos/stream'
-			? () => of({ status: 501, body: { error: 'Streaming responses are not supported by this adapter' } })
-			: options.todoRepository || options.todoStore
-				? route.effect
-				: () => of({ status: 503, body: { error: 'Todo storage is not configured' } }),
-	}));
 	return createHonoApp([
 		get('/foundation', () => of({ body: {
 			runtime: 'workerd', message: options.foundationLabel ?? 'rxjs-flow foundation',
 		} satisfies FoundationResult })),
-		...todoRoutes,
+		...createTodoRoutes(),
 	], { services: {
 		...(options.todoStore ? { todoStore: options.todoStore } : {}),
 		...(options.todoRepository ? { todoRepository: options.todoRepository } : {}),
+		...(options.todoLive$ ? { todoLive$: options.todoLive$ } : {}),
 	} });
 }
 
@@ -107,8 +103,12 @@ export default {
 			try {
 				const collectionId = authorizeTodoCollection(request, env);
 				if (!env.TODO_COLLECTIONS) throw new HttpError(503, 'Todo storage is not configured');
-				const repository = createDurableTodoRepository(env.TODO_COLLECTIONS.getByName(collectionId), collectionId);
-				return createWorkerApp({ todoRepository: repository, foundationLabel: env.FOUNDATION_LABEL }).fetch(request, env, context);
+				const stub = env.TODO_COLLECTIONS.getByName(collectionId);
+				return createWorkerApp({
+					todoRepository: createDurableTodoRepository(stub, collectionId),
+					todoLive$: createDurableTodoLive(stub, collectionId),
+					foundationLabel: env.FOUNDATION_LABEL,
+				}).fetch(request, env, context);
 			} catch (error) {
 				cancelUnreadBody(request);
 				if (error instanceof HttpError) return Response.json({ error: error.message, details: error.details }, { status: error.status });

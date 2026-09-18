@@ -1,6 +1,7 @@
 import { exports } from 'cloudflare:workers';
 import { EMPTY, NEVER, Observable, Subject, finalize, firstValueFrom, map, mergeMap, of, tap } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
+import { TestScheduler } from 'rxjs/testing';
 import { MAX_BODY_BYTES } from '../server/core/body';
 import { cors, requestId, requireAuth } from '../server/core/middleware';
 import { get, group, post } from '../server/core/router';
@@ -169,11 +170,12 @@ describe('Hono finite HTTP compatibility in workerd', () => {
 		}
 	});
 
-	it('does not start an SSE body when the finite descriptor reaches the adapter', async () => {
+	it('does not activate an SSE candidate until the finite descriptor has completed', async () => {
 		const subscribe = vi.fn();
 		const source$ = new Observable(subscribe);
-		const response = await createApp(() => of(stream$(source$))).fetch(request('/api/test'));
-		expect(response.status).toBe(501);
+		const effect: Effect = () => new Observable(subscriber => subscriber.next(stream$(source$)));
+		const response = await createApp(effect, 10).fetch(request('/api/test'));
+		expect(response.status).toBe(504);
 		expect(subscribe).not.toHaveBeenCalled();
 	});
 
@@ -315,13 +317,119 @@ describe('Fetch request body ownership in workerd', () => {
 	});
 });
 
+describe('Hono live response ownership in workerd', () => {
+	it('request body completion and finite descriptor disposal leave the response stream active', async () => {
+		const live = new Subject<string>(); const finalized = vi.fn(); const bodyDone = vi.fn();
+		const app = createHonoApp([post('/live', input$ => input$.pipe(map(input => {
+			expect(input.body).toEqual({ done: true });
+			return stream$(live, 'value');
+		}), finalize(finalized)))]);
+		const body = new ReadableStream<Uint8Array>({ start(controller) {
+			controller.enqueue(new TextEncoder().encode('{"done":true}')); controller.close(); bodyDone();
+		} });
+		const response = await app.fetch(request('/api/live', { method: 'POST', body }));
+		expect(bodyDone).toHaveBeenCalledTimes(1); expect(finalized).toHaveBeenCalledTimes(1);
+		expect(live.observed).toBe(true);
+		const reader = response.body!.getReader();
+		live.next('after request completion');
+		expect(new TextDecoder().decode((await reader.read()).value)).toContain('after request completion');
+		await reader.cancel(); expect(live.observed).toBe(false);
+	});
+
+	it('does not apply the finite request deadline to an accepted streaming body', async () => {
+		const scheduler = new TestScheduler(() => {});
+		const live = new Subject<string>();
+		const app = createHonoApp([get('/live', () => of(stream$(live)))], { deadlineMs: 10, scheduler });
+		const response = await app.fetch(request('/api/live'));
+		scheduler.flush();
+		expect(live.observed).toBe(true);
+		const reader = response.body!.getReader(); live.next('still live');
+		expect(new TextDecoder().decode((await reader.read()).value)).toContain('still live');
+		await reader.cancel();
+	});
+
+	it('synchronous empty and failed sources terminate body ownership exactly once', async () => {
+		for (const fails of [false, true]) {
+			const cleanup = vi.fn();
+			const source = new Observable(subscriber => {
+				if (fails) subscriber.error(new Error('source failure')); else subscriber.complete();
+				return cleanup;
+			});
+			const response = await createApp(() => of(stream$(source))).fetch(request('/api/test'));
+			expect(response.status).toBe(200);
+			if (fails) await expect(response.body!.getReader().read()).rejects.toThrow('source failure');
+			else expect(await response.text()).toBe('');
+			expect(cleanup).toHaveBeenCalledTimes(1);
+		}
+	});
+
+	it('invalid streaming response setup and multiple descriptors never subscribe', async () => {
+		const subscribe = vi.fn(); const source = new Observable(subscribe);
+		for (const invalid of [
+			{ ...stream$(source), status: 204 }, { ...stream$(source), status: 42 },
+			{ ...stream$(source), headers: { 'bad\nheader': 'value' } },
+			{ ...stream$(source), streamPolicy: 'drop' as 'fifo' },
+		]) {
+			expect((await createApp(() => of(invalid)).fetch(request('/api/test'))).status).toBe(500);
+		}
+		expect((await createApp(() => of(stream$(source), stream$(source))).fetch(request('/api/test'))).status).toBe(500);
+		expect(subscribe).not.toHaveBeenCalled();
+	});
+
+	it('abort after headers terminates A while B remains active and can deliver', async () => {
+		const source = new Subject<string>(); const cleanup = vi.fn();
+		const app = createApp(() => of(stream$(source.pipe(finalize(cleanup)))));
+		const abort = new AbortController();
+		const a = await app.fetch(request('/api/test', { signal: abort.signal }));
+		const b = await app.fetch(request('/api/test'));
+		const readerA = a.body!.getReader(); const readerB = b.body!.getReader();
+		abort.abort();
+		await expect(readerA.read()).rejects.toThrow('canceled');
+		expect(cleanup).toHaveBeenCalledTimes(1);
+		source.next('B continues');
+		expect(new TextDecoder().decode((await readerB.read()).value)).toContain('B continues');
+		await readerB.cancel();
+		expect(cleanup).toHaveBeenCalledTimes(2); expect(source.observed).toBe(false);
+	});
+
+	it('source failure after the first event errors the body without replacing headers', async () => {
+		const source = new Subject<string>();
+		const response = await createApp(() => of(stream$(source))).fetch(request('/api/test'));
+		const reader = response.body!.getReader(); source.next('first');
+		expect(new TextDecoder().decode((await reader.read()).value)).toContain('first');
+		source.error(new Error('interrupted'));
+		await expect(reader.read()).rejects.toThrow('interrupted');
+		expect(response.status).toBe(200);
+		expect(response.headers.get('content-type')).toContain('text/event-stream');
+		expect(response.headers.has('connection')).toBe(false);
+	});
+
+	it('uses FIFO by default and coalesces only explicitly declared full snapshots', async () => {
+		const source = new Subject<number>();
+		const app = createHonoApp([
+			get('/fifo', () => of(stream$(source))),
+			get('/snapshots', () => of({ ...stream$(source), streamPolicy: 'latest-snapshot' })),
+		]);
+		const fifo = await app.fetch(request('/api/fifo'));
+		const snapshots = await app.fetch(request('/api/snapshots'));
+		for (let index = 0; index < 100; index++) source.next(index);
+		await expect(fifo.body!.getReader().read()).rejects.toThrow('capacity');
+		const reader = snapshots.body!.getReader();
+		expect(new TextDecoder().decode((await reader.read()).value)).toBe('data: 99\n\n');
+		await reader.cancel(); expect(source.observed).toBe(false);
+	});
+});
+
 describe('Todo Worker migration in workerd', () => {
-	it('keeps all production Todo access disabled and authorized SSE explicitly pending', async () => {
+	it('keeps production access disabled while explicitly injected stores support SSE', async () => {
 		const response = await exports.default.fetch('https://example.test/api/todos');
 		expect(response.status).toBe(503);
 		expect((await exports.default.fetch('https://example.test/api/todos/stream')).status).toBe(503);
 		const authorized = createWorkerApp({ todoStore: createTodoStore() });
-		expect((await authorized.fetch(request('/api/todos/stream'))).status).toBe(501);
+		const stream = await authorized.fetch(request('/api/todos/stream'));
+		expect(stream.status).toBe(200);
+		expect(stream.headers.get('content-type')).toContain('text/event-stream');
+		await stream.body!.cancel();
 	});
 
 	it('reuses the canonical CRUD contracts with an injected local store', async () => {
@@ -354,12 +462,15 @@ describe('Todo Worker migration in workerd', () => {
 		expect((await app.fetch(jsonRequest('/api/todos', { title: 'Valid after failure' }))).status).toBe(201);
 	});
 
-	it('never subscribes to the store live stream during M05b', async () => {
-		const subscribe = vi.fn();
+	it('owns the injected store subscription through response body cancellation', async () => {
+		const cleanup = vi.fn();
+		const subscribe = vi.fn(() => cleanup);
 		const store = { ...createTodoStore(), todos$: new Observable<Todo[]>(subscribe) };
 		const response = await createWorkerApp({ todoStore: store }).fetch(request('/api/todos/stream'));
-		expect(response.status).toBe(501);
-		expect(subscribe).not.toHaveBeenCalled();
+		expect(response.status).toBe(200);
+		expect(subscribe).toHaveBeenCalledTimes(1);
+		await response.body!.cancel();
+		expect(cleanup).toHaveBeenCalledTimes(1);
 	});
 
 	it('keeps separately injected test stores isolated', async () => {

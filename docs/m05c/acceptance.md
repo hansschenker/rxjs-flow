@@ -1,7 +1,12 @@
 # M05c — Durable shared Todo authority
 
 Date: 2026-09-18. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
-Status: implemented; acceptance review/merge pending.
+Status: accepted/merged in [PR #11](https://github.com/hansschenker/rxjs-flow/pull/11)
+at `d5500da407611e7856e9e67481a08e15e530aece`.
+The original execution results and limits below describe M05c at its recorded
+implementation commit. Subsequent live delivery is recorded in [M05d acceptance](../m05d/acceptance.md).
+The owner confirmed the page and that Refresh initiates the API request; this
+manual observation is separate from the automated durability/restart evidence.
 
 ## Provenance and scope
 
@@ -141,7 +146,7 @@ Final verification:
 | `node scripts/m05c-checkpoint.mjs --preview` | Pass — built assets and Worker through local Wrangler; same two-caller/restart proof |
 | `git diff --check` | Pass |
 
-All **737 tests** passed locally. No M05c implementation blocker remains. The milestone PR records the exact review head and final CI result; acceptance/merge is pending. No new dependency install was needed locally because package.json and package-lock.json are unchanged; the PR CI performs a clean `npm ci`.
+All **737 tests** passed locally. No M05c implementation blocker remains. The milestone PR records the exact review head and passing CI result; PR #11 is now merged at the commit above. No new dependency install was needed locally because package.json and package-lock.json are unchanged; the PR CI performs a clean `npm ci`.
 
 Evidence is separated by boundary: pure/domain tests exercise controlled storage
 interleavings and failures; workerd tests exercise the actual Durable Object
