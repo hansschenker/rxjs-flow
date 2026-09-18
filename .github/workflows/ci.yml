@@ -47,3 +47,7 @@ jobs:
       - name: Smoke test local Worker preview
         timeout-minutes: 3
         run: npm run smoke:worker
+
+      - name: Smoke test local Worker Todo API
+        timeout-minutes: 3
+        run: npm run smoke:worker -- --dev

@@ -138,6 +138,63 @@ async function checkUnknownApi(base, path) {
   checks.push({ path, status: response.status, body });
 }
 
+async function checkTodoApi(base) {
+  const path = '/api/todos';
+  const response = await localFetch(base, path);
+  assert.match(response.headers.get('content-type') ?? '', /application\/json/);
+  if (!development) {
+    assert.equal(response.status, 503, 'Built Worker requires an explicit Todo authority');
+    checks.push({ path, status: response.status, mode: 'authority not configured', body: await response.json() });
+    return;
+  }
+  assert.equal(response.status, 200, 'Development Worker exposes its explicit volatile Todo capability');
+  const initial = await response.json();
+  assert.ok(Array.isArray(initial));
+  let createdId;
+  async function mutation(method, suffix = '', body) {
+    return fetch(new URL(path + suffix, base), {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      ...(body === undefined ? {} : { body: typeof body === 'string' ? body : JSON.stringify(body) }),
+      signal: AbortSignal.any([stopping.signal, AbortSignal.timeout(5_000)]),
+    });
+  }
+  try {
+    const createdResponse = await mutation('POST', '', { title: 'M05b local Worker smoke' });
+    assert.equal(createdResponse.status, 201);
+    const created = await createdResponse.json();
+    createdId = created.id;
+    assert.equal(created.title, 'M05b local Worker smoke');
+    const updated = await mutation('PUT', '/' + createdId, { completed: true });
+    assert.equal(updated.status, 200);
+    assert.equal((await updated.json()).completed, true);
+    const filtered = await localFetch(base, path + '?completed=true');
+    assert.ok((await filtered.json()).some(todo => todo.id === createdId));
+    const malformed = await mutation('POST', '', '{');
+    assert.equal(malformed.status, 400);
+    await malformed.text();
+    const invalid = await mutation('POST', '', { title: '' });
+    assert.equal(invalid.status, 422);
+    await invalid.text();
+    const malformedParameter = await mutation('PUT', '/%ZZ', { completed: true });
+    assert.equal(malformedParameter.status, 400);
+    await malformedParameter.text();
+    const healthy = await localFetch(base, path);
+    assert.equal(healthy.status, 200);
+    assert.ok((await healthy.json()).some(todo => todo.id === createdId));
+    const removed = await mutation('DELETE', '/' + createdId);
+    assert.equal(removed.status, 204);
+    assert.equal(await removed.text(), '');
+    const missing = await mutation('DELETE', '/' + createdId);
+    assert.equal(missing.status, 404);
+    await missing.text();
+    createdId = undefined;
+    checks.push({ path, statuses: [200, 201, 200, 400, 422, 400, 200, 204, 404], mode: 'volatile local Todo CRUD and failure isolation' });
+  } finally {
+    if (createdId) await (await mutation('DELETE', '/' + createdId)).text();
+  }
+}
+
 function signalPreviewGroup(signal) {
   try {
     process.kill(-preview.pid, signal);
@@ -184,7 +241,8 @@ try {
     const scriptPath = await checkHtml(base, '/');
     await checkBrowserScript(base, scriptPath);
     await checkFoundation(base);
-    for (const path of ['/api', '/api/missing', '/api/todos']) await checkUnknownApi(base, path);
+    for (const path of ['/api', '/api/missing', '/api/api/todos']) await checkUnknownApi(base, path);
+    await checkTodoApi(base);
     assert.equal(await checkHtml(base, '/unknown-page'), scriptPath, 'SPA fallback uses the same shell');
   } finally {
     await stopPreview();

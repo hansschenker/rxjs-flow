@@ -1,6 +1,6 @@
-import { catchError, mergeMap, of } from 'rxjs';
-import type { AppContext, Effect, HttpRequest, Middleware } from './types';
-import { errorResponse, NotFound } from './errors';
+import { catchError, defer, mergeMap, of, type Observable } from 'rxjs';
+import type { AppContext, Effect, HttpRequest, HttpResponse, Middleware } from './types';
+import { BadRequest, errorResponse, NotFound } from './errors';
 import type { AnyRoute, RouteBody, RouteParams, RouteQuery } from '../../shared/routes';
 
 export interface Route<TPath extends string = string> {
@@ -36,7 +36,11 @@ const matchRoute = (pattern: string, url: string): Record<string, string> | null
 	const params: Record<string, string> = {};
 	for (let i = 0; i < patternParts.length; i++) {
 		if (patternParts[i].startsWith(':')) {
-			params[patternParts[i].slice(1)] = decodeURIComponent(urlParts[i]);
+			try {
+				params[patternParts[i].slice(1)] = decodeURIComponent(urlParts[i]);
+			} catch {
+				throw new BadRequest('Malformed route parameter');
+			}
 		} else if (patternParts[i] !== urlParts[i]) {
 			return null;
 		}
@@ -94,26 +98,34 @@ export const flattenRoutes = (definitions: RouteDefinition[], parentPrefix = '',
 		);
 	});
 
+/** Apply a matched route without exposing either platform's raw context. */
+export function applyRoute(
+	routeDefinition: Route,
+	request: HttpRequest,
+	context: AppContext,
+): Observable<HttpResponse> {
+	return defer(() => {
+		const enriched = { ...request, context };
+		const piped = (routeDefinition.middlewares ?? []).reduce(
+			(source$, middleware) => source$.pipe(middleware),
+			of(enriched),
+		);
+		return routeDefinition.effect(piped);
+	}).pipe(catchError(error => of(errorResponse(error))));
+}
+
 export const createRouter = (
 	definitions: RouteDefinition[],
 	context: AppContext = { services: {}, state: {} },
 ): Effect =>
-	req$ => req$.pipe(
-		mergeMap(req => {
-			for (const routeDefinition of flattenRoutes(definitions)) {
-				if (routeDefinition.method !== req.method) continue;
-				const params = matchRoute(routeDefinition.path, req.url);
+	request$ => request$.pipe(
+		mergeMap(request => defer(() => {
+			for (const definition of flattenRoutes(definitions)) {
+				if (definition.method !== request.method) continue;
+				const params = matchRoute(definition.path, request.url);
 				if (params === null) continue;
-
-				const enriched: HttpRequest = { ...req, params, context };
-				const piped = (routeDefinition.middlewares ?? []).reduce(
-					(src$, middleware) => src$.pipe(middleware),
-					of(enriched),
-				);
-				return routeDefinition.effect(piped).pipe(
-					catchError(err => of(errorResponse(err))),
-				);
+				return applyRoute(definition, { ...request, params }, context);
 			}
 			return of(errorResponse(new NotFound()));
-		}),
+		}).pipe(catchError(error => of(errorResponse(error))))),
 	);

@@ -7,6 +7,31 @@ import { json } from './response';
 import { createTestRequest } from './testing';
 
 describe('createApp()', () => {
+	it('awaits every stop hook in order and reports failures after remaining cleanup', async () => {
+		const failure = new Error('first stop hook failed');
+		const calls: string[] = [];
+		const app = createApp([], {
+			onStop: [
+				() => { calls.push('failed'); throw failure; },
+				async () => {
+					calls.push('cleanup started');
+					await new Promise<void>(resolve => setImmediate(resolve));
+					calls.push('cleanup completed');
+				},
+				() => { calls.push('last cleanup'); },
+			],
+		});
+		const server = await app.start(0);
+		const result = await app.stop().catch(error => error as unknown);
+		expect(server.closed).toBe(true);
+		expect(server.address()).toBeNull();
+		expect(calls).toEqual(['failed', 'cleanup started', 'cleanup completed', 'last cleanup']);
+		expect(result).toBeInstanceOf(AggregateError);
+		expect((result as AggregateError).errors).toEqual([failure]);
+		await app.stop();
+		expect(calls).toHaveLength(4);
+	});
+
 	it('adds health routes by default', async () => {
 		const app = createApp([]);
 		const router = createRouter(app.routes, app.context);

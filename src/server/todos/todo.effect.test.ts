@@ -3,7 +3,6 @@ import type { HttpRequest } from '../core/types';
 import { ValidationError } from '../core/validator';
 import { createTodoStore, resetStore, setTodos, getTodos, todoStore } from './todo.store';
 import { getAll$, create$, update$, delete$, todoStream$ } from './todo.effect';
-import type * as http from 'http';
 
 const mockReq = (overrides: Partial<HttpRequest> = {}): HttpRequest => ({
 	method: 'GET',
@@ -12,7 +11,7 @@ const mockReq = (overrides: Partial<HttpRequest> = {}): HttpRequest => ({
 	query: {},
 	body: {},
 	headers: {},
-	raw: {} as http.IncomingMessage,
+	signal: new AbortController().signal,
 	context: { services: { todoStore }, state: {} },
 	requestContext: { state: {} },
 	...overrides,

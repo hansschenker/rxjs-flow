@@ -3,12 +3,13 @@
   "name": "rxjs-flow-foundation",
   "main": "src/worker/index.ts",
   "compatibility_date": "2026-09-16",
-  "compatibility_flags": [],
+  "compatibility_flags": ["enable_request_signal"],
   "workers_dev": false,
   "preview_urls": false,
   "send_metrics": false,
   "vars": {
-    "FOUNDATION_LABEL": "rxjs-flow foundation"
+    "FOUNDATION_LABEL": "rxjs-flow foundation",
+    "LOCAL_TODO_DEMO": "disabled"
   },
   "secrets": { "required": [] },
   "assets": {

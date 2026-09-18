@@ -28,7 +28,7 @@ describe('foundation Worker in workerd', () => {
 		// The official test harness also owns private runtime/service bindings.
 		const applicationBindings = Object.keys(env)
 			.filter(name => !name.startsWith('__VITEST_POOL_WORKERS_'));
-		expect(applicationBindings).toEqual(['FOUNDATION_LABEL']);
+		expect(applicationBindings.sort()).toEqual(['FOUNDATION_LABEL', 'LOCAL_TODO_DEMO']);
 	});
 
 	it('registers routes without constructing or subscribing to an operation', () => {
