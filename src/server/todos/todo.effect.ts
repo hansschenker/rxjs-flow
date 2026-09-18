@@ -1,7 +1,8 @@
 import { map, mergeMap } from 'rxjs/operators';
+import type { Observable } from 'rxjs';
 import { HttpError } from '../core/errors';
 import { created, json, noContent, stream$ } from '../core/response';
-import type { Effect } from '../core/types';
+import type { Effect, SseEvent } from '../core/types';
 import { validateBody, validateParams, validateQuery } from '../core/validator';
 import { CreateTodoSchema, TodoListQuerySchema, TodoParamsSchema, UpdateTodoSchema } from './todo.validator';
 import type { TodoStore } from './todo.store-factory';
@@ -11,6 +12,7 @@ import { createMemoryTodoRepository, type TodoRepository } from './todo.reposito
 export interface TodoServices {
 	todoStore?: TodoStore;
 	todoRepository?: TodoRepository;
+	todoLive$?: Observable<SseEvent>;
 }
 
 export const createTodoEffects = () => ({
@@ -48,8 +50,11 @@ export const createTodoEffects = () => ({
 	todoStream$: ((req$) =>
 		req$.pipe(
 			map(req => {
-				const store = getTodoStore(req);
-				return stream$(store.todos$, 'todos');
+				const live = req.context.services.todoLive$ as Observable<SseEvent> | undefined;
+				if (live) return { ...stream$(live), stream: live, streamPolicy: 'latest-snapshot' as const };
+				const store = req.context.services.todoStore as TodoStore | undefined;
+				if (!store) throw new HttpError(503, 'Todo live storage is not configured');
+				return { ...stream$(store.todos$, 'todos'), streamPolicy: 'latest-snapshot' as const };
 			}),
 		)) as Effect,
 });
@@ -60,9 +65,6 @@ export const create$ = defaultEffects.create$;
 export const update$ = defaultEffects.update$;
 export const delete$ = defaultEffects.delete$;
 export const todoStream$ = defaultEffects.todoStream$;
-
-const getTodoStore = (req: { context: { services: Record<string, unknown> } }): TodoStore =>
-	req.context.services.todoStore as TodoStore;
 
 function getTodoRepository(req: { context: { services: Record<string, unknown> } }): TodoRepository {
 	const capability = req.context.services.todoRepository as TodoRepository | undefined;

@@ -2,9 +2,10 @@
 // request exposes body consumption to its separately owned finite operation.
 import * as http from 'node:http';
 import type { AddressInfo } from 'node:net';
-import { Observable, Subscriber, Subscription, tap } from 'rxjs';
+import { Observable, Subscriber, Subscription } from 'rxjs';
 import { MAX_BODY_BYTES, parseJsonBody } from './body';
 import { HttpError } from './errors';
+import { encodeSseEvent } from './sse-event';
 import type { HttpRequest, HttpResponse, SseEvent } from './types';
 
 const releaseSubscription = (subscription: Subscription): void => {
@@ -21,6 +22,7 @@ export interface PreparedNodeResponse {
 	headers: Record<string, string>;
 	body: string;
 	stream?: Observable<SseEvent>;
+	streamPolicy?: HttpResponse['streamPolicy'];
 }
 
 export interface RequestEvent {
@@ -111,43 +113,160 @@ const parseQuery = (raw: string): Record<string, string> => {
 	return params;
 };
 
-export const formatSseChunk = (event: SseEvent): string => {
-	let chunk = '';
-	if (event.id !== undefined) chunk += `id: ${event.id}\n`;
-	if (event.event !== undefined) chunk += `event: ${event.event}\n`;
-	return `${chunk}data: ${JSON.stringify(event.data)}\n\n`;
-};
+export const formatSseChunk = (event: SseEvent): string =>
+	new TextDecoder().decode(encodeSseEvent(event));
+
+export const NODE_SSE_LIMITS = Object.freeze({
+	maxActiveStreams: 32,
+	maxFrameBytes: 128 * 1024,
+	maxPendingBytes: 256 * 1024,
+	maxPendingEvents: 16,
+});
 
 interface CloseSource {
 	on: (event: 'close', handler: () => void) => unknown;
 	off?: (event: 'close', handler: () => void) => unknown;
 }
 
+interface NodeSseTransport {
+	write: (chunk: string) => unknown;
+	end: () => unknown;
+	destroy?: () => unknown;
+	destroyed?: boolean;
+	writableEnded?: boolean;
+	on?: (event: 'drain' | 'error', handler: () => void) => unknown;
+	off?: (event: 'drain' | 'error', handler: () => void) => unknown;
+}
+
+export interface NodeSseOptions {
+	policy?: HttpResponse['streamPolicy'];
+	signal?: AbortSignal;
+	maxFrameBytes?: number;
+	maxPendingBytes?: number;
+	maxPendingEvents?: number;
+}
+
+/**
+ * The response owns one serialized writer. A false write means Node accepted
+ * that frame but requires drain before another write. FIFO never drops events:
+ * overflow destroys the response. Full snapshots may explicitly replace the
+ * one pending snapshot; the frame already handed to Node is never replaced.
+ */
 export const applySse = (
 	stream: Observable<SseEvent>,
 	responseLifetime: CloseSource,
-	nodeRes: { write: (chunk: string) => unknown; end: () => unknown },
+	nodeRes: NodeSseTransport,
+	options: NodeSseOptions = {},
 ): Subscription => {
 	const owner = new Subscription();
-	const onClose = (): void => releaseSubscription(owner);
-	responseLifetime.on('close', onClose);
-	owner.add(() => responseLifetime.off?.('close', onClose));
-	const finish = (): void => {
-		try { nodeRes.end(); } catch { /* A disconnected transport cannot accept an error body. */ }
-		finally { releaseSubscription(owner); }
+	const maxFrameBytes = options.maxFrameBytes ?? NODE_SSE_LIMITS.maxFrameBytes;
+	const maxPendingBytes = options.maxPendingBytes ?? NODE_SSE_LIMITS.maxPendingBytes;
+	const maxPendingEvents = options.maxPendingEvents ?? NODE_SSE_LIMITS.maxPendingEvents;
+	let queue: Array<{ chunk: string; bytes: number }> = [];
+	let pendingBytes = 0;
+	let blocked = false;
+	let writing = false;
+	let completed = false;
+	const cancel = (): void => releaseSubscription(owner);
+	const fail = (): void => {
+		if (owner.closed) return;
+		releaseSubscription(owner);
+		// Headers are already sent. A socket interruption exposes failure; a
+		// successful end would falsely advertise normal stream completion.
+		try {
+			if (nodeRes.destroy) nodeRes.destroy();
+			else nodeRes.end(); // Compatibility for minimal legacy test transports.
+		} catch { /* The transport is already unusable. */ }
 	};
-	const sink = new Subscriber<SseEvent>({ next: () => {}, error: finish, complete: finish });
+	const finish = (): void => {
+		if (owner.closed) return;
+		releaseSubscription(owner);
+		try { nodeRes.end(); } catch { /* A closed peer cannot accept more bytes. */ }
+	};
+	const pump = (): void => {
+		if (owner.closed || blocked || writing) return;
+		writing = true;
+		try {
+			while (!owner.closed && !blocked && queue.length > 0) {
+				const frame = queue.shift()!;
+				pendingBytes -= frame.bytes;
+				if (nodeRes.write(frame.chunk) === false) {
+					blocked = true;
+					if (!nodeRes.on) fail();
+				}
+			}
+			if (!owner.closed && !blocked && completed && queue.length === 0) finish();
+		} catch { fail(); }
+		finally { writing = false; }
+	};
+	const onDrain = (): void => { blocked = false; pump(); };
+	// Cleanup exists before listeners, source setup or synchronous emissions.
+	owner.add(() => { queue = []; pendingBytes = 0; blocked = false; });
+	owner.add(() => responseLifetime.off?.('close', cancel));
+	owner.add(() => nodeRes.off?.('drain', onDrain));
+	owner.add(() => nodeRes.off?.('error', fail));
+	owner.add(() => options.signal?.removeEventListener('abort', fail));
+	if (options.signal?.aborted || nodeRes.destroyed || nodeRes.writableEnded) {
+		cancel();
+		return owner;
+	}
+	const sink = new Subscriber<SseEvent>({
+		next: event => {
+			if (owner.closed) return;
+			try {
+				const bytes = encodeSseEvent(event);
+				if (bytes.byteLength > maxFrameBytes) { fail(); return; }
+				if (options.policy === 'latest-snapshot') { queue = []; pendingBytes = 0; }
+				if (queue.length >= maxPendingEvents || pendingBytes + bytes.byteLength > maxPendingBytes) {
+					fail();
+					return;
+				}
+				queue.push({ chunk: new TextDecoder().decode(bytes), bytes: bytes.byteLength });
+				pendingBytes += bytes.byteLength;
+				pump();
+			} catch { fail(); }
+		},
+		error: fail,
+		complete: () => { completed = true; pump(); },
+	});
 	owner.add(sink);
-	stream.pipe(tap(event => nodeRes.write(formatSseChunk(event)))).subscribe(sink);
+	try {
+		if (![maxFrameBytes, maxPendingBytes, maxPendingEvents].every(value => Number.isSafeInteger(value) && value > 0)
+			|| (options.policy !== undefined && options.policy !== 'fifo' && options.policy !== 'latest-snapshot')) {
+			throw new RangeError('Invalid Node SSE delivery policy');
+		}
+		responseLifetime.on('close', cancel);
+		if (owner.closed) return owner;
+		nodeRes.on?.('drain', onDrain);
+		if (owner.closed) return owner;
+		nodeRes.on?.('error', fail);
+		if (owner.closed) return owner;
+		options.signal?.addEventListener('abort', fail, { once: true });
+		if (!owner.closed && !options.signal?.aborted) stream.subscribe(sink);
+		else cancel();
+	} catch (error) {
+		if (!owner.closed) fail();
+		else {
+			// RxJS may synchronously run a returned finalizer after a producer
+			// has already completed. Keep that failure inside this boundary.
+			try { console.error(error); } catch { /* Reporting is observational. */ }
+		}
+	}
 	return owner;
 };
 
-export const prepareNodeResponse = ({ status = 200, body, headers = {}, stream }: HttpResponse): PreparedNodeResponse => {
+export const prepareNodeResponse = ({ status = 200, body, headers = {}, stream, streamPolicy }: HttpResponse): PreparedNodeResponse => {
 	if (!Number.isInteger(status) || status < 200 || status > 599) throw new Error('Invalid response status');
+	if (stream && [204, 205, 304].includes(status)) throw new Error('SSE response status cannot suppress its body');
+	if (stream && streamPolicy !== undefined && streamPolicy !== 'fifo' && streamPolicy !== 'latest-snapshot') {
+		throw new Error('Invalid Node SSE delivery policy');
+	}
 	const preparedHeaders: Record<string, string> = stream
 		? { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', Connection: 'keep-alive', ...headers }
 		: { 'Content-Type': 'application/json', ...headers };
 	for (const [name, value] of Object.entries(preparedHeaders)) {
+		// Live responses have no fixed encoded length; let Node frame the body.
+		if (stream && name.toLowerCase() === 'content-length') { delete preparedHeaders[name]; continue; }
 		http.validateHeaderName(name);
 		http.validateHeaderValue(name, value);
 	}
@@ -158,12 +277,14 @@ export const prepareNodeResponse = ({ status = 200, body, headers = {}, stream }
 		headers: preparedHeaders,
 		body: serialized,
 		stream,
+		streamPolicy,
 	};
 };
 
 export const createServer = (port: number, options: NodeServerOptions = {}): Observable<RequestEvent> =>
 	new Observable(observer => {
 		const responses = new Set<() => void>();
+		let activeStreams = 0;
 		let listening = false;
 		let stopped = false;
 		let closeReported = false;
@@ -195,13 +316,21 @@ export const createServer = (port: number, options: NodeServerOptions = {}): Obs
 			res.on('finish', finish);
 			const respondPrepared = (response: PreparedNodeResponse): void => {
 				if (owner.closed || res.headersSent || res.destroyed) return;
+				if (response.stream && activeStreams >= NODE_SSE_LIMITS.maxActiveStreams) {
+					respondPrepared(prepareNodeResponse({ status: 503, body: { error: 'Live stream capacity reached' } }));
+					return;
+				}
 				try {
+					if (response.stream) {
+						activeStreams++;
+						owner.add(() => { activeStreams--; });
+					}
 					const headers = { ...response.headers };
 					if (!req.complete) headers.Connection = 'close';
 					res.writeHead(response.status, headers);
 					if (response.stream) {
 						res.flushHeaders();
-						owner.add(applySse(response.stream, res, res));
+						owner.add(applySse(response.stream, res, res, { policy: response.streamPolicy, signal: controller.signal }));
 					} else {
 						res.end(response.body);
 					}

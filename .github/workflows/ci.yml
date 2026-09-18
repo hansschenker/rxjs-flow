@@ -55,3 +55,11 @@ jobs:
       - name: Verify durable Todo process restart
         timeout-minutes: 3
         run: node scripts/m05c-checkpoint.mjs --preview
+
+      - name: Verify owned live streams in development
+        timeout-minutes: 3
+        run: node scripts/m05d-checkpoint.mjs
+
+      - name: Verify owned live streams in built Worker
+        timeout-minutes: 3
+        run: node scripts/m05d-checkpoint.mjs --preview

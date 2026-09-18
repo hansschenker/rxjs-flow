@@ -4,6 +4,6 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": ["vite/client"]
   },
-  "include": ["src/client/**/*"],
+  "include": ["src/client/**/*", "src/checkpoints/**/*"],
   "exclude": ["**/*.test.ts"]
 }

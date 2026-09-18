@@ -11,10 +11,10 @@ import { fileURLToPath } from 'node:url';
 const projectDirectory = fileURLToPath(new URL('..', import.meta.url));
 const viteEntry = fileURLToPath(new URL('../node_modules/vite/bin/vite.js', import.meta.url));
 const wranglerEntry = fileURLToPath(new URL('../node_modules/wrangler/bin/wrangler.js', import.meta.url));
-export async function runWorkerSmoke({ development = false, restart = false } = {}) {
-  const persistenceDirectory = await mkdtemp(join(tmpdir(), 'rxjs-flow-m05c-'));
-  const enableAuthority = development || restart;
-  const builtAuthority = !development && restart;
+export async function runWorkerSmoke({ development = false, restart = false, checkpoint } = {}) {
+  const persistenceDirectory = await mkdtemp(join(tmpdir(), 'rxjs-flow-checkpoint-'));
+  const enableAuthority = development || restart || Boolean(checkpoint);
+  const builtAuthority = !development && (restart || Boolean(checkpoint));
   const mode = development ? 'development' : builtAuthority ? 'built-worker-local' : 'built-preview';
   const stopping = new AbortController();
   const navigationHeaders = { Accept: 'text/html', 'Sec-Fetch-Mode': 'navigate' };
@@ -323,6 +323,13 @@ export async function runWorkerSmoke({ development = false, restart = false } = 
       for (const path of ['/api', '/api/missing', '/api/api/todos']) await checkUnknownApi(base, path);
       await checkTodoApi(base);
       assert.equal(await checkHtml(base, '/unknown-page'), scriptPath, 'SPA fallback uses the same shell');
+      if (checkpoint) {
+        await checkpoint({
+          base, signal: stopping.signal, checks,
+          stop: stopPreview,
+          start: async () => { startPreview(port); await waitUntilReady(base); },
+        });
+      }
       if (restart) {
         const expected = await checkTwoCallers(base);
         await stopPreview();

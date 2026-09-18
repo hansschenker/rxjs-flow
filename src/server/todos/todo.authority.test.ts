@@ -1,4 +1,4 @@
-import { Observable, Subject, defer, firstValueFrom, of } from 'rxjs';
+import { Observable, Subject, Subscriber, defer, firstValueFrom, of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import type { Todo } from '../../shared/types';
 import {
@@ -397,5 +397,284 @@ describe('durable Todo authority', () => {
 	it('decodes snapshot identity strictly without accepting arbitrary structural assertions', () => {
 		expect(decodeTodoSnapshot(envelope(), 'test')).toEqual(envelope());
 		expect(() => decodeTodoSnapshot(envelope(), 'wrong')).toThrow('Stored Todo state is invalid');
+	});
+});
+
+describe('owned live Todo authority registrations', () => {
+	it('constructs watch descriptions without storage, and handles a synchronous one-snapshot consumer', async () => {
+		const model = storageModel();
+		const { core } = authority(model);
+		const snapshots = core.watch$();
+		expect(model.reads()).toBe(0);
+		expect(core.resourceCounts().subscribers).toBe(0);
+		expect(await firstValueFrom(snapshots)).toEqual(envelope());
+		expect(core.resourceCounts()).toEqual({ active: 0, queued: 0, pending: 0, subscribers: 0 });
+		expect(model.writes()).toBe(1);
+	});
+
+	it('gives every subscriber independent ownership, including subscribers to the same watch description', async () => {
+		const { core } = authority(storageModel(envelope()));
+		const watch = core.watch$();
+		const left: number[] = [];
+		const right: number[] = [];
+		const first = watch.subscribe(snapshot => left.push(snapshot.revision));
+		const second = watch.subscribe(snapshot => right.push(snapshot.revision));
+		expect(core.resourceCounts().subscribers).toBe(2);
+		first.unsubscribe();
+		await firstValueFrom(core.execute$(create('Only right stays connected')));
+		expect(left).toEqual([0]);
+		expect(right).toEqual([0, 1]);
+		expect(core.resourceCounts().subscribers).toBe(1);
+		second.unsubscribe();
+		expect(core.resourceCounts().subscribers).toBe(0);
+		await firstValueFrom(core.execute$(create('No connected clients')));
+		expect(await firstValueFrom(watch)).toMatchObject({ revision: 2, todos: [{ title: 'Only right stays connected' }, { title: 'No connected clients' }] });
+	});
+
+	it('cannot miss a committed mutation queued during initial snapshot setup', async () => {
+		const model = storageModel(envelope());
+		model.hold();
+		const { core } = authority(model);
+		const seen: number[] = [];
+		const subscription = core.watch$().subscribe(snapshot => seen.push(snapshot.revision));
+		const mutation = firstValueFrom(core.execute$(create('During setup')));
+		expect(seen).toEqual([]);
+		expect(core.resourceCounts()).toEqual({ active: 1, queued: 1, pending: 2, subscribers: 1 });
+		model.release();
+		expect(seen).toEqual([0]);
+		model.release();
+		await mutation;
+		expect(seen).toEqual([0, 1]);
+		subscription.unsubscribe();
+		expect(core.resourceCounts()).toEqual({ active: 0, queued: 0, pending: 0, subscribers: 0 });
+	});
+
+	it('acquires the committed snapshot between earlier and later queued writes', async () => {
+		const model = storageModel(envelope());
+		model.hold();
+		const { core } = authority(model);
+		const before = firstValueFrom(core.execute$(create('Before registration')));
+		const seen: TodoSnapshot[] = [];
+		const subscription = core.watch$().subscribe(snapshot => seen.push(snapshot));
+		const after = firstValueFrom(core.execute$(create('After registration')));
+		model.release();
+		await before;
+		expect(seen).toEqual([]);
+		model.release();
+		expect(seen.map(snapshot => snapshot.revision)).toEqual([1]);
+		model.release();
+		await after;
+		expect(seen.map(snapshot => snapshot.revision)).toEqual([1, 2]);
+		expect(seen[1].todos.map(todo => todo.title)).toEqual(['Before registration', 'After registration']);
+		subscription.unsubscribe();
+	});
+
+	it('attaches before synchronous notification even when that notification submits a mutation', () => {
+		const { core } = authority(storageModel(envelope()));
+		const seen: number[] = [];
+		const subscription = core.watch$().subscribe(snapshot => {
+			seen.push(snapshot.revision);
+			if (snapshot.revision === 0) core.execute$(create('Reentrant write')).subscribe();
+		});
+		expect(seen).toEqual([0, 1]);
+		expect(core.resourceCounts()).toEqual({ active: 0, queued: 0, pending: 0, subscribers: 1 });
+		subscription.unsubscribe();
+	});
+
+	it('allows a reentrant watcher to acquire a coherent current snapshot without duplicate delivery', async () => {
+		const { core } = authority(storageModel(envelope()));
+		const later: number[] = [];
+		let second: ReturnType<Observable<TodoSnapshot>['subscribe']> | undefined;
+		const first = core.watch$().subscribe(snapshot => {
+			if (snapshot.revision === 1) second = core.watch$().subscribe(value => later.push(value.revision));
+		});
+		await firstValueFrom(core.execute$(create('Connect during publication')));
+		expect(later).toEqual([1]);
+		await firstValueFrom(core.execute$(create('Next commit')));
+		expect(later).toEqual([1, 2]);
+		first.unsubscribe();
+		second?.unsubscribe();
+		expect(core.resourceCounts().subscribers).toBe(0);
+	});
+
+	it('does no work for an already-closed subscriber', () => {
+		const model = storageModel();
+		const { core } = authority(model);
+		const subscriber = new Subscriber<TodoSnapshot>();
+		subscriber.unsubscribe();
+		core.watch$().subscribe(subscriber);
+		expect(model.reads()).toBe(0);
+		expect(core.resourceCounts()).toEqual({ active: 0, queued: 0, pending: 0, subscribers: 0 });
+	});
+
+	it('releases live admission during canceled setup without canceling a held state transaction', async () => {
+		const model = storageModel(envelope());
+		model.hold();
+		const { core } = authority(model, { maxActiveSubscribers: 1 });
+		const seen: TodoSnapshot[] = [];
+		const subscription = core.watch$().subscribe(snapshot => seen.push(snapshot));
+		subscription.unsubscribe();
+		expect(core.resourceCounts()).toEqual({ active: 1, queued: 0, pending: 1, subscribers: 0 });
+		const next = firstValueFrom(core.execute$(create('Still committed')));
+		model.release();
+		model.release();
+		expect((await next).snapshot.revision).toBe(1);
+		expect(seen).toEqual([]);
+		expect(core.resourceCounts()).toEqual({ active: 0, queued: 0, pending: 0, subscribers: 0 });
+	});
+
+	it('keeps canceled queued registrations bounded and skips their storage work when drained', async () => {
+		const model = storageModel(envelope());
+		model.hold();
+		const { core } = authority(model, { maxPendingOperations: 3 });
+		const mutation = firstValueFrom(core.execute$(create('Active')));
+		core.watch$().subscribe().unsubscribe();
+		core.watch$().subscribe().unsubscribe();
+		await expect(firstValueFrom(core.watch$())).rejects.toMatchObject({ status: 503, details: { code: 'TODO_AUTHORITY_BUSY' } });
+		expect(core.resourceCounts()).toEqual({ active: 1, queued: 2, pending: 3, subscribers: 0 });
+		model.release();
+		await mutation;
+		expect(model.reads()).toBe(1);
+		expect(core.resourceCounts()).toEqual({ active: 0, queued: 0, pending: 0, subscribers: 0 });
+		model.runImmediately();
+		expect((await firstValueFrom(core.watch$())).revision).toBe(1);
+	});
+
+	it('bounds live registrations before storage and admits replacements after cancellation', async () => {
+		const model = storageModel(envelope());
+		const { core } = authority(model, { maxActiveSubscribers: 2 });
+		const first = core.watch$().subscribe();
+		const second = core.watch$().subscribe();
+		await expect(firstValueFrom(core.watch$())).rejects.toMatchObject({ status: 503, details: { code: 'TODO_LIVE_BUSY' } });
+		expect(model.reads()).toBe(2);
+		expect(core.resourceCounts().subscribers).toBe(2);
+		first.unsubscribe();
+		expect((await firstValueFrom(core.watch$())).revision).toBe(0);
+		second.unsubscribe();
+		expect(core.resourceCounts().subscribers).toBe(0);
+	});
+
+	it('reserves live capacity while setup waits instead of over-admitting pending registrations', async () => {
+		const model = storageModel(envelope());
+		model.hold();
+		const { core } = authority(model, { maxActiveSubscribers: 1 });
+		const first = core.watch$().subscribe();
+		await expect(firstValueFrom(core.watch$())).rejects.toMatchObject({ details: { code: 'TODO_LIVE_BUSY' } });
+		expect(model.reads()).toBe(1);
+		first.unsubscribe();
+		model.release();
+		expect(core.resourceCounts().subscribers).toBe(0);
+	});
+
+	it('keeps domain failures local and publishes only successful committed mutations', async () => {
+		const model = storageModel(envelope());
+		const { core } = authority(model);
+		const seen: number[] = [];
+		const subscription = core.watch$().subscribe(snapshot => seen.push(snapshot.revision));
+		await expect(firstValueFrom(core.execute$({ kind: 'delete', id: 'missing' }))).rejects.toMatchObject({ status: 404 });
+		await expect(firstValueFrom(core.execute$({ kind: 'create', input: { title: '' } }))).rejects.toMatchObject({ status: 422 });
+		expect(seen).toEqual([0]);
+		expect(subscription.closed).toBe(false);
+		await firstValueFrom(core.execute$(create('Healthy')));
+		await firstValueFrom(core.execute$({ kind: 'list' }));
+		expect(seen).toEqual([0, 1]);
+		subscription.unsubscribe();
+	});
+
+	it.each(['not-committed', 'unknown'] as const)('makes %s storage failure visible without publishing a candidate', async outcome => {
+		const model = storageModel(envelope());
+		const { core } = authority(model);
+		const seen: number[] = [];
+		const errors: unknown[] = [];
+		const first = core.watch$().subscribe({ next: snapshot => seen.push(snapshot.revision), error: error => errors.push(error) });
+		const second = core.watch$().subscribe({ error: error => errors.push(error) });
+		if (outcome === 'unknown') model.loseNextResponse();
+		else model.failNext();
+		await expect(firstValueFrom(core.execute$(create('Unacknowledged')))).rejects.toMatchObject({ details: { outcome } });
+		expect(seen).toEqual([0]);
+		expect(errors).toMatchObject([{ details: { outcome } }, { details: { outcome } }]);
+		expect(first.closed).toBe(true);
+		expect(second.closed).toBe(true);
+		expect(core.resourceCounts()).toEqual({ active: 0, queued: 0, pending: 0, subscribers: 0 });
+		const restored = await firstValueFrom(core.watch$());
+		expect(restored.revision).toBe(outcome === 'unknown' ? 1 : 0);
+		expect(model.writes()).toBe(outcome === 'unknown' ? 1 : 0);
+	});
+
+	it('releases synchronous setup failures and allows a fresh registration', async () => {
+		const model = storageModel(envelope());
+		const { core } = authority(model);
+		model.failNext();
+		await expect(firstValueFrom(core.watch$())).rejects.toMatchObject({ status: 503 });
+		expect(core.resourceCounts()).toEqual({ active: 0, queued: 0, pending: 0, subscribers: 0 });
+		expect((await firstValueFrom(core.watch$())).revision).toBe(0);
+	});
+
+	it('supports synchronous disposal from initial notification without orphaning registration or queue', () => {
+		const model = storageModel(envelope());
+		const { core } = authority(model);
+		const errors: unknown[] = [];
+		const subscription = core.watch$().subscribe({ next: () => core.dispose(), error: error => errors.push(error) });
+		expect(subscription.closed).toBe(true);
+		expect(errors).toMatchObject([{ status: 503, message: 'Todo authority is inactive' }]);
+		expect(core.resourceCounts()).toEqual({ active: 0, queued: 0, pending: 0, subscribers: 0 });
+		core.dispose();
+	});
+
+	it('interrupts live and queued registrations on disposal while preserving committed storage for reconstruction', async () => {
+		const model = storageModel(envelope());
+		const { core } = authority(model);
+		const errors: unknown[] = [];
+		core.watch$().subscribe({ error: error => errors.push(error) });
+		await firstValueFrom(core.execute$(create('Retained')));
+		model.hold();
+		core.watch$().subscribe({ error: error => errors.push(error) });
+		core.watch$().subscribe({ error: error => errors.push(error) });
+		core.dispose();
+		expect(errors).toHaveLength(3);
+		expect(core.resourceCounts()).toEqual({ active: 0, queued: 0, pending: 0, subscribers: 0 });
+		await expect(firstValueFrom(core.watch$())).rejects.toMatchObject({ status: 503 });
+		model.release();
+		model.runImmediately();
+		const replacement = authority(model);
+		expect((await firstValueFrom(replacement.core.watch$())).todos[0].title).toBe('Retained');
+		expect(replacement.core.resourceCounts().subscribers).toBe(0);
+	});
+
+	it('does not let one throwing consumer finalizer prevent another interruption or queue cleanup', () => {
+		const model = storageModel(envelope());
+		const { core } = authority(model);
+		const errors: unknown[] = [];
+		const first = core.watch$().subscribe({ error: error => errors.push(error) });
+		first.add(() => { throw new Error('Consumer teardown failed'); });
+		const second = core.watch$().subscribe({ error: error => errors.push(error) });
+		model.hold();
+		core.execute$(create('Active at disposal')).subscribe({ error: error => errors.push(error) });
+		expect(() => core.dispose()).not.toThrow();
+		expect(first.closed).toBe(true);
+		expect(second.closed).toBe(true);
+		expect(errors).toHaveLength(3);
+		expect(core.resourceCounts()).toEqual({ active: 0, queued: 0, pending: 0, subscribers: 0 });
+	});
+
+	it('freezes each published snapshot so one live consumer cannot alter another or future reads', async () => {
+		const { core } = authority(storageModel(envelope({ todos: [seed] })));
+		const attempts: boolean[] = [];
+		const first = core.watch$().subscribe(snapshot => {
+			try { snapshot.todos[0].title = 'Tampered'; attempts.push(false); } catch { attempts.push(true); }
+		});
+		const seen: TodoSnapshot[] = [];
+		const second = core.watch$().subscribe(snapshot => seen.push(snapshot));
+		await firstValueFrom(core.execute$(create('Next')));
+		expect(attempts).toEqual([true, true]);
+		expect(seen.map(snapshot => snapshot.todos[0].title)).toEqual([seed.title, seed.title]);
+		expect(Object.isFrozen(seen[1])).toBe(true);
+		expect(Object.isFrozen(seen[1].todos)).toBe(true);
+		first.unsubscribe();
+		second.unsubscribe();
+	});
+
+	it.each([0, -1, 1.5, 33, Infinity])('rejects invalid subscriber capacity %s at construction', capacity => {
+		expect(() => authority(storageModel(), { maxActiveSubscribers: capacity })).toThrow(RangeError);
 	});
 });
