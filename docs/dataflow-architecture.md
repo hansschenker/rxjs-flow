@@ -4,7 +4,7 @@ Design revision: 2026-09-17. Target revision: **rxjs-flow migration r2 — Cloud
 
 Applies to the ChatGPT Project **`rxjs-flow`** and development repository **`hansschenker/rxjs-flow`**. Read with the [canonical roadmap](roadmap-gpt-6-astra-2026-09-15.md) and [Cloudflare/Hono runtime decision](runtime-cloudflare-hono.md). The historical source `rxjs-stack` and separate `rxjs-fullstack` repositories are not development targets.
 
-**Status:** target behavior, with implementation evidence recorded per milestone. M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e`; M01 is accepted/merged in PR #5. M05a is accepted/merged in PR #6. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`. M05b is [accepted/merged in PR #10](m05b/acceptance.md) at `1cfbaec`. M05c is implemented; [acceptance review/merge pending](m05c/acceptance.md). M05b adapts the same finite server Effect and route definitions to Hono, with owned request execution and separately tested retained Node compatibility. M05c adds a configured collection authority with attached SQLite storage, atomic state/metadata commit and reconstruction. Worker live delivery, application live integration and deployment remain pending. The [r1 contract](archive/dataflow-architecture-r1-2026-09-15.md) and M00 evidence are preserved.
+**Status:** target behavior, with implementation evidence recorded per milestone. M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e`; M01 is accepted/merged in PR #5. M05a is accepted/merged in PR #6. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`. M05b is [accepted/merged in PR #10](m05b/acceptance.md) at `1cfbaec`. M05c is [accepted/merged in PR #11](m05c/acceptance.md) at `d5500da`. M05d implements bounded, owned live delivery; [acceptance review/merge is pending](m05d/acceptance.md). M05b adapts the same finite server Effect and route definitions to Hono, with owned request execution and separately tested retained Node compatibility. M05c adds a configured collection authority with attached SQLite storage, atomic state/metadata commit and reconstruction. M05d adds race-free authority registration and response-owned bounded delivery. The versioned public live protocol, Todo application integration and deployment remain pending. The [r1 contract](archive/dataflow-architecture-r1-2026-09-15.md) and M00 evidence are preserved.
 
 r2 retains the reactive core, rendering and transport-correctness requirements while replacing the permanent Node-server assumption with an explicit Hono/Workers boundary and a minimal durable shared-state authority. Platform facts and primary references are separated from these project requirements in the runtime decision.
 
@@ -217,6 +217,31 @@ Two independent in-memory test factories must remain isolated. Two request adapt
 A live connection owns delivery resources, not collection state. Subscribe through the authority-to-Worker path, with a race-free initial snapshot/live-registration handoff. A mutation during setup cannot fall between an initial read and later subscription. Bound active clients, pending snapshots and writes according to the documented policy.
 
 Register cleanup before synchronous sources can complete/fail. Check already-aborted requests and release subscriptions on response cancellation, write failure, source termination and local-runtime shutdown. Serialize writes; never accumulate unbounded pending write promises. Full-state snapshots may use bounded latest-snapshot coalescing. Do not silently drop events that represent distinct domain facts.
+
+The M05d implementation registers `watch$()` through the same bounded serialized
+owner as authority operations. The initial committed read and attachment happen
+in one queue turn; later successful commits publish to registered consumers only
+after storage settlement. Cancelled queued registrations retain their queue slot
+until drained, preventing repeated connect/cancel from hiding unbounded work.
+One collection admits at most 32 live registrations, including pending setup.
+The retained Node listener separately admits at most 32 active SSE responses.
+
+The Durable Object sends validated internal snapshot envelopes over a private
+Fetch NDJSON body. Each Worker response owns a cold reader and explicitly
+cancels that upstream body. The public `/api/todos/stream` endpoint keeps the
+legacy `todos` event with a bare Todo array. This private transport does not
+publish M06's versioned browser protocol or connect the Todo application's model.
+
+The Worker body owner uses a zero-high-water-mark ReadableStream and a bounded
+pending queue. Generic events retain FIFO order with a 16-frame/256-KiB pending
+budget and a 128-KiB maximum frame; overflow terminates visibly. Only complete
+snapshot streams opt into replacement of one pending snapshot by the latest.
+The authority's NDJSON side allows one pending frame of at most 120 KiB plus its
+newline. Limits cover application queues, not platform or network buffers.
+Synchronous completion drains accepted bytes; error/cancel discards pending bytes
+and releases the source/listener. After headers, failure terminates the stream.
+See [M05d acceptance](m05d/acceptance.md) for retained Node backpressure, transport
+checks and measured cleanup.
 
 Persistent storage does not make live responses durable and does not imply SSE hibernation. Record active-stream limits/resource behavior and reconnect after interruption. Do not add a WebSocket rewrite to satisfy this milestone.
 

@@ -11,10 +11,11 @@ M05a is accepted/merged in PR #6 at `eeb8d29`, with [local foundation evidence](
 a Hono/RxJS probe, generated types, Vite/Worker builds, workerd tests and local
 preview. M04 is accepted/merged in PR #9 at `2b316a4`. M05b's
 [owned finite HTTP and compatibility](m05b/acceptance.md) is accepted/merged in
-PR #10 at `1cfbaec`. M05c implements [durable authority and reconstruction](m05c/acceptance.md),
-with a [local restart checkpoint](m05c/local-development.md); acceptance review/merge
-is pending. The inspected planning baseline above is historical. Worker live
-delivery, application live synchronization and deployment remain pending.
+PR #10 at `1cfbaec`. M05c is [accepted/merged in PR #11](m05c/acceptance.md) at
+`d5500da`, with durable authority and a [local restart checkpoint](m05c/local-development.md).
+M05d implements [bounded, owned live delivery](m05d/acceptance.md); acceptance
+review/merge is pending. The inspected planning baseline above is historical.
+Versioned application live synchronization and deployment remain pending.
 
 ## 1. Context and authority
 
@@ -76,8 +77,7 @@ state is validated on reads. Unsupported/corrupt storage fails without replacing
 history. A new collection starts empty; no volatile M05b state is migrated.
 
 Limits are 32 admitted application operations including one active operation,
-1,000 Todos and 120 KiB of encoded snapshot JSON. Live subscriber capacity is zero
-until M05d. These are application budgets, not a claim that Cloudflare's internal
+1,000 Todos and 120 KiB of encoded snapshot JSON. M05d adds a separate maximum of 32 active or registering live subscribers. These are application budgets, not a claim that Cloudflare's internal
 delivery queues or overall service capacity have been bounded. Overflow fails
 before a proposed state is committed. Identity and time are injected into the
 shared named pure transitions.
@@ -111,6 +111,38 @@ M05d must prove the authority-to-Worker response path as well as browser disconn
 Hono's streaming helper exposes abort handling and closes the stream when its callback completes [2]. The callback and owned subscription therefore need aligned lifetimes. Register cancellation safely before synchronous emissions; handle already-aborted input; serialize and await transport writes; prevent an unbounded chain of pending write promises. Post-header errors cannot be converted into a fresh JSON error response. Terminate or signal a documented protocol failure and release resources.
 
 One client disconnect must not stop another client's response or delete committed state. A dropped connection is repaired by a new full snapshot, not by an exactly-once event-delivery claim. Persisted storage does not make live subscriptions durable or make SSE hibernate automatically. Measure active streaming resource use before deployment; do not replace SSE with WebSockets within this revision.
+
+**M05d implementation:** authority `watch$()` uses the serialized owner for an
+atomic initial committed snapshot and live registration. Mutations publish only
+after storage settlement; storage failure interrupts live observers instead of
+advertising speculative state. Client count never owns collection persistence.
+
+A private Durable Object Fetch response carries newline-delimited internal
+snapshot envelopes. A cold Worker reader bounds and validates each envelope,
+then maps it to the retained public `todos` event containing a bare Todo array.
+The Hono adapter returns a standards-based streaming Response with a separate
+body owner; it does not use a prematurely returning streaming-helper callback.
+The finite descriptor deadline does not limit the live body's lifetime.
+The incoming-request `enable_request_signal` flag remains explicit, and reader
+cancellation closes the upstream response as well as aborting a pending fetch.
+
+Generic delivery preserves FIFO order with at most 16 pending frames, 256 KiB
+pending bytes and 128 KiB per frame. Complete Todo snapshots explicitly choose
+latest-snapshot coalescing with one pending snapshot. The authority transport's
+maximum NDJSON frame is 120 KiB plus its newline. Overflow, encoding failure,
+source error and interruption terminate the affected stream, release buffers and
+subscriptions, and do not substitute JSON after headers. Native transport buffers
+are outside these application counts. There are no detached write chains,
+perpetual timer subscriptions, heartbeat service or hibernation claim.
+
+The [M05d live checkpoint](m05d/local-development.md) demonstrates two consumers,
+one disconnect/reconnect and continuing committed state. It is separate from the
+existing Todo application, which still uses Refresh for another caller's changes.
+M06 owns the versioned public live-state schema, reconnect ownership, stale-state
+UI and complete application feedback loop. Node remains a tested retained mode
+with an in-memory collection, at most 32 active SSE responses per listener,
+`drain`-aware writes, explicit stream shutdown and port release; M09
+reviews its final support disposition. No remote deployment was performed.
 
 ## 6. Vite and Wrangler workflow
 

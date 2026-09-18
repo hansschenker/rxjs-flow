@@ -3,20 +3,23 @@
 Revision: **rxjs-flow migration r2 — Cloudflare/Hono**. The existing Todo page now
 uses a Durable Object collection with attached SQLite storage in the local
 Cloudflare Workers runtime. Saved Todos survive both browser refresh and stopping
-and restarting that runtime.
+and restarting that runtime. M05c is accepted/merged in PR #11 at `d5500da`.
+This guide preserves the durable-storage checkpoint; see the [M05d live guide](../m05d/local-development.md)
+for the subsequent server-stream demonstration.
 
 ## Run the page
 
-Use Node **22.22.1**. While the milestone PR is under review:
+Use Node **22.22.1** and updated `main`:
 
 ```bash
 git fetch origin
-git switch m05c/durable-todos
+git switch main
+git pull --ff-only
 npm ci
 npm run dev:worker
 ```
 
-After merge, use updated `main` instead. Open **http://localhost:5174**. This one
+Open **http://localhost:5174**. This one
 command serves the page, Hono API and local collection authority. A separate Node
 backend is not needed.
 
@@ -28,9 +31,9 @@ backend is not needed.
    from the same checkout.
 5. Reload both tabs. The saved Todos and their completed values remain.
 
-Updates between tabs still require Refresh. Worker live delivery is M05d and
-application live synchronization is M06. A draft that has not been submitted is
-not stored as a Todo; preserving input during the app's Refresh operation and
+Updates between Todo app tabs still require Refresh. M05d supplies the server
+stream and a separate live checkpoint; application live synchronization is M06.
+A draft that has not been submitted is not stored as a Todo; preserving input during the app's Refresh operation and
 persisting saved data are separate behaviors.
 
 ## Where the data lives

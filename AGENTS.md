@@ -26,10 +26,14 @@ and `docs/m04/minimal-sample.md` for owned scalar bindings, a stable shell and k
 rows with child scopes. Rendering commits synchronously, preserving focus and
 selection; `todo.view.tsx` owns rendering and the app root connects its streams.
 M05b is accepted and merged in PR #10 at `1cfbaeca0cede3a08c90631e16cf6bdf2fa750c8`;
-see `docs/m05b/acceptance.md`. M05c is implemented; acceptance review/merge is pending.
-See `docs/m05c/acceptance.md` and `docs/m05c/local-development.md` for the durable
-collection, access policy, bounds and restart checkpoint. M05d–M09 remain pending;
-begin M05d only after M05c acceptance and explicit authorization.
+see `docs/m05b/acceptance.md`. M05c is accepted and merged in PR #11 at
+`d5500da407611e7856e9e67481a08e15e530aece`. See `docs/m05c/acceptance.md` for
+the durable collection and restart evidence. M05d implements bounded, owned SSE
+from the durable authority through Hono and retains tested Node streaming.
+Acceptance review/merge is pending; see `docs/m05d/acceptance.md` and
+`docs/m05d/local-development.md`. The Todo application still requires Refresh
+for changes from another caller; its versioned live-state loop belongs to M06.
+M06–M09 remain pending; begin M06 only after M05d acceptance and authorization.
 Do not repeat the import or reopen M00 because the platform target changed.
 The separate `m00/characterize-baseline` branch contains intentionally failing
 probes; do not merge it. Map each failure to a verified fix or tested replacement.
@@ -52,8 +56,9 @@ Worker types, builds and runtime tests. M05b adds finite Hono Todo HTTP and
 request ownership with separate retained Node evidence. M05c adds a bounded
 collection authority with attached SQLite storage and atomic state/metadata
 commit. Development access is limited to the configured local collection;
-deployable configuration stays disabled. Worker live delivery/application SSE
-integration remain M05d/M06.
+deployable configuration stays disabled. M05d adds race-free committed-snapshot
+registration, bounded live delivery and response-owned cancellation. M06 owns the
+versioned public live protocol, reconnect policy and Todo application integration.
 The current Node HTTP application remains the migration baseline until equivalent
 behavior is verified.
 Keep its applicable lifecycle tests or explicitly document tested retirement.
