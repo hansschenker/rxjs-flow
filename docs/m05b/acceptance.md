@@ -1,8 +1,18 @@
 # M05b — HTTP compatibility and request ownership
 
 Date: 2026-09-18. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
-Status: implemented and locally verified against the M05b criteria; acceptance
-review/merge pending. The PR records final-head CI separately.
+Status: accepted and merged in [PR #10](https://github.com/hansschenker/rxjs-flow/pull/10)
+at **`1cfbaeca0cede3a08c90631e16cf6bdf2fa750c8`**. Final-head CI passed at
+`db9aeb47fb1e17cdde50bb1583f7f95df562459e` in
+[run 35345130819](https://github.com/hansschenker/rxjs-flow/actions/runs/35345130819):
+570 Node/DOM tests and 86 workerd tests, typechecks, generated types, builds and
+both local HTTP smokes passed. The owner subsequently confirmed the pleasant
+layout and input preservation during Refresh. This is a manual browser observation,
+not an additional automated browser suite.
+
+This report records the M05b implementation. M05c subsequently replaces the volatile
+Worker demo with durable local storage; see its [acceptance record](../m05c/acceptance.md)
+and [current development guide](../m05c/local-development.md).
 
 ## Provenance and scope
 

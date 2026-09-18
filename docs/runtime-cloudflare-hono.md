@@ -9,11 +9,12 @@ Date: 2026-09-17. Plan revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
 **Subsequent implementation checkpoint:** M01 merged in PR #5 at `188f21f`.
 M05a is accepted/merged in PR #6 at `eeb8d29`, with [local foundation evidence](m05a/acceptance.md):
 a Hono/RxJS probe, generated types, Vite/Worker builds, workerd tests and local
-preview. M04 is accepted/merged in PR #9 at `2b316a4`. M05b now implements
-[owned finite HTTP and compatibility](m05b/acceptance.md), with a [local Todo
-checkpoint](m05b/local-development.md); acceptance review/merge is pending.
-The inspected planning baseline above is historical. Durable authority, Worker
-live delivery, application live synchronization and deployment remain pending.
+preview. M04 is accepted/merged in PR #9 at `2b316a4`. M05b's
+[owned finite HTTP and compatibility](m05b/acceptance.md) is accepted/merged in
+PR #10 at `1cfbaec`. M05c implements [durable authority and reconstruction](m05c/acceptance.md),
+with a [local restart checkpoint](m05c/local-development.md); acceptance review/merge
+is pending. The inspected planning baseline above is historical. Worker live
+delivery, application live synchronization and deployment remain pending.
 
 ## 1. Context and authority
 
@@ -64,6 +65,38 @@ On storage failure, expose a typed failure and leave the prior committed state a
 Collection identity is not authorization. The HTTP/authority boundary must enforce the intended access policy before selecting an authority; a public demo needs explicit release scoping and must not expose a privileged storage endpoint. Two independent test stores remain isolated. Two request handlers intentionally addressing the same collection must observe the same authority.
 
 The in-memory Node store remains useful for baseline and pure contract tests, with its reset-on-restart limitation stated. It is not acceptance evidence for the deployed shared-state requirement. Data backup, disaster recovery, production capacity and full operational readiness remain separate claims.
+
+**M05c implementation:** `TodoCollection` delegates to `createTodoAuthority` and
+uses a SQLite-backed Durable Object binding `TODO_COLLECTIONS`. Migration
+`m05c-v1` declares the class locally. Synchronous `storage.kv` reads/writes inside
+`transactionSync()` keep the single `snapshot` envelope atomic; a successful
+`storage.sync()` precedes acknowledgment. The envelope is schema version 1 and
+contains `collectionId`, `stateGeneration`, `revision` and `todos`. Existing stored
+state is validated on reads. Unsupported/corrupt storage fails without replacing
+history. A new collection starts empty; no volatile M05b state is migrated.
+
+Limits are 32 admitted application operations including one active operation,
+1,000 Todos and 120 KiB of encoded snapshot JSON. Live subscriber capacity is zero
+until M05d. These are application budgets, not a claim that Cloudflare's internal
+delivery queues or overall service capacity have been bounded. Overflow fails
+before a proposed state is committed. Identity and time are injected into the
+shared named pure transitions.
+
+The explicit access policy is local development only. The server is bound to
+loopback; authorization requires a loopback request URL, matching Origin when
+present, no cross-site fetch indicator, and no request-supplied collection
+selector. Trusted configuration chooses `local-reference`. The deployed
+configuration keeps `TODO_ACCESS_POLICY=disabled`; development enables
+`local-loopback`, and executing the built artifact locally requires an explicit Wrangler command. This is
+not end-user authentication or a production release policy. No remote resource,
+migration or deployment was performed.
+
+The normal local runtime persists below `.wrangler/state`. Tests and automated
+restart checkpoints use isolated storage. Known rollback reports a failed commit;
+flush failure or lost RPC response reports an uncertain outcome. A flush failure
+blocks that activation from advertising further snapshots. Reconstruction reads
+committed storage again; no automatic mutation retry or rollback-on-disconnect
+is promised. See [M05c acceptance](m05c/acceptance.md) for exact evidence and limits.
 
 ## 5. Snapshot and SSE contract
 

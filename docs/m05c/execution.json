@@ -1,0 +1,541 @@
+{
+  "milestone": "M05c",
+  "roadmap_revision": "rxjs-flow migration r2 \u2014 Cloudflare/Hono",
+  "repository": "hansschenker/rxjs-flow",
+  "branch": "m05c/durable-todos",
+  "starting_commit": "1cfbaeca0cede3a08c90631e16cf6bdf2fa750c8",
+  "starting_commit_evidence": "GitHub PR #10 merged; GitHub main ref and local fetch agree; imported source, documentation and original destination histories remain ancestors.",
+  "implementation_commit": "48b9a8a71de5167f9de9fa94fbb3109b07a3c055",
+  "inspection_commands": [
+    "git status --short --branch",
+    "git remote -v",
+    "git fetch origin main",
+    "git switch -c m05c/durable-todos origin/main",
+    "git log -1 --format=fuller",
+    "git log --oneline -8",
+    "Read AGENTS.md, canonical roadmap, architecture/runtime decision, historical audit and M00 evidence using rg/cat/sed.",
+    "Read Todo effects/store/contracts, Hono adapter, Worker entry/configuration, CI, existing tests and installed Cloudflare APIs using rg/cat/sed.",
+    "GitHub API read: /repos/hansschenker/rxjs-flow/pulls/10 and /git/ref/heads/main"
+  ],
+  "toolchain": {
+    "node": "22.22.1",
+    "npm": "11.9.0",
+    "rxjs": "7.8.2",
+    "typescript": "6.0.3",
+    "hono": "4.13.8",
+    "vite": "8.0.12",
+    "vitest": "4.1.6",
+    "wrangler": "4.133.0",
+    "cloudflare_vite_plugin": "1.54.11",
+    "cloudflare_vitest_plugin": "1.1.11",
+    "workerd": "1.20260916.1"
+  },
+  "baseline": {
+    "node_dom": {
+      "tests": 570,
+      "files": 35,
+      "exit_code": 0
+    },
+    "workerd": {
+      "tests": 86,
+      "files": 3,
+      "exit_code": 0
+    }
+  },
+  "commands": [
+    {
+      "label": "baseline-node-dom",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-18T12:51:01.508764+00:00",
+      "finished": "2026-09-18T12:51:06.280417+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "Test Files  35 passed (35)",
+        "Tests  570 passed (570)"
+      ],
+      "log_sha256": "beb990a043e71fb77d55b521d9e3b7fa70d43c4a461149037efc8215cb618776"
+    },
+    {
+      "label": "baseline-workerd",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker"
+      ],
+      "started": "2026-09-18T12:51:34.096567+00:00",
+      "finished": "2026-09-18T12:51:40.009500+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "Test Files  3 passed (3)",
+        "Tests  86 passed (86)"
+      ],
+      "log_sha256": "8cf3b327c49ffc332f71aae51847949cd2e8b5c902ffd9b6ab0b2cf312483bae"
+    },
+    {
+      "label": "repository-red",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/server/todos/todo.repository.test.ts"
+      ],
+      "started": "2026-09-18T12:52:53.895921+00:00",
+      "finished": "2026-09-18T12:52:54.656654+00:00",
+      "exit_code": 1,
+      "result_summary": [
+        "Test Files  1 failed (1)",
+        "Tests  5 failed | 1 passed (6)",
+        "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 5 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+      ],
+      "log_sha256": "0fa620d5e23d513e022296d73edb368b956832c691b3da80b42283c040e06358",
+      "failure_excerpt": "scriber.next node_modules/rxjs/src/internal/Subscriber.ts:71:11\n \u276f node_modules/rxjs/src/internal/operators/mergeInternals.ts:85:23\n \u276f OperatorSubscriber._this._next node_modules/rxjs/src/internal/operators/OperatorSubscriber.ts:70:12\n \u276f OperatorSubscriber.Subscriber.next node_modules/rxjs/src/internal/Subscriber.ts:71:11\n \u276f Observable._subscribe node_modules/rxjs/src/internal/observable/innerFrom.ts:78:17\n \u276f Observable._trySubscribe node_modules/rxjs/src/internal/Observable.ts:235:18\n \u276f node_modules/rxjs/src/internal/Observable.ts:225:17\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[3/5]\u23af\n\n FAIL  |node| src/server/todos/todo.repository.test.ts > Todo effects with a finite repository capability > waits for the delete result before producing the empty 204 response\nAssertionError: expected \"vi.fn()\" to not be called at all, but actually been called 1 times\n\nReceived:\n\n  1st vi.fn() call:\n\n    Array [\n      [TypeError: Cannot read properties of undefined (reading 'getTodos')],\n    ]\n\n\nNumber of calls: 1\n\n \u276f src/server/todos/todo.repository.test.ts:53:21\n     51|   const error = vi.fn();\n     52|   createTodoEffects().delete$(of(request(repository({ delete$: () => c\u2026\n     53|   expect(error).not.toHaveBeenCalled();\n       |                     ^\n     54|   expect(next).not.toHaveBeenCalled();\n     55|   commit.next();\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[4/5]\u23af\n\n FAIL  |node| src/server/todos/todo.repository.test.ts > Todo effects with a finite repository capability > releases its repository subscription on request disposal\nAssertionError: expected false to be true // Object.is equality\n\n- Expected\n+ Received\n\n- true\n+ false\n\n \u276f src/server/todos/todo.repository.test.ts:63:27\n     61|   const commit = new Subject<Todo>();\n     62|   const subscription = createTodoEffects().create$(of(request(reposito\u2026\n     63|   expect(commit.observed).toBe(true);\n       |                           ^\n     64|   subscription.unsubscribe();\n     65|   expect(commit.observed).toBe(false);\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[5/5]\u23af\n\n"
+    },
+    {
+      "label": "repository-green",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/server/todos/todo.repository.test.ts",
+        "src/server/todos/todo.effect.test.ts",
+        "src/server/todos/todo.store.test.ts"
+      ],
+      "started": "2026-09-18T12:54:28.795419+00:00",
+      "finished": "2026-09-18T12:54:29.601096+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "Test Files  3 passed (3)",
+        "Tests  31 passed (31)"
+      ],
+      "log_sha256": "05a044a7636e9b7d7b287579780c4e6dacc039a44f02f9a3ec77af16e573ec2f"
+    },
+    {
+      "label": "interim-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started": "2026-09-18T12:54:46.734974+00:00",
+      "finished": "2026-09-18T12:54:59.913833+00:00",
+      "exit_code": 2,
+      "result_summary": [
+        "src/worker/todo-collection.ts(16,14): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Env'.",
+        "src/worker/todo-repository.ts(20,44): error TS2339: Property 'status' does not exist on type '{ ok: true; result: { kind: \"snapshot\"; snapshot: { schemaVersion: 1; collectionId: string; stateGeneration: string; revision: number; todos: { id: string; title: string; completed: boolean; createdAt: string; }[]; }; value: null; } | { ...; } | { ...; } | { ...; } | { ...; }; } & Disposable'.",
+        "src/worker/todo-repository.ts(20,58): error TS2339: Property 'message' does not exist on type '{ ok: true; result: { kind: \"snapshot\"; snapshot: { schemaVersion: 1; collectionId: string; stateGeneration: string; revision: number; todos: { id: string; title: string; completed: boolean; createdAt: string; }[]; }; value: null; } | { ...; } | { ...; } | { ...; } | { ...; }; } & Disposable'.",
+        "src/worker/todo-repository.ts(20,73): error TS2339: Property 'details' does not exist on type '{ ok: true; result: { kind: \"snapshot\"; snapshot: { schemaVersion: 1; collectionId: string; stateGeneration: string; revision: number; todos: { id: string; title: string; completed: boolean; createdAt: string; }[]; }; value: null; } | { ...; } | { ...; } | { ...; } | { ...; }; } & Disposable'.",
+        "src/worker/todo-repository.ts(24,34): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type '{ kind: \"snapshot\"; } | { kind: \"list\"; completed?: boolean | undefined; } | { kind: \"create\"; input: { title: string; }; } | { kind: \"update\"; id: string; input: { title?: string | undefined; completed?: boolean | undefined; }; } | { ...; }'.",
+        "src/worker/todo-repository.ts(25,32): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type '{ kind: \"snapshot\"; } | { kind: \"list\"; completed?: boolean | undefined; } | { kind: \"create\"; input: { title: string; }; } | { kind: \"update\"; id: string; input: { title?: string | undefined; completed?: boolean | undefined; }; } | { ...; }'.",
+        "src/worker/todo-repository.ts(26,38): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type '{ kind: \"snapshot\"; } | { kind: \"list\"; completed?: boolean | undefined; } | { kind: \"create\"; input: { title: string; }; } | { kind: \"update\"; id: string; input: { title?: string | undefined; completed?: boolean | undefined; }; } | { ...; }'.",
+        "src/worker/todo-repository.ts(27,29): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type '{ kind: \"snapshot\"; } | { kind: \"list\"; completed?: boolean | undefined; } | { kind: \"create\"; input: { title: string; }; } | { kind: \"update\"; id: string; input: { title?: string | undefined; completed?: boolean | undefined; }; } | { ...; }'."
+      ],
+      "log_sha256": "0326fe5a124cff4d137f1931d33f313dc2615afdfcf0fff851195cb02a291afa",
+      "failure_excerpt": "{ title?: string | undefined; completed?: boolean | undefined; }; } | { ...; }'.\nsrc/worker/todo-repository.ts(27,29): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type '{ kind: \"snapshot\"; } | { kind: \"list\"; completed?: boolean | undefined; } | { kind: \"create\"; input: { title: string; }; } | { kind: \"update\"; id: string; input: { title?: string | undefined; completed?: boolean | undefined; }; } | { ...; }'.\n(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:31) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\u25b2 [WARNING] Proxy environment variables detected. We'll use your proxy for fetch requests.\n\n\n(node:39) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:63) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:84) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n"
+    },
+    {
+      "label": "provenance",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "python",
+        "-c",
+        "import subprocess,json; base=\"1cfbaeca0cede3a08c90631e16cf6bdf2fa750c8\"; refs=[\"cbc91eefbccdeaf17221d06c75bdd237fe5e5499\",\"d701cb72f14293e96acac2cb163e6434e5fb0f54\",\"978d1be715cb2d23b9c9a0c875d15cd9707721e7\",\"db9aeb47fb1e17cdde50bb1583f7f95df562459e\"]; result={r:subprocess.run([\"git\",\"merge-base\",\"--is-ancestor\",r,base]).returncode for r in refs}; print(json.dumps(result)); assert all(x==0 for x in result.values())"
+      ],
+      "started": "2026-09-18T12:56:12.397189+00:00",
+      "finished": "2026-09-18T12:56:12.437754+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "1d80cfa5f50f87bc8badc7f7e085811ec937dd67d9174c28113121c0ea2ec98b"
+    },
+    {
+      "label": "toolchain",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "--input-type=module",
+        "-e",
+        "import{readFileSync}from\"node:fs\";let names=[\"rxjs\",\"typescript\",\"hono\",\"vite\",\"vitest\",\"wrangler\",\"@cloudflare/vite-plugin\",\"@cloudflare/vitest-plugin\",\"workerd\"];console.log(JSON.stringify({node:process.version,packages:Object.fromEntries(names.map(n=>[n,JSON.parse(readFileSync(\"node_modules/\"+n+\"/package.json\")).version]))},null,2))"
+      ],
+      "started": "2026-09-18T12:56:12.466412+00:00",
+      "finished": "2026-09-18T12:56:12.518052+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "fd135279cc86360b8f97122ac12029edaf8b3664c2166c9161967bc9ed9324f7"
+    },
+    {
+      "label": "npm-version",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "--version"
+      ],
+      "started": "2026-09-18T12:56:57.896347+00:00",
+      "finished": "2026-09-18T12:56:57.990654+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "5203bb9296ee1dcc7841166f9093aa875a4534a35c367f57796996c59fd495c8"
+    },
+    {
+      "label": "checkpoint-dev-initial",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "scripts/m05c-checkpoint.mjs"
+      ],
+      "started": "2026-09-18T12:57:04.077959+00:00",
+      "finished": "2026-09-18T12:57:12.952299+00:00",
+      "exit_code": 1,
+      "result_summary": [],
+      "log_sha256": "50eb910bccc405224268c84f539be368084772c860900d4d3522958fd73ad4a0",
+      "failure_excerpt": "e/scratch/69635aad2014/rxjs-flow-recovery/node_modules/@cloudflare/vite-plugin/dist/index.mjs:85299:6)\\n    at async _createServer (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/vite/dist/node/chunks/node.js:26271:84)\\n    at async CAC.<anonymous> (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/vite/dist/node/cli.js:709:18)\\n\\n  VITE v8.0.12  ready in 8231 ms\\n\\n  \u279c  Local:   http://127.0.0.1:41799/\\n\\nThe Cloudflare Vite plugin detected this dev session is running in an AI agent.\\nThe Local Explorer API is available at http://127.0.0.1:41799/cdn-cgi/local/explorer/api\\nUseful routes:\\n  GET http://127.0.0.1:41799/cdn-cgi/local/explorer/api/local/workers - local Workers and bindings\\n  GET http://127.0.0.1:41799/cdn-cgi/local/explorer/api/storage/kv/namespaces - KV namespaces\\n  GET http://127.0.0.1:41799/cdn-cgi/local/explorer/api/d1/database - D1 databases\\n  GET http://127.0.0.1:41799/cdn-cgi/local/explorer/api/r2/buckets - R2 buckets\\n  GET http://127.0.0.1:41799/cdn-cgi/local/explorer/api/workers/durable_objects/namespaces - Durable Object namespaces\\n  GET http://127.0.0.1:41799/cdn-cgi/local/explorer/api/workflows - Workflows\\n  POST http://127.0.0.1:41799/cdn-cgi/local/explorer/api/local/observability/query - run a read-only SQL query (SELECT/WITH only) over captured request traces and console logs. Tables: spans, logs (read attributes via json(attributes)). Example:\\n    curl -X POST http://127.0.0.1:41799/cdn-cgi/local/explorer/api/local/observability/query -H 'Content-Type: application/json' -d '{\\\"sql\\\":\\\"SELECT service, name, outcome, duration_ms FROM spans WHERE parent_id IS NULL LIMIT 20\\\"}'\\n  POST http://127.0.0.1:41799/cdn-cgi/local/explorer/api/local/observability/clear - clear all captured traces and logs\\nIf the routes above don't cover what you need, fetch the full OpenAPI schema (large - use only as a last resort):\\n  GET http://127.0.0.1:41799/cdn-cgi/local/explorer/api - OpenAPI schema\\n\\n\"\n}\n"
+    },
+    {
+      "label": "checkpoint-dev-diagnose",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "scripts/m05c-checkpoint.mjs"
+      ],
+      "started": "2026-09-18T12:57:30.431307+00:00",
+      "finished": "2026-09-18T12:57:39.081143+00:00",
+      "exit_code": 1,
+      "result_summary": [],
+      "log_sha256": "3ca7bd6f5f19a49150448466d3d381a466db653d07ad01f9373770e7deba5351",
+      "failure_excerpt": "e/scratch/69635aad2014/rxjs-flow-recovery/node_modules/@cloudflare/vite-plugin/dist/index.mjs:85299:6)\\n    at async _createServer (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/vite/dist/node/chunks/node.js:26271:84)\\n    at async CAC.<anonymous> (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/vite/dist/node/cli.js:709:18)\\n\\n  VITE v8.0.12  ready in 8149 ms\\n\\n  \u279c  Local:   http://127.0.0.1:45815/\\n\\nThe Cloudflare Vite plugin detected this dev session is running in an AI agent.\\nThe Local Explorer API is available at http://127.0.0.1:45815/cdn-cgi/local/explorer/api\\nUseful routes:\\n  GET http://127.0.0.1:45815/cdn-cgi/local/explorer/api/local/workers - local Workers and bindings\\n  GET http://127.0.0.1:45815/cdn-cgi/local/explorer/api/storage/kv/namespaces - KV namespaces\\n  GET http://127.0.0.1:45815/cdn-cgi/local/explorer/api/d1/database - D1 databases\\n  GET http://127.0.0.1:45815/cdn-cgi/local/explorer/api/r2/buckets - R2 buckets\\n  GET http://127.0.0.1:45815/cdn-cgi/local/explorer/api/workers/durable_objects/namespaces - Durable Object namespaces\\n  GET http://127.0.0.1:45815/cdn-cgi/local/explorer/api/workflows - Workflows\\n  POST http://127.0.0.1:45815/cdn-cgi/local/explorer/api/local/observability/query - run a read-only SQL query (SELECT/WITH only) over captured request traces and console logs. Tables: spans, logs (read attributes via json(attributes)). Example:\\n    curl -X POST http://127.0.0.1:45815/cdn-cgi/local/explorer/api/local/observability/query -H 'Content-Type: application/json' -d '{\\\"sql\\\":\\\"SELECT service, name, outcome, duration_ms FROM spans WHERE parent_id IS NULL LIMIT 20\\\"}'\\n  POST http://127.0.0.1:45815/cdn-cgi/local/explorer/api/local/observability/clear - clear all captured traces and logs\\nIf the routes above don't cover what you need, fetch the full OpenAPI schema (large - use only as a last resort):\\n  GET http://127.0.0.1:45815/cdn-cgi/local/explorer/api - OpenAPI schema\\n\\n\"\n}\n"
+    },
+    {
+      "label": "integrated-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started": "2026-09-18T12:58:03.403531+00:00",
+      "finished": "2026-09-18T12:58:22.762131+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, \"FOUNDATION_LABEL\" | \"TODO_ACCESS_POLICY\" | \"TODO_COLLECTION_ID\">> {}"
+      ],
+      "log_sha256": "9ce91227ce171f2f80ca88ae5cd20a1dd2659cba688b70e598dcee09c0091429"
+    },
+    {
+      "label": "checkpoint-dev-customizer",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "scripts/m05c-checkpoint.mjs"
+      ],
+      "started": "2026-09-18T12:58:52.054063+00:00",
+      "finished": "2026-09-18T12:59:09.609640+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "\"status\": \"passed\",",
+        "\"check\": \"two independent HTTP callers\",",
+        "\"concurrentCreates\": 2,",
+        "\"concurrentUpdates\": 2,",
+        "\"sameCommittedCollection\": true,",
+        "\"check\": \"full local process restart\",",
+        "\"sameCommittedContents\": true,",
+        "\"newCallers\": 2,"
+      ],
+      "log_sha256": "c49ef90b7301c51fa8e7eb9f971af05a1ef2d8d2ba863cb0c6a87b5fd1006d51"
+    },
+    {
+      "label": "review-build",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "build:worker"
+      ],
+      "started": "2026-09-18T12:59:29.079040+00:00",
+      "finished": "2026-09-18T12:59:30.573292+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "77b24834f7f0af57861c0aebee2474ce27a5ef836988d2095b91e3e79c4297ce"
+    },
+    {
+      "label": "checkpoint-built-local",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "scripts/m05c-checkpoint.mjs",
+        "--preview"
+      ],
+      "started": "2026-09-18T12:59:49.367436+00:00",
+      "finished": "2026-09-18T12:59:54.219592+00:00",
+      "exit_code": 1,
+      "result_summary": [],
+      "log_sha256": "20b70d3924df714e6931c1067c78697724b4ec73ddeff0b34f07dd1f1957db67",
+      "failure_excerpt": "/explorer/api/d1/database - D1 databases\\n  GET http://127.0.0.1:42607/cdn-cgi/local/explorer/api/r2/buckets - R2 buckets\\n  GET http://127.0.0.1:42607/cdn-cgi/local/explorer/api/workers/durable_objects/namespaces - Durable Object namespaces\\n  GET http://127.0.0.1:42607/cdn-cgi/local/explorer/api/workflows - Workflows\\n  POST http://127.0.0.1:42607/cdn-cgi/local/explorer/api/local/observability/query - run a read-only SQL query (SELECT/WITH only) over captured request traces and console logs. Tables: spans, logs (read attributes via json(attributes)). Example:\\n    curl -X POST http://127.0.0.1:42607/cdn-cgi/local/explorer/api/local/observability/query -H 'Content-Type: application/json' -d '{\\\"sql\\\":\\\"SELECT service, name, outcome, duration_ms FROM spans WHERE parent_id IS NULL LIMIT 20\\\"}'\\n  POST http://127.0.0.1:42607/cdn-cgi/local/explorer/api/local/observability/clear - clear all captured traces and logs\\nIf the routes above don't cover what you need, fetch the full OpenAPI schema (large - use only as a last resort):\\n  GET http://127.0.0.1:42607/cdn-cgi/local/explorer/api - OpenAPI schema\\n[wrangler:info] Ready on http://127.0.0.1:42607\\n[wrangler:info] GET / 200 OK (182ms)\\n[wrangler:info] GET / 200 OK (4ms)\\n[wrangler:info] GET /assets/index-C8VqeqSo.js 200 OK (2ms)\\n[wrangler:info] GET /api/foundation 200 OK (13ms)\\n[wrangler:info] GET /api 404 Not Found (5ms)\\n[wrangler:info] GET /api/missing 404 Not Found (3ms)\\n[wrangler:info] GET /api/api/todos 404 Not Found (3ms)\\n[wrangler:info] GET /api/todos 200 OK (8ms)\\n[wrangler:info] POST /api/todos 201 Created (5ms)\\n[wrangler:info] PUT /api/todos/d58e9ade-c1c6-40ad-bc7b-dac029e9daba 200 OK (4ms)\\n[wrangler:info] GET /api/todos 200 OK (3ms)\\n[wrangler:info] POST /api/todos 400 Bad Request (3ms)\\n[wrangler:info] POST /api/todos 422 Unprocessable Entity (3ms)\\n[wrangler:info] PUT /api/todos/%ZZ 404 Not Found (4ms)\\n[wrangler:info] DELETE /api/todos/d58e9ade-c1c6-40ad-bc7b-dac029e9daba 204 No Content (4ms)\\n\"\n}\n"
+    },
+    {
+      "label": "checkpoint-built-path-diagnose",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "scripts/m05c-checkpoint.mjs",
+        "--preview"
+      ],
+      "started": "2026-09-18T13:00:33.440093+00:00",
+      "finished": "2026-09-18T13:00:37.906003+00:00",
+      "exit_code": 1,
+      "result_summary": [],
+      "log_sha256": "24371d63bfc20238df5deedb667d2cd9b4789b84acd70df10e6826f7ba3e12c4",
+      "failure_excerpt": "/explorer/api/d1/database - D1 databases\\n  GET http://127.0.0.1:34097/cdn-cgi/local/explorer/api/r2/buckets - R2 buckets\\n  GET http://127.0.0.1:34097/cdn-cgi/local/explorer/api/workers/durable_objects/namespaces - Durable Object namespaces\\n  GET http://127.0.0.1:34097/cdn-cgi/local/explorer/api/workflows - Workflows\\n  POST http://127.0.0.1:34097/cdn-cgi/local/explorer/api/local/observability/query - run a read-only SQL query (SELECT/WITH only) over captured request traces and console logs. Tables: spans, logs (read attributes via json(attributes)). Example:\\n    curl -X POST http://127.0.0.1:34097/cdn-cgi/local/explorer/api/local/observability/query -H 'Content-Type: application/json' -d '{\\\"sql\\\":\\\"SELECT service, name, outcome, duration_ms FROM spans WHERE parent_id IS NULL LIMIT 20\\\"}'\\n  POST http://127.0.0.1:34097/cdn-cgi/local/explorer/api/local/observability/clear - clear all captured traces and logs\\nIf the routes above don't cover what you need, fetch the full OpenAPI schema (large - use only as a last resort):\\n  GET http://127.0.0.1:34097/cdn-cgi/local/explorer/api - OpenAPI schema\\n[wrangler:info] Ready on http://127.0.0.1:34097\\n[wrangler:info] GET / 200 OK (172ms)\\n[wrangler:info] GET / 200 OK (3ms)\\n[wrangler:info] GET /assets/index-C8VqeqSo.js 200 OK (2ms)\\n[wrangler:info] GET /api/foundation 200 OK (10ms)\\n[wrangler:info] GET /api 404 Not Found (4ms)\\n[wrangler:info] GET /api/missing 404 Not Found (3ms)\\n[wrangler:info] GET /api/api/todos 404 Not Found (3ms)\\n[wrangler:info] GET /api/todos 200 OK (9ms)\\n[wrangler:info] POST /api/todos 201 Created (7ms)\\n[wrangler:info] PUT /api/todos/aeca5a9a-ee02-42a6-9831-6ce84edad051 200 OK (5ms)\\n[wrangler:info] GET /api/todos 200 OK (3ms)\\n[wrangler:info] POST /api/todos 400 Bad Request (3ms)\\n[wrangler:info] POST /api/todos 422 Unprocessable Entity (3ms)\\n[wrangler:info] PUT /api/todos/%ZZ 404 Not Found (4ms)\\n[wrangler:info] DELETE /api/todos/aeca5a9a-ee02-42a6-9831-6ce84edad051 204 No Content (4ms)\\n\"\n}\n"
+    },
+    {
+      "label": "final-node-dom",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-18T13:02:51.246655+00:00",
+      "finished": "2026-09-18T13:02:55.967111+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "Test Files  38 passed (38)",
+        "Tests  628 passed (628)"
+      ],
+      "log_sha256": "f34804854262a0e68bc5956e28bdf1b02f8e0898ef78452f68848ff19c29c591"
+    },
+    {
+      "label": "review-build-path-guard",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "build:worker"
+      ],
+      "started": "2026-09-18T13:04:59.483012+00:00",
+      "finished": "2026-09-18T13:05:00.894139+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "f25f677bfd27b9fa549aa0c4dbca26afaf4a905ba8399824d72de2655379379a"
+    },
+    {
+      "label": "checkpoint-built-path-guard",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "scripts/m05c-checkpoint.mjs",
+        "--preview"
+      ],
+      "started": "2026-09-18T13:05:10.894510+00:00",
+      "finished": "2026-09-18T13:05:19.777860+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "\"status\": \"passed\",",
+        "\"check\": \"two independent HTTP callers\",",
+        "\"concurrentCreates\": 2,",
+        "\"concurrentUpdates\": 2,",
+        "\"sameCommittedCollection\": true,",
+        "\"check\": \"full local process restart\",",
+        "\"sameCommittedContents\": true,",
+        "\"newCallers\": 2,"
+      ],
+      "log_sha256": "1485110e46b0302c77586ff0780be57a6354914aeaa902697a62efaaeef0defc"
+    },
+    {
+      "label": "smoke-built-default-guard",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "smoke:worker"
+      ],
+      "started": "2026-09-18T13:05:25.352070+00:00",
+      "finished": "2026-09-18T13:05:30.101222+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "\"status\": \"passed\","
+      ],
+      "log_sha256": "b182eee31602042dbf8c7d5dc6597adae050e0fa075f801b369a80364c258395"
+    },
+    {
+      "label": "final-node-dom-complete",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-18T13:05:53.505129+00:00",
+      "finished": "2026-09-18T13:05:59.508276+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "Test Files  38 passed (38)",
+        "Tests  629 passed (629)"
+      ],
+      "log_sha256": "cd8d1ad6fe9505b35ba243e97c75baac980d28aaa22f5caa8d106d34019cf0fd"
+    },
+    {
+      "label": "final-generated-check",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "cf:typecheck"
+      ],
+      "started": "2026-09-18T13:05:59.540695+00:00",
+      "finished": "2026-09-18T13:06:15.251522+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "f33600a214f78e4205f5951e1970850e5da69e2a8116df076975b8cc84f3d0ba"
+    },
+    {
+      "label": "final-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started": "2026-09-18T13:07:05.892276+00:00",
+      "finished": "2026-09-18T13:07:27.046154+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, \"FOUNDATION_LABEL\" | \"TODO_ACCESS_POLICY\" | \"TODO_COLLECTION_ID\">> {}"
+      ],
+      "log_sha256": "9ce91227ce171f2f80ca88ae5cd20a1dd2659cba688b70e598dcee09c0091429"
+    },
+    {
+      "label": "final-workerd",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker"
+      ],
+      "started": "2026-09-18T13:07:05.894722+00:00",
+      "finished": "2026-09-18T13:07:12.401803+00:00",
+      "exit_code": 1,
+      "result_summary": [
+        "Test Files  1 failed | 3 passed (4)",
+        "Tests  1 failed | 106 passed (107)",
+        "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+      ],
+      "log_sha256": "9c2800f7dc28bd990f2768dcf44b4a190785c665cef7fe12cffee9062c6c5a74",
+      "failure_excerpt": "his will stop working in the next major version of npm.\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\u25b2 [WARNING] Proxy environment variables detected. We'll use your proxy for fetch requests.\n\n\n(node:18) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af\n\n FAIL  src/worker/http-adapter.test.ts > Todo Worker migration in workerd > keeps production entry authority disabled and SSE explicitly pending\nAssertionError: expected 503 to be 501 // Object.is equality\n\n- Expected\n+ Received\n\n- 501\n+ 503\n\n \u276f src/worker/http-adapter.test.ts:322:89\n    320|   const response = await exports.default.fetch('https://example.test/a\u2026\n    321|   expect(response.status).toBe(503);\n    322|   expect((await exports.default.fetch('https://example.test/api/todos/\u2026\n       |                                                                                         ^\n    323|  });\n    324|\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[1/1]\u23af\n\n"
+    },
+    {
+      "label": "final-workerd-complete",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker"
+      ],
+      "started": "2026-09-18T13:08:32.669019+00:00",
+      "finished": "2026-09-18T13:08:40.920906+00:00",
+      "exit_code": 0,
+      "result_summary": [
+        "Test Files  4 passed (4)",
+        "Tests  108 passed (108)"
+      ],
+      "log_sha256": "63233cd8a76f5cf83d8ed61edeab092eeea95c4d5f1b171ef104404570e9e7a1"
+    },
+    {
+      "label": "final-build",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "build:worker"
+      ],
+      "started": "2026-09-18T13:08:32.672490+00:00",
+      "finished": "2026-09-18T13:08:34.241482+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "d5492de1ffe13af6472d0f3f893028cba4310342688cd9df6adc2bd0afc71f54"
+    },
+    {
+      "label": "final-test-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:tests"
+      ],
+      "started": "2026-09-18T13:08:34.268747+00:00",
+      "finished": "2026-09-18T13:08:40.407894+00:00",
+      "exit_code": 0,
+      "result_summary": [],
+      "log_sha256": "0200b8784c2fd91fb1991c3bcd9a45b5d5fa1fc63ef605b066440cd06c8476b0"
+    }
+  ],
+  "failure_dispositions": {
+    "repository-red": "Expected regression: existing effects only accepted synchronous todoStore. Five failures exposed missing finite storage capability; repository-green proves waiting, failures and cancellation after adaptation.",
+    "interim-typecheck": "Ran during concurrent platform editing; command discriminant and RPC union typing were incomplete. Integrated typecheck passed after implementation settled.",
+    "checkpoint-dev-initial": "Local binding override assumption failed: Todo GET503. Replaced with supported Vite config customizer.",
+    "checkpoint-dev-diagnose": "Repeated scoped configuration diagnosis; superseded by passing checkpoint-dev-customizer.",
+    "checkpoint-built-local": "Built checkpoint exposed unused decodeURIComponent being removed by production optimization. Validation now consumes decoded value, preserving malformed-path400; subsequent rebuilt checkpoint verifies correction.",
+    "checkpoint-built-path-diagnose": "Scoped reproduction confirmed domain404 and that the emitted bundle omitted the unused decode call. Fixed guard passes original400 assertion.",
+    "final-workerd": "106/107 passed; inherited M05b test expected stream501 even with disabledaccess. M05c intentionally authorizes before selection; updated assertion verifies disabled503 plus injected/local501. Final workerd108/108 passes."
+  },
+  "evidence_limits": [
+    "Node unit storage model is controlled simulation; workerd tests and local process restart supply separate platform evidence.",
+    "Local runtime tests do not force or prove remote global routing.",
+    "No remote resources, remote migrations, deployment, merge, release, package publication or account/domain changes performed.",
+    "No new real-browser UI automation; browser code and wire contracts are unchanged. User manual layout/Refresh feedback refers to M05b.",
+    "Local dependency installation reused the unchanged lockfile; clean installation is checked separately by PR CI.",
+    "M05d live delivery and M06 application synchronization remain pending."
+  ],
+  "implementation_tree": "23f1daa0ce5f9df52106d6084718b150a974f202",
+  "final": {
+    "node_dom": {
+      "tests": 629,
+      "files": 38,
+      "exit_code": 0
+    },
+    "workerd": {
+      "tests": 108,
+      "files": 4,
+      "exit_code": 0
+    },
+    "typecheck": "all five projects passed",
+    "generated_types": "passed",
+    "build": "passed; Worker286.46kB; browser JS102.70kB/CSS2.58kB unchanged",
+    "default_preview": "passed; Todo503",
+    "development_restart": "passed",
+    "built_restart": "passed",
+    "acceptance_criteria": "7/7 passed locally",
+    "blockers": []
+  },
+  "agent_focused_commands": [
+    {
+      "command": "npm exec vitest run -- --project node src/server/todos/todo.authority.test.ts src/server/todos/todo.transitions.test.ts",
+      "result": "51 tests /2 files passed; included in final whole suite"
+    },
+    {
+      "command": "npm run test:worker -- src/worker/todo-authority.test.ts",
+      "result": "22 tests passed; included in final whole suite",
+      "intermediate_dispositions": [
+        "KV.list() test fixture incorrectly assumed Map.keys(); corrected iterable handling.",
+        "Incoming Request test typing corrected."
+      ]
+    },
+    {
+      "command": "npm run typecheck:tests",
+      "result": "passed after platform fixtures corrected"
+    }
+  ],
+  "publication": {
+    "repository": "hansschenker/rxjs-flow",
+    "branch": "m05c/durable-todos",
+    "method": "GitHub tree/commit/ref tools; local index tree compared with remote tree before soft reset",
+    "implementation_commit": "48b9a8a71de5167f9de9fa94fbb3109b07a3c055",
+    "implementation_tree": "23f1daa0ce5f9df52106d6084718b150a974f202",
+    "merge_performed": false,
+    "deployment_performed": false,
+    "prepublication_main_reverified": "1cfbaeca0cede3a08c90631e16cf6bdf2fa750c8"
+  }
+}

@@ -16,10 +16,12 @@ are accepted and merged in PR #8 at `c64fda1`.
 M04's [owned, targeted DOM rendering](docs/m04/acceptance.md) is accepted and
 merged in PR #9 at `2b316a4`. See the [minimal binding sample](docs/m04/minimal-sample.md).
 M05b's [HTTP compatibility and request ownership](docs/m05b/acceptance.md) is
-implemented; acceptance review/merge pending. [Try the Hono Todo page locally](docs/m05b/local-development.md).
-M05c–M09 remain pending. Both the retained Node sample and explicit local Worker
-demo use **in-memory storage**. Durable authority and the complete live-state loop
-remain planned.
+accepted and merged in PR #10 at `1cfbaec`.
+M05c's [durable Todo authority](docs/m05c/acceptance.md) is implemented;
+acceptance review/merge is pending. [Run the persistent local Todo page](docs/m05c/local-development.md).
+The local Workers runtime stores each configured collection in attached SQLite
+storage, so saved Todos survive a runtime restart. The retained Node sample uses
+memory. Worker live delivery and the application live-state loop remain M05d/M06.
 M00's dated test results and separate failing characterization remain evidence,
 not a claim that every planned behavior works.
 
@@ -28,7 +30,8 @@ uses Hono for HTTP integration, Cloudflare Workers for execution, a minimal Dura
 Object authority for shared Todo state, Vite for builds and Wrangler for Cloudflare
 operations. M05a supplies project-local Wrangler, Vite/Workers builds and a typed
 Hono/RxJS probe. M05b adds finite Todo HTTP compatibility and request ownership;
-durable authority and live synchronization remain planned work. No deployed Worker or domain configuration is claimed.
+M05c adds bounded authority operations, atomic persistence and reconstruction.
+Live synchronization remains planned. No deployed Worker or domain configuration is claimed.
 
 ## Project documents
 
@@ -43,7 +46,8 @@ durable authority and live synchronization remain planned work. No deployed Work
 - [M04 minimal binding sample](docs/m04/minimal-sample.md)
 - [M05a acceptance and test evidence](docs/m05a/acceptance.md)
 - [M05b acceptance and route compatibility](docs/m05b/acceptance.md)
-- [Run the local Hono Todo page](docs/m05b/local-development.md)
+- [M05c durable authority and restart/failure acceptance](docs/m05c/acceptance.md)
+- [Run the persistent local Todo page](docs/m05c/local-development.md)
 - [Historical M05a foundation guide](docs/m05a/local-development.md)
 - [Historical source audit](docs/repository-audit-2026-09-15.md)
 
@@ -52,8 +56,8 @@ durable authority and live synchronization remain planned work. No deployed Work
 | Area | Existing implementation | Work still planned |
 |---|---|---|
 | Client | Instance-owned state and effects, ordered mutation queue, cancellable reads, validated HTTP outcomes, coherent view model, custom JSX, a stable shell and owned scalar/keyed DOM bindings | Live protocol integration (M06) |
-| HTTP server | Owned finite Todo operations through Hono/workerd and the retained Node adapter | M05b acceptance; durable authority and live delivery (M05c–M05d) |
-| Shared state | In-memory Node store and explicitly enabled volatile Worker demo | Logical collection authority, minimal durable commit/recovery and ordering metadata (M05c) |
+| HTTP server | Owned finite Todo operations through Hono/workerd and the retained Node adapter | Bounded live delivery (M05d) |
+| Shared state | One Durable Object per configured collection, atomic state/metadata persistence and reconstruction; separate in-memory Node/test factories | M05c acceptance; race-free live registration (M05d) |
 | Live updates | Node SSE route and a subscription-owned EventSource adapter with a required decoder | Owned bounded server delivery, versioned live protocol, reconnect semantics and app integration (M05d–M06) |
 | Reference app/delivery | Existing Todo application and separate development processes | Complete browser loop, platform tests/traces and documented Cloudflare-ready build (M07–M09) |
 
@@ -65,7 +69,7 @@ bindings update the relevant DOM values; keyed rows retain their nodes and child
 scopes across updates, preserve focus and selection, and release ownership on removal.
 
 The recommended sequence is M01 → M05a → M02 → M03 → M04 → M05b → M05c → M05d →
-M06 → M07 → M08 → M09. M00 stays closed; M05c starts only after M05b acceptance and
+M06 → M07 → M08 → M09. M00 stays closed; M05d starts only after M05c acceptance and
 its own authorization. No SSR, Hono JSX, browser router or custom CLI is required for
 this completion target.
 
@@ -107,11 +111,14 @@ To run the Todo page and Hono API together in the local Workers runtime:
 npm run dev:worker
 ```
 
-Open **http://localhost:5174** for the Todo page. This development mode explicitly
-enables a volatile store. The [M05b guide](docs/m05b/local-development.md) explains
-its lifetime and validation examples. `npm run smoke:worker -- --dev` checks
-actual local Todo HTTP behavior. `npm run build:worker` and `npm run smoke:worker`
-verify the built checkpoint, which leaves storage disabled (503) until M05c.
+Open **http://localhost:5174** for the Todo page. Saved Todos persist in the local
+Workers runtime's SQLite storage under `.wrangler/state`. Stop and restart the
+command from the same checkout to see the same collection. The [M05c guide](docs/m05c/local-development.md)
+explains the two-caller and restart checkpoints. `npm run smoke:worker -- --dev`
+checks actual local Todo HTTP behavior; `node scripts/m05c-checkpoint.mjs` also
+restarts the local runtime using an isolated temporary database.
+The built configuration leaves Todo access disabled (503); the guide documents
+an explicit local Wrangler command. Local persistence does not deploy a service.
 
 ## Scope and contribution
 

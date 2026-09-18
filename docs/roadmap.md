@@ -16,10 +16,12 @@ M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda1`.
 M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`.
 Its stable shell, owned scalar bindings and keyed rows commit synchronously and
 preserve focus and selection; see the [minimal binding sample](m04/minimal-sample.md).
-M05b is implemented; [acceptance review/merge pending](m05b/acceptance.md). M05c–M09 remain pending.
-The [local Hono Todo page](m05b/local-development.md) uses explicit volatile
-storage. The built Worker defaults to 503 until M05c supplies authority; Worker
-SSE and application live state remain M05d/M06.
+M05b is [accepted/merged in PR #10](m05b/acceptance.md) at `1cfbaeca0cede3a08c90631e16cf6bdf2fa750c8`.
+M05c is implemented; [acceptance review/merge pending](m05c/acceptance.md).
+The [local Hono Todo page](m05c/local-development.md) uses attached SQLite storage
+and preserves committed state across runtime restarts. The built Worker leaves
+Todo access disabled; local execution of the built artifact requires an explicit Wrangler command. M05d–M09 remain
+pending, including Worker SSE and application live state in M05d/M06.
 
 Recommended order: M01 → M05a → M02 → M03 → M04 → M05b → M05c → M05d → M06 → M07
 → M08 → M09. M05a establishes the platform/build path early. M05 is complete only
