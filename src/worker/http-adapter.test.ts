@@ -316,10 +316,12 @@ describe('Fetch request body ownership in workerd', () => {
 });
 
 describe('Todo Worker migration in workerd', () => {
-	it('keeps production entry authority disabled and SSE explicitly pending', async () => {
+	it('keeps all production Todo access disabled and authorized SSE explicitly pending', async () => {
 		const response = await exports.default.fetch('https://example.test/api/todos');
 		expect(response.status).toBe(503);
-		expect((await exports.default.fetch('https://example.test/api/todos/stream')).status).toBe(501);
+		expect((await exports.default.fetch('https://example.test/api/todos/stream')).status).toBe(503);
+		const authorized = createWorkerApp({ todoStore: createTodoStore() });
+		expect((await authorized.fetch(request('/api/todos/stream'))).status).toBe(501);
 	});
 
 	it('reuses the canonical CRUD contracts with an injected local store', async () => {

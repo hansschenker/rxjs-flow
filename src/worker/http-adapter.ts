@@ -95,7 +95,7 @@ export function finiteResponse(response: HttpResponse): Response {
 }
 
 /** A failure before decoding still owns disposal of the unread incoming body. */
-function cancelUnreadBody(request: Request): void {
+export function cancelUnreadBody(request: Request): void {
 	if (!request.body || request.body.locked) return;
 	void request.body.cancel().catch(() => { /* Failure is already reported by its operation. */ });
 }
@@ -131,7 +131,11 @@ export function createHonoApp(definitions: RouteDefinition[], options: HonoAppOp
 			execute(signal) {
 				return defer(() => {
 					const path = normalizedPath(incoming);
-					try { decodeURIComponent(path); } catch { throw new BadRequest('Malformed path encoding'); }
+					try {
+						// Consume the decoded value: production optimizers may discard an
+						// unused decode call, including its malformed-encoding exception.
+						if (!decodeURIComponent(path).startsWith('/')) throw new BadRequest('Malformed path encoding');
+					} catch { throw new BadRequest('Malformed path encoding'); }
 					const withinApi = path === '/api' || path.startsWith('/api/');
 					const route = selected?.method === incoming.method ? selected : undefined;
 					const request: HttpRequest = {

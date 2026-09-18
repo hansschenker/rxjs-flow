@@ -9,8 +9,13 @@
   "send_metrics": false,
   "vars": {
     "FOUNDATION_LABEL": "rxjs-flow foundation",
-    "LOCAL_TODO_DEMO": "disabled"
+    "TODO_ACCESS_POLICY": "disabled",
+    "TODO_COLLECTION_ID": "local-reference"
   },
+  "durable_objects": {
+    "bindings": [{ "name": "TODO_COLLECTIONS", "class_name": "TodoCollection" }]
+  },
+  "migrations": [{ "tag": "m05c-v1", "new_sqlite_classes": ["TodoCollection"] }],
   "secrets": { "required": [] },
   "assets": {
     "not_found_handling": "single-page-application",

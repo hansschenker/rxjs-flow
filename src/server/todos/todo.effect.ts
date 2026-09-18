@@ -1,74 +1,48 @@
-import { map } from 'rxjs/operators';
-import { NotFound } from '../core/errors';
+import { map, mergeMap } from 'rxjs/operators';
+import { HttpError } from '../core/errors';
 import { created, json, noContent, stream$ } from '../core/response';
 import type { Effect } from '../core/types';
 import { validateBody, validateParams, validateQuery } from '../core/validator';
 import { CreateTodoSchema, TodoListQuerySchema, TodoParamsSchema, UpdateTodoSchema } from './todo.validator';
 import type { TodoStore } from './todo.store-factory';
 import { routes, type RouteResponse } from '../../shared/routes';
-import type { Todo } from '../../shared/types';
+import { createMemoryTodoRepository, type TodoRepository } from './todo.repository';
 
 export interface TodoServices {
-	todoStore: TodoStore;
+	todoStore?: TodoStore;
+	todoRepository?: TodoRepository;
 }
 
 export const createTodoEffects = () => ({
 	getAll$: ((req$) =>
 		req$.pipe(
 			validateQuery(TodoListQuerySchema),
-			map(req => {
-				const todos = getTodoStore(req).getTodos();
-				const filtered = req.query.completed === undefined
-					? todos
-					: todos.filter(todo => String(todo.completed) === req.query.completed);
-				return json(filtered);
-			}),
+			mergeMap(req => getTodoRepository(req).list$(
+				req.query.completed === undefined ? undefined : req.query.completed === 'true',
+			).pipe(map(todos => json(todos)))),
 		)) as Effect,
 
 	create$: ((req$) =>
 		req$.pipe(
 			validateBody(CreateTodoSchema),
-			map(req => {
-				const todo: Todo = {
-					id: crypto.randomUUID(),
-					title: req.body.title,
-					completed: false,
-					createdAt: new Date().toISOString(),
-				};
-				const store = getTodoStore(req);
-				store.setTodos([...store.getTodos(), todo]);
-				return created(todo satisfies RouteResponse<typeof routes.todos.create>);
-			}),
+			mergeMap(req => getTodoRepository(req).create$(req.body).pipe(
+				map(todo => created(todo satisfies RouteResponse<typeof routes.todos.create>)),
+			)),
 		)) as Effect,
 
 	update$: ((req$) =>
 		req$.pipe(
 			validateParams(TodoParamsSchema),
 			validateBody(UpdateTodoSchema),
-			map(req => {
-				const store = getTodoStore(req);
-				const current = store.getTodos();
-				if (!current.some(todo => todo.id === req.params.id)) throw new NotFound('Todo not found');
-				const updated = current.map(todo =>
-					todo.id === req.params.id ? { ...todo, ...req.body } : todo,
-				);
-				store.setTodos(updated);
-				const todo = updated.find(item => item.id === req.params.id);
-				if (!todo) throw new NotFound('Todo not found');
-				return json(todo satisfies RouteResponse<typeof routes.todos.update>);
-			}),
+			mergeMap(req => getTodoRepository(req).update$(req.params.id, req.body).pipe(
+				map(todo => json(todo satisfies RouteResponse<typeof routes.todos.update>)),
+			)),
 		)) as Effect,
 
 	delete$: ((req$) =>
 		req$.pipe(
 			validateParams(TodoParamsSchema),
-			map(req => {
-				const store = getTodoStore(req);
-				const current = store.getTodos();
-				if (!current.some(todo => todo.id === req.params.id)) throw new NotFound('Todo not found');
-				store.setTodos(current.filter(todo => todo.id !== req.params.id));
-				return noContent();
-			}),
+			mergeMap(req => getTodoRepository(req).delete$(req.params.id).pipe(map(() => noContent()))),
 		)) as Effect,
 
 	todoStream$: ((req$) =>
@@ -89,3 +63,11 @@ export const todoStream$ = defaultEffects.todoStream$;
 
 const getTodoStore = (req: { context: { services: Record<string, unknown> } }): TodoStore =>
 	req.context.services.todoStore as TodoStore;
+
+function getTodoRepository(req: { context: { services: Record<string, unknown> } }): TodoRepository {
+	const capability = req.context.services.todoRepository as TodoRepository | undefined;
+	if (capability) return capability;
+	const store = req.context.services.todoStore as TodoStore | undefined;
+	if (store) return createMemoryTodoRepository(store);
+	throw new HttpError(503, 'Todo storage is not configured');
+}

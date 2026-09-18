@@ -24,11 +24,11 @@ describe('foundation Worker in workerd', () => {
 		});
 	});
 
-	it('exposes only the public configuration binding to the application', () => {
+	it('exposes the declared application bindings', () => {
 		// The official test harness also owns private runtime/service bindings.
 		const applicationBindings = Object.keys(env)
 			.filter(name => !name.startsWith('__VITEST_POOL_WORKERS_'));
-		expect(applicationBindings.sort()).toEqual(['FOUNDATION_LABEL', 'LOCAL_TODO_DEMO']);
+		expect(applicationBindings.sort()).toEqual(['FOUNDATION_LABEL', 'TODO_ACCESS_POLICY', 'TODO_COLLECTIONS', 'TODO_COLLECTION_ID']);
 	});
 
 	it('registers routes without constructing or subscribing to an operation', () => {

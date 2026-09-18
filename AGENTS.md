@@ -25,9 +25,11 @@ M04 is accepted and merged in PR #9 at `2b316a477600c91b3105c9e390949c29e90046d3
 and `docs/m04/minimal-sample.md` for owned scalar bindings, a stable shell and keyed
 rows with child scopes. Rendering commits synchronously, preserving focus and
 selection; `todo.view.tsx` owns rendering and the app root connects its streams.
-M05b is implemented; acceptance review/merge pending. See `docs/m05b/acceptance.md`
-and `docs/m05b/local-development.md`. M05c–M09 remain pending; begin M05c only
-after M05b acceptance and explicit authorization.
+M05b is accepted and merged in PR #10 at `1cfbaeca0cede3a08c90631e16cf6bdf2fa750c8`;
+see `docs/m05b/acceptance.md`. M05c is implemented; acceptance review/merge is pending.
+See `docs/m05c/acceptance.md` and `docs/m05c/local-development.md` for the durable
+collection, access policy, bounds and restart checkpoint. M05d–M09 remain pending;
+begin M05d only after M05c acceptance and explicit authorization.
 Do not repeat the import or reopen M00 because the platform target changed.
 The separate `m00/characterize-baseline` branch contains intentionally failing
 probes; do not merge it. Map each failure to a verified fix or tested replacement.
@@ -47,8 +49,11 @@ The r2 target is Hono HTTP integration on Cloudflare Workers, Vite plus the
 Cloudflare Vite plugin, project-local Wrangler, and a minimal Durable Object
 collection authority. M05a establishes only a local Hono/RxJS probe, generated
 Worker types, builds and runtime tests. M05b adds finite Hono Todo HTTP and
-request ownership with separate retained Node evidence. Durable authority and
-Worker live delivery/application SSE integration remain planned.
+request ownership with separate retained Node evidence. M05c adds a bounded
+collection authority with attached SQLite storage and atomic state/metadata
+commit. Development access is limited to the configured local collection;
+deployable configuration stays disabled. Worker live delivery/application SSE
+integration remain M05d/M06.
 The current Node HTTP application remains the migration baseline until equivalent
 behavior is verified.
 Keep its applicable lifecycle tests or explicitly document tested retirement.

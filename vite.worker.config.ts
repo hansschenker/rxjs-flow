@@ -2,12 +2,15 @@ import { cloudflare } from '@cloudflare/vite-plugin';
 import { defineConfig } from 'vite';
 import { browserBoundary } from './scripts/browser-boundary';
 
-export default defineConfig(({ command }) => ({
+export default defineConfig(({ command, isPreview }) => ({
   plugins: [
     cloudflare({
-      configPath: './wrangler.jsonc', remoteBindings: false, persistState: false,
-      // Explicit volatile development capability; builds keep Todo authority disabled.
-      config: config => ({ vars: { ...config.vars, LOCAL_TODO_DEMO: command === 'serve' ? 'enabled' : 'disabled' } }),
+      configPath: './wrangler.jsonc', remoteBindings: false,
+      persistState: { path: process.env.RXJS_FLOW_LOCAL_STATE ?? '.wrangler/state' },
+      config: config => ({ vars: {
+        ...config.vars,
+        TODO_ACCESS_POLICY: command === 'serve' && !isPreview ? 'local-loopback' : 'disabled',
+      } }),
       // Local verification needs no debugger or network-interface discovery.
       inspectorPort: false,
     }),

@@ -4,7 +4,7 @@ Design revision: 2026-09-17. Target revision: **rxjs-flow migration r2 — Cloud
 
 Applies to the ChatGPT Project **`rxjs-flow`** and development repository **`hansschenker/rxjs-flow`**. Read with the [canonical roadmap](roadmap-gpt-6-astra-2026-09-15.md) and [Cloudflare/Hono runtime decision](runtime-cloudflare-hono.md). The historical source `rxjs-stack` and separate `rxjs-fullstack` repositories are not development targets.
 
-**Status:** target behavior, with implementation evidence recorded per milestone. M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e`; M01 is accepted/merged in PR #5. M05a is accepted/merged in PR #6. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`. M05b is implemented; [acceptance review/merge pending](m05b/acceptance.md). M05c–M09 remain pending. M05b adapts the same finite server Effect and route definitions to Hono, with owned request execution and separately tested retained Node compatibility. Durable authority, Worker live delivery, live integration and deployment remain pending. The [r1 contract](archive/dataflow-architecture-r1-2026-09-15.md) and M00 evidence are preserved.
+**Status:** target behavior, with implementation evidence recorded per milestone. M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e`; M01 is accepted/merged in PR #5. M05a is accepted/merged in PR #6. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`. M05b is [accepted/merged in PR #10](m05b/acceptance.md) at `1cfbaec`. M05c is implemented; [acceptance review/merge pending](m05c/acceptance.md). M05b adapts the same finite server Effect and route definitions to Hono, with owned request execution and separately tested retained Node compatibility. M05c adds a configured collection authority with attached SQLite storage, atomic state/metadata commit and reconstruction. Worker live delivery, application live integration and deployment remain pending. The [r1 contract](archive/dataflow-architecture-r1-2026-09-15.md) and M00 evidence are preserved.
 
 r2 retains the reactive core, rendering and transport-correctness requirements while replacing the permanent Node-server assumption with an explicit Hono/Workers boundary and a minimal durable shared-state authority. Platform facts and primary references are separated from these project requirements in the runtime decision.
 
@@ -118,6 +118,24 @@ Where an effect depends on state, use a coherent transition snapshot associated 
 
 Shared execution within one app is not distributed consistency. Client mutation queues do not serialize all clients. The authority must establish a tested read/validate/transition/commit boundary. Do not publish a proposed reduction as committed until state and ordering metadata have committed consistently. Persisted state is the recovery source; a Worker-global `shareReplay` or Subject is not a shared database.
 
+The [M05c checkpoint](m05c/acceptance.md) uses `TodoRepository` as the finite
+request capability. Named pure Todo transitions serve both the retained memory
+adapter and `createTodoAuthority`. A thin `TodoCollection` Durable Object entry
+owns the platform boundary. Its one persisted snapshot envelope contains schema
+version, collection identity, generation, revision and Todos. SQLite's synchronous
+transaction protects read/validate/transition/write; `storage.sync()` settles
+before any successful result is emitted. Authority admission is bounded to 32
+active-plus-waiting application operations. There is no live registration API yet;
+M05d must add and test the race-free registration/snapshot handoff.
+
+An admitted authority operation remains owned even if its HTTP observer disappears.
+A known transaction rollback reports `not-committed`; a failed flush or lost reply
+reports `unknown`. No mutation is automatically retried. Failed flush also blocks
+further results from that activation until reconstruction. These outcome values
+belong to internal operation error details; the application live schema remains
+M06 work. Local configuration selects and authorizes the reference collection;
+a request-supplied collection key cannot grant access.
+
 ## 5. Error, completion, and cancellation are different
 
 Expected operation failures become typed result values while the intent-processing graph stays alive. A source's terminal `error` still ends that subscription; recovery is an explicit policy at the correct boundary.
@@ -179,9 +197,10 @@ Observing replayed outcomes never starts another execution. Input bytes are
 bounded to 1 MiB, and cancellation releases the request's work. The Hono adapter
 uses `/api` once and consumes canonical route definitions; the retained Node
 adapter keeps its unprefixed paths. See [M05b compatibility](m05b/acceptance.md).
-The local development Worker explicitly enables a volatile demo capability;
-production configuration leaves it disabled pending M05c. This does not implement
-the durable authority described below.
+M05c replaces the volatile Worker demo with a configured Durable Object authority.
+The development runtime persists locally; checked-in and built configuration
+leave Todo access disabled. See the [M05c checkpoint](m05c/local-development.md)
+for the explicitly enabled local workflow.
 
 ### Logical collection authority
 

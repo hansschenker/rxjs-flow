@@ -1,5 +1,9 @@
 # M05b — Try the Todo page through Hono
 
+**Historical checkpoint:** M05b merged in PR #10 at `1cfbaec`. The commands and
+volatile-store behavior below describe that commit. For the current implementation,
+use the [M05c persistent Todo guide](../m05c/local-development.md).
+
 Revision: **rxjs-flow migration r2 — Cloudflare/Hono**. This checkpoint runs the
 existing M04 page against Hono in the local Cloudflare Workers runtime. RxJS 7,
 TypeScript, the shared API contracts and the custom JSX renderer are retained.

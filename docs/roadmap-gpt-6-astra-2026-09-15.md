@@ -8,7 +8,7 @@ Updated: 2026-09-18. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**. F
 **Original audited source baseline:** `cbc91eefbccdeaf17221d06c75bdd237fe5e5499` on the source repository's `main`.  
 **Inspected destination baseline for this revision:** `c9197b68591e390a0a3add4667e5dd23717d6b6e` on `rxjs-flow/main`.
 
-**Implementation status, 2026-09-18:** M00 is accepted and closed by merged PR #2 at the destination baseline above. M01 is accepted/merged in PR #5 at `188f21f`. M05a is accepted/merged in PR #6 at `eeb8d29`. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`. M05b is implemented; [acceptance review/merge pending](m05b/acceptance.md). M05c–M09 remain pending. Finite Todo HTTP now runs through the shared owned operation boundary in Hono/workerd and the retained Node adapter. The local Worker demo explicitly injects volatile memory; the production build requires a storage capability and returns 503 until M05c. Worker streaming remains M05d; durable authority and live integration are pending. The r2 plan adoption changed documentation only; subsequent M01/M05a/M02/M03/M04 checkpoints implement browser lifetime/state ownership, extracted effect policies, validated HTTP outcomes, a required generic SSE decoder, targeted DOM bindings with keyed rows and the local platform foundation. Live protocol and application integration remain M06. The ChatGPT Project reference copy remains separately unverified.
+**Implementation status, 2026-09-18:** M00 is accepted and closed by merged PR #2 at the destination baseline above. M01 is accepted/merged in PR #5 at `188f21f`. M05a is accepted/merged in PR #6 at `eeb8d29`. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`. M05b is [accepted/merged in PR #10](m05b/acceptance.md) at `1cfbaeca0cede3a08c90631e16cf6bdf2fa750c8`. M05c is implemented; [acceptance review/merge pending](m05c/acceptance.md). Its [local Todo checkpoint](m05c/local-development.md) uses a configured Durable Object collection with attached SQLite storage, bounded admission, atomic state/metadata persistence and restart reconstruction. The built configuration leaves Todo access disabled; an explicit local Wrangler command is available. M05d–M09 remain pending, including bounded Worker SSE in M05d and the live protocol/application integration in M06. The retained Node application and independent test stores remain in memory. The ChatGPT Project reference copy remains separately unverified.
 
 This is a continuation of the existing application, not a fresh scaffold, repository rename, history reset or import from `rxjs-fullstack`. It explicitly amends r1's permanent Node HTTP and in-memory-only target assumptions. Preserve domain behavior and tested contracts while moving the platform boundary through reviewable steps. No runtime replacement occurs in this documentation change.
 
@@ -98,8 +98,8 @@ Node retirement is an explicit later decision: retain the baseline until corresp
 | M04 | Owned, targeted reactive DOM rendering | M02, M03 | Accepted/merged; [PR #9 at `2b316a4`](m04/acceptance.md) |
 | M05 | Cloudflare/Hono request, authority and SSE correctness | M05a–M05d | Pending |
 | M05a | Cloudflare/Hono development and build foundation | M01 | Accepted/merged; PR #6 at `eeb8d29` |
-| M05b | HTTP compatibility and request ownership | M05a | Implemented; [review/merge pending](m05b/acceptance.md) |
-| M05c | Durable shared Todo authority | M05b | Pending; explicit added scope |
+| M05b | HTTP compatibility and request ownership | M05a | Accepted/merged; [PR #10 at `1cfbaec`](m05b/acceptance.md) |
+| M05c | Durable shared Todo authority | M05b | Implemented; [review/merge pending](m05c/acceptance.md) |
 | M05d | Owned SSE and bounded authority-to-client delivery | M05b, M05c | Pending |
 | M06 | Typed live synchronization and recovery | M03, M05 | Pending |
 | M07 | Complete reference Todo app and forms | M04, M06 | Pending |
@@ -265,9 +265,10 @@ M05b–M05d remain unimplemented.
 
 ### M05b — HTTP compatibility and request ownership
 
-**Implementation checkpoint, 2026-09-18:** [acceptance record](m05b/acceptance.md)
-and [locally runnable Todo page](m05b/local-development.md). Implementation and
-verification are recorded; acceptance review/merge is pending.
+**Accepted/merged, 2026-09-18:** [PR #10](https://github.com/hansschenker/rxjs-flow/pull/10)
+at `1cfbaeca0cede3a08c90631e16cf6bdf2fa750c8`. The [acceptance record](m05b/acceptance.md)
+records 656 passing tests and final-head CI; the owner also confirmed the local
+page layout and input preservation during Refresh.
 
 **Depends on:** M05a.
 
@@ -285,6 +286,11 @@ verification are recorded; acceptance review/merge is pending.
 **Visible evidence:** route compatibility and request-lifecycle acceptance records.
 
 ### M05c — Durable shared Todo authority
+
+**Implementation checkpoint, 2026-09-18:** [acceptance record](m05c/acceptance.md)
+and [two-caller/restart checkpoint](m05c/local-development.md). Implementation is
+under acceptance review; merge is pending. M05b's PR #10 merge `1cfbaec` is the
+verified starting commit. M05d/M06 remain separate authorized milestones.
 
 **Depends on:** M05b. **Scope:** a deliberate, minimal persistence addition to r1.
 
@@ -426,6 +432,6 @@ Keep documentation, dependency/toolchain changes, platform adapters, storage aut
 
 After a roadmap amendment is merged/accepted, refresh the ChatGPT Project reference copy with this same filename and revision. Until that refresh is confirmed, report it as pending rather than claiming automatic Project synchronization. GitHub branch content is not proof that main or the Project copy has changed.
 
-**Next implementation session:** review and accept M05b, verify the actual current
-repository state, then begin M05c only when authorized. M00, M01, M05a, M02,
-M03 and M04 remain accepted/merged. M05d–M09 do not start automatically.
+**Next implementation session:** review and accept M05c, verify the actual current
+repository state, then begin M05d only when authorized. M00, M01, M05a, M02,
+M03, M04 and M05b remain accepted/merged. M05d–M09 do not start automatically.
