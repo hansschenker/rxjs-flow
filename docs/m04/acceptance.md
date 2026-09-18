@@ -1,9 +1,12 @@
 # M04 — Owned, targeted DOM rendering
 
 Date: 2026-09-17. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
-Status: implemented and verified against the M04 DOM criteria; acceptance
-review/merge pending. Real-browser visual verification is blocked in this
-environment, as recorded below.
+Status: accepted and merged in [PR #9](https://github.com/hansschenker/rxjs-flow/pull/9)
+at `2b316a477600c91b3105c9e390949c29e90046d3` on 2026-09-17. Final-head
+[CI run 35203513000](https://github.com/hansschenker/rxjs-flow/actions/runs/35203513000)
+passed. The owner subsequently confirmed the local page works and looks good.
+The assistant's automated real-browser run remained blocked as recorded below;
+the owner's manual review does not replace the recorded DOM-test evidence.
 
 ## Provenance and scope
 

@@ -1,6 +1,6 @@
 # RxJS-Flow: dataflow implementation roadmap
 
-Updated: 2026-09-17. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**. Filename retained: `roadmap-gpt-6-astra-2026-09-15.md`.
+Updated: 2026-09-18. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**. Filename retained: `roadmap-gpt-6-astra-2026-09-15.md`.
 
 **ChatGPT Project:** `rxjs-flow`  
 **Development repository:** `hansschenker/rxjs-flow`  
@@ -8,7 +8,7 @@ Updated: 2026-09-17. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**. F
 **Original audited source baseline:** `cbc91eefbccdeaf17221d06c75bdd237fe5e5499` on the source repository's `main`.  
 **Inspected destination baseline for this revision:** `c9197b68591e390a0a3add4667e5dd23717d6b6e` on `rxjs-flow/main`.
 
-**Implementation status, 2026-09-17:** M00 is accepted and closed by merged PR #2 at the destination baseline above. M01 is accepted/merged in PR #5 at `188f21f`. M05a is accepted/merged in PR #6 at `eeb8d29`. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is implemented; [acceptance review/merge pending](m04/acceptance.md). M05b–M09 remain pending. The executable implementation still uses Node HTTP/in-memory Todo storage. Hono, Wrangler, Worker build/preview and runtime tests form a local foundation; Todo HTTP migration and Durable Object persistence remain planned. The r2 plan adoption changed documentation only; subsequent M01/M05a/M02/M03/M04 checkpoints implement browser lifetime/state ownership, extracted effect policies, validated HTTP outcomes, a required generic SSE decoder, targeted DOM bindings with keyed rows and the local platform foundation. Live protocol and application integration remain M06. The ChatGPT Project reference copy remains separately unverified.
+**Implementation status, 2026-09-18:** M00 is accepted and closed by merged PR #2 at the destination baseline above. M01 is accepted/merged in PR #5 at `188f21f`. M05a is accepted/merged in PR #6 at `eeb8d29`. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`. M05b is implemented; [acceptance review/merge pending](m05b/acceptance.md). M05c–M09 remain pending. Finite Todo HTTP now runs through the shared owned operation boundary in Hono/workerd and the retained Node adapter. The local Worker demo explicitly injects volatile memory; the production build requires a storage capability and returns 503 until M05c. Worker streaming remains M05d; durable authority and live integration are pending. The r2 plan adoption changed documentation only; subsequent M01/M05a/M02/M03/M04 checkpoints implement browser lifetime/state ownership, extracted effect policies, validated HTTP outcomes, a required generic SSE decoder, targeted DOM bindings with keyed rows and the local platform foundation. Live protocol and application integration remain M06. The ChatGPT Project reference copy remains separately unverified.
 
 This is a continuation of the existing application, not a fresh scaffold, repository rename, history reset or import from `rxjs-fullstack`. It explicitly amends r1's permanent Node HTTP and in-memory-only target assumptions. Preserve domain behavior and tested contracts while moving the platform boundary through reviewable steps. No runtime replacement occurs in this documentation change.
 
@@ -95,10 +95,10 @@ Node retirement is an explicit later decision: retain the baseline until corresp
 | M01 | Explicit application/component/source lifetimes | M00 | Accepted/merged; PR #5 at `188f21f` |
 | M02 | Instance-owned state and coherent derived streams | M01 | Accepted/merged; [PR #7 at `7374557`](m02/acceptance.md) |
 | M03 | Effect policies and correct HTTP outcomes | M02 | Accepted/merged; [PR #8 at `c64fda1`](m03/acceptance.md) |
-| M04 | Owned, targeted reactive DOM rendering | M02, M03 | Implemented; [acceptance review/merge pending](m04/acceptance.md) |
+| M04 | Owned, targeted reactive DOM rendering | M02, M03 | Accepted/merged; [PR #9 at `2b316a4`](m04/acceptance.md) |
 | M05 | Cloudflare/Hono request, authority and SSE correctness | M05a–M05d | Pending |
 | M05a | Cloudflare/Hono development and build foundation | M01 | Accepted/merged; PR #6 at `eeb8d29` |
-| M05b | HTTP compatibility and request ownership | M05a | Pending |
+| M05b | HTTP compatibility and request ownership | M05a | Implemented; [review/merge pending](m05b/acceptance.md) |
 | M05c | Durable shared Todo authority | M05b | Pending; explicit added scope |
 | M05d | Owned SSE and bounded authority-to-client delivery | M05b, M05c | Pending |
 | M06 | Typed live synchronization and recovery | M03, M05 | Pending |
@@ -208,13 +208,13 @@ Start with one simple ordered mutation queue. Per-entity queues are a later opti
 
 ## M04 — Render from streams with targeted DOM ownership
 
-**Implementation checkpoint, 2026-09-17:** implemented; acceptance review/merge
-pending. [Acceptance evidence](m04/acceptance.md) and the
+**Implementation checkpoint, 2026-09-17:** accepted and merged in PR #9 at
+`2b316a477600c91b3105c9e390949c29e90046d3`. [Acceptance evidence](m04/acceptance.md) and the
 [minimal binding sample](m04/minimal-sample.md) document a stable shell, owned
 scalar bindings and keyed rows with child scopes. `todo.view.tsx` owns rendering;
 the app root connects its streams. Synchronous targeted commits preserve node
 identity, focus and selection, and removing rows/views releases their ownership.
-M05b is next only after M04 acceptance and explicit authorization.
+M05b is now implemented as the next authorized checkpoint; see its acceptance record below.
 
 **Purpose:** make rendering an explicit sink without turning every state emission into a full reconstruction.
 
@@ -264,6 +264,10 @@ M05b–M05d remain unimplemented.
 **Visible checkpoint:** locally runnable browser asset plus Worker endpoint and a build/runtime evidence document. Authentication, dependency installation and deployment are not claimed by this plan revision.
 
 ### M05b — HTTP compatibility and request ownership
+
+**Implementation checkpoint, 2026-09-18:** [acceptance record](m05b/acceptance.md)
+and [locally runnable Todo page](m05b/local-development.md). Implementation and
+verification are recorded; acceptance review/merge is pending.
 
 **Depends on:** M05a.
 
@@ -422,4 +426,6 @@ Keep documentation, dependency/toolchain changes, platform adapters, storage aut
 
 After a roadmap amendment is merged/accepted, refresh the ChatGPT Project reference copy with this same filename and revision. Until that refresh is confirmed, report it as pending rather than claiming automatic Project synchronization. GitHub branch content is not proof that main or the Project copy has changed.
 
-**Next implementation session:** complete M04 acceptance review and verify the current repository state, then begin M05b only when authorized. M00, M01, M05a, M02 and M03 remain accepted/closed. Continue with M05b before M05c–M05d in the recommended serial order. No later milestone starts automatically.
+**Next implementation session:** review and accept M05b, verify the actual current
+repository state, then begin M05c only when authorized. M00, M01, M05a, M02,
+M03 and M04 remain accepted/merged. M05d–M09 do not start automatically.

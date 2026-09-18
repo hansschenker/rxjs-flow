@@ -1,0 +1,642 @@
+{
+  "milestone": "M05b",
+  "revision": "rxjs-flow migration r2 \u2014 Cloudflare/Hono",
+  "repository": "hansschenker/rxjs-flow",
+  "branch": "m05b/http-ownership",
+  "starting_commit": "2b316a477600c91b3105c9e390949c29e90046d3",
+  "implementation_commit": "407ce32ad041df6c60fbfab043927bebe38e811e",
+  "implementation_tree": "034b8a25cc11be1a1190590cb7fad30e3b7419cb",
+  "authorization": "Owner requested continuation with milestone M05b on 2026-09-18; scope limited to M05b and reviewable PR.",
+  "baseline": {
+    "node_dom_tests": 513,
+    "node_dom_files": 33,
+    "workerd_tests": 16,
+    "workerd_files": 1,
+    "total_tests": 529
+  },
+  "final": {
+    "node_dom_tests": 570,
+    "node_dom_files": 35,
+    "workerd_tests": 86,
+    "workerd_files": 3,
+    "total_tests": 656
+  },
+  "toolchain": {
+    "node": "22.22.1",
+    "npm": "11.9.0",
+    "rxjs": "7.8.2",
+    "typescript": "6.0.3",
+    "vite": "8.0.12",
+    "vitest": "4.1.6",
+    "hono": "4.13.8",
+    "wrangler": "4.133.0",
+    "cloudflare_vite_plugin": "1.54.11",
+    "workerd": "1.20260916.1"
+  },
+  "execution_environment": {
+    "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+    "node_path_prefix": "/workspace/scratch/69635aad2014/m00-node22/node_modules/node-linux-x64/bin",
+    "wrapper": "python /workspace/scratch/69635aad2014/m05b-run.py <label> <cwd> <command...>",
+    "notes": "Wrapper captures UTC timestamps and exits. Test runner display clocks are retained verbatim. Existing lockfile installation used locally; PR CI separately runs npm ci."
+  },
+  "initial_commands": [
+    "git status --short --branch",
+    "git log -3 --oneline",
+    "git remote -v",
+    "git fetch origin refs/heads/main:refs/remotes/origin/main",
+    "git switch -c m05b/http-ownership origin/main",
+    "git rev-parse HEAD",
+    "node --version (shell default was 24.19.0; all acceptance commands use recorded Node22 prefix)",
+    "env PATH=/workspace/scratch/69635aad2014/m00-node22/node_modules/node-linux-x64/bin:$PATH node --version",
+    "env PATH=/workspace/scratch/69635aad2014/m00-node22/node_modules/node-linux-x64/bin:$PATH npm test > /workspace/scratch/69635aad2014/m05b-evidence/baseline-tests.log 2>&1 (exit 0; 513 tests)",
+    "Repository read-only inspection used rg, cat, sed, git and Python on AGENTS.md, roadmap, architecture, historical evidence, source, pinned dependency declarations and tests."
+  ],
+  "remote_verification": [
+    "GitHub GET /repos/hansschenker/rxjs-flow/git/ref/heads/main => 2b316a477600c91b3105c9e390949c29e90046d3, checked again before publication",
+    "GitHub GET /repos/hansschenker/rxjs-flow/pulls/9 => merged 2026-09-17, merge commit matches starting commit"
+  ],
+  "checks": [
+    {
+      "label": "auth-red",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/server/core/middleware.test.ts"
+      ],
+      "started": "2026-09-18T12:12:57.883978+00:00",
+      "finished": "2026-09-18T12:12:58.659657+00:00",
+      "exit_code": 1,
+      "test_summary": [
+        "Test Files  1 failed (1)",
+        "Tests  2 failed | 21 passed (23)",
+        "Tests 2 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+      ],
+      "selected_output": "uireAuth() > does not turn an authenticated handler failure into an authentication failure\nAssertionError: promise resolved \"{ status: 401, \u2026(1) }\" instead of rejecting\n\n- Expected\n+ Received\n\n- Error {\n-   \"message\": \"rejected promise\",\n+ {\n+   \"body\": {\n+     \"error\": \"Unauthorized\",\n+   },\n+   \"status\": 401,\n  }\n\n \u276f src/server/core/middleware.test.ts:126:101\n    124|   const failure = new Error('handler failed');\n    125|   const wrapped = requireAuth(() => ({ id: '42' }))(() => throwError((\u2026\n    126|   await expect(firstValueFrom(wrapped(of(mockReq({ headers: { authoriz\u2026\n       |                                                                                                     ^\n    127|    .rejects.toBe(failure);\n    128|  });\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[1/2]\u23af\n\n FAIL  |node| src/server/core/middleware.test.ts > requireAuth() > does not hide a synchronous protected handler construction failure\nAssertionError: promise resolved \"{ status: 401, \u2026(1) }\" instead of rejecting\n\n- Expected\n+ Received\n\n- Error {\n-   \"message\": \"rejected promise\",\n+ {\n+   \"body\": {\n+     \"error\": \"Unauthorized\",\n+   },\n+   \"status\": 401,\n  }\n\n \u276f src/server/core/middleware.test.ts:133:101\n    131|   const failure = new Error('construction failed');\n    132|   const wrapped = requireAuth(() => ({ id: '42' }))(() => { throw fail\u2026\n    133|   await expect(firstValueFrom(wrapped(of(mockReq({ headers: { authoriz\u2026\n       |                                                                                                     ^\n    134|    .rejects.toBe(failure);\n    135|  });\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[2/2]\u23af\n\n",
+      "disposition": "Intermediate failed regression/typecheck or exploratory harness result; corrected/superseded by final passing gates. See acceptance.md."
+    },
+    {
+      "label": "baseline-worker",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker"
+      ],
+      "started": "2026-09-18T12:12:05.762327+00:00",
+      "finished": "2026-09-18T12:12:09.936605+00:00",
+      "exit_code": 0,
+      "test_summary": [
+        "Test Files  1 passed (1)",
+        "Tests  16 passed (16)"
+      ],
+      "selected_output": "\n> rxjs-flow@1.0.0 test:worker\n> vitest run --config vitest.worker.config.ts\n\n\n RUN  v4.1.6 /workspace/scratch/69635aad2014/rxjs-flow-recovery\n\nUsing secrets defined in process.env\n\n Test Files  1 passed (1)\n      Tests  16 passed (16)\n   Start at  15:12:06\n   Duration  3.26s (transform 617ms, setup 0ms, import 1.16s, tests 1.03s, environment 0ms)\n\n(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:20) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\u001b[33m\u25b2 \u001b[43;33m[\u001b[43;30mWARNING\u001b[43;33m]\u001b[0m \u001b[1mProxy environment variables detected. We'll use your proxy for fetch requests.\u001b[0m\n\n\n(node:20) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(node:20) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:20) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "label": "build-first",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "build:worker"
+      ],
+      "started": "2026-09-18T12:20:18.343013+00:00",
+      "finished": "2026-09-18T12:20:20.046686+00:00",
+      "exit_code": 0,
+      "test_summary": [],
+      "selected_output": "chunks...\nUsing secrets defined in process.env\ncomputing gzip size...\ndist/rxjs_flow_foundation/.vite/manifest.json    0.15 kB \u2502 gzip:  0.11 kB\ndist/rxjs_flow_foundation/wrangler.json          1.56 kB \u2502 gzip:  0.80 kB\ndist/rxjs_flow_foundation/index.js             264.17 kB \u2502 gzip: 57.69 kB\n\n\u2713 built in 78ms\nvite v8.0.12 building client environment for production...\n\u001b[2K\ntransforming...\u2713 327 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/client/.assetsignore                0.02 kB\ndist/client/index.html                   1.45 kB \u2502 gzip:  0.70 kB\ndist/client/assets/index-De6qimoS.css    2.58 kB \u2502 gzip:  1.13 kB\ndist/client/assets/index-C8VqeqSo.js   102.70 kB \u2502 gzip: 30.06 kB\n\n\u2713 built in 113ms\n(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\u001b[33m\u25b2 \u001b[43;33m[\u001b[43;30mWARNING\u001b[43;33m]\u001b[0m \u001b[1mProxy environment variables detected. We'll use your proxy for fetch requests.\u001b[0m\n\n\n(node:18) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "label": "final-build",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "build:worker"
+      ],
+      "started": "2026-09-18T12:23:14.044061+00:00",
+      "finished": "2026-09-18T12:23:15.481603+00:00",
+      "exit_code": 0,
+      "test_summary": [],
+      "selected_output": " chunks...\nUsing secrets defined in process.env\ncomputing gzip size...\ndist/rxjs_flow_foundation/.vite/manifest.json    0.15 kB \u2502 gzip:  0.11 kB\ndist/rxjs_flow_foundation/wrangler.json          1.56 kB \u2502 gzip:  0.80 kB\ndist/rxjs_flow_foundation/index.js             264.75 kB \u2502 gzip: 57.82 kB\n\n\u2713 built in 78ms\nvite v8.0.12 building client environment for production...\n\u001b[2K\ntransforming...\u2713 327 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/client/.assetsignore                0.02 kB\ndist/client/index.html                   1.45 kB \u2502 gzip:  0.70 kB\ndist/client/assets/index-De6qimoS.css    2.58 kB \u2502 gzip:  1.13 kB\ndist/client/assets/index-C8VqeqSo.js   102.70 kB \u2502 gzip: 30.06 kB\n\n\u2713 built in 91ms\n(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\u001b[33m\u25b2 \u001b[43;33m[\u001b[43;30mWARNING\u001b[43;33m]\u001b[0m \u001b[1mProxy environment variables detected. We'll use your proxy for fetch requests.\u001b[0m\n\n\n(node:18) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "label": "final-generated-check",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "cf:typecheck"
+      ],
+      "started": "2026-09-18T12:25:47.417609+00:00",
+      "finished": "2026-09-18T12:25:53.706202+00:00",
+      "exit_code": 0,
+      "test_summary": [],
+      "selected_output": "\n> rxjs-flow@1.0.0 cf:typecheck\n> wrangler types --config wrangler.jsonc worker-configuration.d.ts --env-interface WorkerEnv --check\n\n\n \u26c5\ufe0f wrangler 4.133.0\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2728 Types at worker-configuration.d.ts are up to date.\n\n(node:6) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:19) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\u001b[33m\u25b2 \u001b[43;33m[\u001b[43;30mWARNING\u001b[43;33m]\u001b[0m \u001b[1mProxy environment variables detected. We'll use your proxy for fetch requests.\u001b[0m\n\n\n(node:27) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "label": "final-node-dom",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-18T12:24:55.879645+00:00",
+      "finished": "2026-09-18T12:25:01.391626+00:00",
+      "exit_code": 0,
+      "test_summary": [
+        "Test Files  35 passed (35)",
+        "Tests  570 passed (570)"
+      ],
+      "selected_output": "ng was created)\n(node:290) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:298) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:306) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:314) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:321) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:324) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:338) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:344) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:354) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "label": "final-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started": "2026-09-18T12:24:55.874867+00:00",
+      "finished": "2026-09-18T12:25:13.513481+00:00",
+      "exit_code": 0,
+      "test_summary": [],
+      "selected_output": "r version of npm.\n(node:31) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\u001b[33m\u25b2 \u001b[43;33m[\u001b[43;30mWARNING\u001b[43;33m]\u001b[0m \u001b[1mProxy environment variables detected. We'll use your proxy for fetch requests.\u001b[0m\n\n\n(node:39) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:63) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:84) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:105) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:126) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n"
+    },
+    {
+      "label": "final-workerd",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker"
+      ],
+      "started": "2026-09-18T12:23:14.042529+00:00",
+      "finished": "2026-09-18T12:23:20.098645+00:00",
+      "exit_code": 0,
+      "test_summary": [
+        "Test Files  3 passed (3)",
+        "Tests  86 passed (86)"
+      ],
+      "selected_output": "rets defined in process.env\n\n Test Files  3 passed (3)\n      Tests  86 passed (86)\n   Start at  15:23:14\n   Duration  5.08s (transform 2.92s, setup 0ms, import 7.79s, tests 1.19s, environment 0ms)\n\n(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\u001b[33m\u25b2 \u001b[43;33m[\u001b[43;30mWARNING\u001b[43;33m]\u001b[0m \u001b[1mProxy environment variables detected. We'll use your proxy for fetch requests.\u001b[0m\n\n\n(node:18) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "label": "full-node-dom",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-18T12:21:13.973566+00:00",
+      "finished": "2026-09-18T12:21:19.764547+00:00",
+      "exit_code": 0,
+      "test_summary": [
+        "Test Files  35 passed (35)",
+        "Tests  568 passed (568)"
+      ],
+      "selected_output": "ng was created)\n(node:290) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:298) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:306) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:314) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:315) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:329) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:338) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:347) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:346) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "label": "full-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started": "2026-09-18T12:21:13.972215+00:00",
+      "finished": "2026-09-18T12:21:33.169171+00:00",
+      "exit_code": 0,
+      "test_summary": [],
+      "selected_output": "r version of npm.\n(node:31) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\u001b[33m\u25b2 \u001b[43;33m[\u001b[43;30mWARNING\u001b[43;33m]\u001b[0m \u001b[1mProxy environment variables detected. We'll use your proxy for fetch requests.\u001b[0m\n\n\n(node:39) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:74) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:95) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:116) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:137) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n"
+    },
+    {
+      "label": "full-workerd",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker"
+      ],
+      "started": "2026-09-18T12:21:13.972121+00:00",
+      "finished": "2026-09-18T12:21:23.124413+00:00",
+      "exit_code": 0,
+      "test_summary": [
+        "Test Files  3 passed (3)",
+        "Tests  83 passed (83)"
+      ],
+      "selected_output": "ets defined in process.env\n\n Test Files  3 passed (3)\n      Tests  83 passed (83)\n   Start at  15:21:15\n   Duration  7.61s (transform 4.72s, setup 0ms, import 10.54s, tests 1.19s, environment 1ms)\n\n(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\u001b[33m\u25b2 \u001b[43;33m[\u001b[43;30mWARNING\u001b[43;33m]\u001b[0m \u001b[1mProxy environment variables detected. We'll use your proxy for fetch requests.\u001b[0m\n\n\n(node:18) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "label": "generated-worker-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "cf:typegen"
+      ],
+      "started": "2026-09-18T12:15:08.265352+00:00",
+      "finished": "2026-09-18T12:15:34.584354+00:00",
+      "exit_code": 0,
+      "test_summary": [],
+      "selected_output": "foundation\";\n\tLOCAL_TODO_DEMO: \"disabled\";\n}\ndeclare namespace Cloudflare {\n\tinterface GlobalProps {\n\t\tmainModule: typeof import(\"./src/worker/index\");\n\t}\n\tinterface Env extends __BaseEnv_WorkerEnv {}\n}\ninterface WorkerEnv extends __BaseEnv_WorkerEnv {}\ntype StringifyValues<EnvType extends Record<string, unknown>> = {\n\t[Binding in keyof EnvType]: EnvType[Binding] extends string ? EnvType[Binding] : string;\n};\ndeclare namespace NodeJS {\n\tinterface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, \"FOUNDATION_LABEL\" | \"LOCAL_TODO_DEMO\">> {}\n}\n\nGenerating runtime types...\n\nRuntime types generated.\n\n\n\u2728 Types written to worker-configuration.d.ts\n\n\ud83d\udcd6 Read about runtime types\nhttps://developers.cloudflare.com/workers/languages/typescript/#generate-types\n\ud83d\udce3 Remember to rerun 'wrangler types' after you change your wrangler.jsonc file.\n\n(node:6) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:19) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\u001b[33m\u25b2 \u001b[43;33m[\u001b[43;30mWARNING\u001b[43;33m]\u001b[0m \u001b[1mProxy environment variables detected. We'll use your proxy for fetch requests.\u001b[0m\n\n\n(node:27) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "label": "generic-final",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/server/core/request-operation.test.ts"
+      ],
+      "started": "2026-09-18T12:19:33.648527+00:00",
+      "finished": "2026-09-18T12:19:34.400932+00:00",
+      "exit_code": 0,
+      "test_summary": [
+        "Test Files  1 passed (1)",
+        "Tests  31 passed (31)"
+      ],
+      "selected_output": "\n> rxjs-flow@1.0.0 test\n> vitest run src/server/core/request-operation.test.ts\n\n\n RUN  v4.1.6 /workspace/scratch/69635aad2014/rxjs-flow-recovery\n\n\n Test Files  1 passed (1)\n      Tests  31 passed (31)\n   Start at  15:19:34\n   Duration  326ms (transform 92ms, setup 0ms, import 169ms, tests 27ms, environment 0ms)\n\n(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:52) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "label": "node-lifecycle-final",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/server/node-lifecycle.test.ts",
+        "src/server/core/http.test.ts",
+        "src/server/core/app.test.ts",
+        "src/server/http.integration.test.ts"
+      ],
+      "started": "2026-09-18T12:19:19.825363+00:00",
+      "finished": "2026-09-18T12:19:20.869349+00:00",
+      "exit_code": 0,
+      "test_summary": [
+        "Test Files  4 passed (4)",
+        "Tests  43 passed (43)"
+      ],
+      "selected_output": "\n> rxjs-flow@1.0.0 test\n> vitest run src/server/node-lifecycle.test.ts src/server/core/http.test.ts src/server/core/app.test.ts src/server/http.integration.test.ts\n\n\n RUN  v4.1.6 /workspace/scratch/69635aad2014/rxjs-flow-recovery\n\n\n Test Files  4 passed (4)\n      Tests  43 passed (43)\n   Start at  15:19:20\n   Duration  609ms (transform 490ms, setup 0ms, import 1.03s, tests 302ms, environment 0ms)\n\n(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:20) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:54) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:62) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:61) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:55) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "label": "node-lifecycle-first",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/server/node-lifecycle.test.ts",
+        "src/server/core/http.test.ts",
+        "src/server/core/app.test.ts",
+        "src/server/http.integration.test.ts"
+      ],
+      "started": "2026-09-18T12:16:39.391178+00:00",
+      "finished": "2026-09-18T12:16:40.444952+00:00",
+      "exit_code": 0,
+      "test_summary": [
+        "Test Files  4 passed (4)",
+        "Tests  36 passed (36)"
+      ],
+      "selected_output": "\n> rxjs-flow@1.0.0 test\n> vitest run src/server/node-lifecycle.test.ts src/server/core/http.test.ts src/server/core/app.test.ts src/server/http.integration.test.ts\n\n\n RUN  v4.1.6 /workspace/scratch/69635aad2014/rxjs-flow-recovery\n\n\n Test Files  4 passed (4)\n      Tests  36 passed (36)\n   Start at  15:16:39\n   Duration  595ms (transform 337ms, setup 0ms, import 932ms, tests 309ms, environment 0ms)\n\n(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:20) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:55) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:57) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:56) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:63) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "label": "node-lifecycle-second",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/server/node-lifecycle.test.ts",
+        "src/server/core/http.test.ts",
+        "src/server/core/app.test.ts",
+        "src/server/http.integration.test.ts"
+      ],
+      "started": "2026-09-18T12:18:15.612742+00:00",
+      "finished": "2026-09-18T12:18:16.620649+00:00",
+      "exit_code": 0,
+      "test_summary": [
+        "Test Files  4 passed (4)",
+        "Tests  40 passed (40)"
+      ],
+      "selected_output": "\n> rxjs-flow@1.0.0 test\n> vitest run src/server/node-lifecycle.test.ts src/server/core/http.test.ts src/server/core/app.test.ts src/server/http.integration.test.ts\n\n\n RUN  v4.1.6 /workspace/scratch/69635aad2014/rxjs-flow-recovery\n\n\n Test Files  4 passed (4)\n      Tests  40 passed (40)\n   Start at  15:18:16\n   Duration  579ms (transform 349ms, setup 0ms, import 949ms, tests 294ms, environment 0ms)\n\n(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:20) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:54) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:56) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:55) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:62) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "label": "node-stable-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:node"
+      ],
+      "started": "2026-09-18T12:20:21.020992+00:00",
+      "finished": "2026-09-18T12:20:22.989760+00:00",
+      "exit_code": 0,
+      "test_summary": [],
+      "selected_output": "\n> rxjs-flow@1.0.0 typecheck:node\n> tsc -p tsconfig.node.json\n\n(node:86) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n"
+    },
+    {
+      "label": "node-stable-validation",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/server/node-lifecycle.test.ts",
+        "src/server/core/http.test.ts",
+        "src/server/core/app.test.ts",
+        "src/server/http.integration.test.ts"
+      ],
+      "started": "2026-09-18T12:20:20.002642+00:00",
+      "finished": "2026-09-18T12:20:20.994906+00:00",
+      "exit_code": 0,
+      "test_summary": [
+        "Test Files  4 passed (4)",
+        "Tests  44 passed (44)"
+      ],
+      "selected_output": "\n> rxjs-flow@1.0.0 test\n> vitest run src/server/node-lifecycle.test.ts src/server/core/http.test.ts src/server/core/app.test.ts src/server/http.integration.test.ts\n\n\n RUN  v4.1.6 /workspace/scratch/69635aad2014/rxjs-flow-recovery\n\n\n Test Files  4 passed (4)\n      Tests  44 passed (44)\n   Start at  15:20:20\n   Duration  596ms (transform 325ms, setup 0ms, import 952ms, tests 324ms, environment 0ms)\n\n(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:20) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:54) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:55) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:56) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:62) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "label": "node-stop-hooks-green",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/server/node-lifecycle.test.ts",
+        "src/server/core/http.test.ts",
+        "src/server/core/app.test.ts",
+        "src/server/http.integration.test.ts"
+      ],
+      "started": "2026-09-18T12:23:41.988579+00:00",
+      "finished": "2026-09-18T12:23:43.112470+00:00",
+      "exit_code": 0,
+      "test_summary": [
+        "Test Files  4 passed (4)",
+        "Tests  46 passed (46)"
+      ],
+      "selected_output": "\n> rxjs-flow@1.0.0 test\n> vitest run src/server/node-lifecycle.test.ts src/server/core/http.test.ts src/server/core/app.test.ts src/server/http.integration.test.ts\n\n\n RUN  v4.1.6 /workspace/scratch/69635aad2014/rxjs-flow-recovery\n\n\n Test Files  4 passed (4)\n      Tests  46 passed (46)\n   Start at  15:23:42\n   Duration  631ms (transform 507ms, setup 0ms, import 1.05s, tests 343ms, environment 0ms)\n\n(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:20) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:56) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:55) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:54) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:62) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "label": "node-stop-hooks-red",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/server/core/app.test.ts",
+        "-t",
+        "awaits every stop hook"
+      ],
+      "started": "2026-09-18T12:23:29.223026+00:00",
+      "finished": "2026-09-18T12:23:30.017507+00:00",
+      "exit_code": 1,
+      "test_summary": [
+        "Test Files  1 failed (1)",
+        "Tests  1 failed | 10 skipped (11)",
+        "Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+      ],
+      "selected_output": "aining cleanup 9ms\n\n Test Files  1 failed (1)\n      Tests  1 failed | 10 skipped (11)\n   Start at  15:23:29\n   Duration  347ms (transform 100ms, setup 0ms, import 210ms, tests 11ms, environment 0ms)\n\n(node:6) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:19) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:53) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af\n\n FAIL  |node| src/server/core/app.test.ts > createApp() > awaits every stop hook in order and reports failures after remaining cleanup\nAssertionError: expected [ 'failed' ] to deeply equal [ 'failed', 'cleanup started', \u2026(2) ]\n\n- Expected\n+ Received\n\n  [\n    \"failed\",\n-   \"cleanup started\",\n-   \"cleanup completed\",\n-   \"last cleanup\",\n  ]\n\n \u276f src/server/core/app.test.ts:28:17\n     26|   expect(server.closed).toBe(true);\n     27|   expect(server.address()).toBeNull();\n     28|   expect(calls).toEqual(['failed', 'cleanup started', 'cleanup complet\u2026\n       |                 ^\n     29|   expect(result).toBeInstanceOf(AggregateError);\n     30|   expect((result as AggregateError).errors).toEqual([failure]);\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[1/1]\u23af\n\n",
+      "disposition": "Intermediate failed regression/typecheck or exploratory harness result; corrected/superseded by final passing gates. See acceptance.md."
+    },
+    {
+      "label": "node-stop-hooks-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:node"
+      ],
+      "started": "2026-09-18T12:23:43.142015+00:00",
+      "finished": "2026-09-18T12:23:45.017261+00:00",
+      "exit_code": 0,
+      "test_summary": [],
+      "selected_output": "\n> rxjs-flow@1.0.0 typecheck:node\n> tsc -p tsconfig.node.json\n\n(node:86) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n"
+    },
+    {
+      "label": "node-test-types-final",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:tests"
+      ],
+      "started": "2026-09-18T12:19:20.896561+00:00",
+      "finished": "2026-09-18T12:19:25.939424+00:00",
+      "exit_code": 2,
+      "test_summary": [],
+      "selected_output": " ... 1 more ... | undefined, complete?: (() => void) | ... 1 more ... | undefined): Subscription; }'.\n      Types of parameters 'next' and 'next' are incompatible.\n        Types of parameters 'value' and 'value' are incompatible.\n          Type 'unknown' is not assignable to type 'HttpResponse'.\nsrc/worker/http-client.integration.test.ts(144,39): error TS2322: Type 'Observable<unknown>' is not assignable to type 'Observable<HttpResponse>'.\n  Types of property 'subscribe' are incompatible.\n    Type '{ (observerOrNext?: Partial<Observer<unknown>> | ((value: unknown) => void) | undefined): Subscription; (next?: ((value: unknown) => void) | null | undefined, error?: ((error: any) => void) | null | undefined, complete?: (() => void) | ... 1 more ... | undefined): Subscription; }' is not assignable to type '{ (observerOrNext?: Partial<Observer<HttpResponse>> | ((value: HttpResponse) => void) | undefined): Subscription; (next?: ((value: HttpResponse) => void) | ... 1 more ... | undefined, error?: ((error: any) => void) | ... 1 more ... | undefined, complete?: (() => void) | ... 1 more ... | undefined): Subscription; }'.\n      Types of parameters 'next' and 'next' are incompatible.\n        Types of parameters 'value' and 'value' are incompatible.\n          Type 'unknown' is not assignable to type 'HttpResponse'.\n(node:86) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n",
+      "disposition": "Intermediate failed regression/typecheck or exploratory harness result; corrected/superseded by final passing gates. See acceptance.md."
+    },
+    {
+      "label": "node-test-types-second",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:tests"
+      ],
+      "started": "2026-09-18T12:18:16.645775+00:00",
+      "finished": "2026-09-18T12:18:20.155798+00:00",
+      "exit_code": 2,
+      "test_summary": [],
+      "selected_output": "\n> rxjs-flow@1.0.0 typecheck:tests\n> tsc -p tsconfig.test.json && tsc -p tsconfig.worker-test.json\n\nsrc/server/node-lifecycle.test.ts(91,37): error TS2322: Type 'Observable<unknown>' is not assignable to type 'Observable<HttpResponse>'.\n  Types of property 'subscribe' are incompatible.\n    Type '{ (observerOrNext?: Partial<Observer<unknown>> | ((value: unknown) => void) | undefined): Subscription; (next?: ((value: unknown) => void) | null | undefined, error?: ((error: any) => void) | null | undefined, complete?: (() => void) | ... 1 more ... | undefined): Subscription; }' is not assignable to type '{ (observerOrNext?: Partial<Observer<HttpResponse>> | ((value: HttpResponse) => void) | undefined): Subscription; (next?: ((value: HttpResponse) => void) | ... 1 more ... | undefined, error?: ((error: any) => void) | ... 1 more ... | undefined, complete?: (() => void) | ... 1 more ... | undefined): Subscription; }'.\n      Types of parameters 'next' and 'next' are incompatible.\n        Types of parameters 'value' and 'value' are incompatible.\n          Type 'unknown' is not assignable to type 'HttpResponse'.\n(node:86) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n",
+      "disposition": "Intermediate failed regression/typecheck or exploratory harness result; corrected/superseded by final passing gates. See acceptance.md."
+    },
+    {
+      "label": "node-test-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:tests"
+      ],
+      "started": "2026-09-18T12:17:04.444156+00:00",
+      "finished": "2026-09-18T12:17:07.938658+00:00",
+      "exit_code": 2,
+      "test_summary": [],
+      "selected_output": "\n> rxjs-flow@1.0.0 typecheck:tests\n> tsc -p tsconfig.test.json && tsc -p tsconfig.worker-test.json\n\nsrc/server/node-lifecycle.test.ts(4,53): error TS6133: 'defer' is declared but its value is never read.\n(node:27) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n",
+      "disposition": "Intermediate failed regression/typecheck or exploratory harness result; corrected/superseded by final passing gates. See acceptance.md."
+    },
+    {
+      "label": "node-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:node"
+      ],
+      "started": "2026-09-18T12:17:02.500168+00:00",
+      "finished": "2026-09-18T12:17:04.415602+00:00",
+      "exit_code": 0,
+      "test_summary": [],
+      "selected_output": "\n> rxjs-flow@1.0.0 typecheck:node\n> tsc -p tsconfig.node.json\n\n(node:6) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n"
+    },
+    {
+      "label": "review-node-sse-teardown-cleanup",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "--import",
+        "tsx",
+        "--input-type=module",
+        "-e",
+        "import { createApp } from \"./src/server/core/app.ts\"; import { get } from \"./src/server/core/router.ts\"; import { stream$ } from \"./src/server/core/response.ts\"; import { Observable, of } from \"rxjs\"; import { createConnection } from \"node:net\"; import assert from \"node:assert/strict\"; const source = new Observable(subscriber => { subscriber.next({ tick: 1 }); return () => { throw new Error(\"stream cleanup failed\"); }; }); const app = createApp([get(\"/events\", () => of(stream$(source)))]); const server = await app.start(0); const port = server.address().port; const response = await fetch(`http://127.0.0.1:${port}/events`); await response.body.getReader().read(); await app.stop(); const state = await new Promise(resolve => { const socket = createConnection({host:\"127.0.0.1\", port}); socket.once(\"connect\", () => { socket.destroy(); resolve(\"listening\"); }); socket.once(\"error\", error => resolve(error.code)); }); assert.equal(state, \"ECONNREFUSED\"); console.log(\"PASS: throwing SSE teardown reported, stop settled, port released\");"
+      ],
+      "started": "2026-09-18T12:21:23.432236+00:00",
+      "finished": "2026-09-18T12:21:23.838903+00:00",
+      "exit_code": 0,
+      "test_summary": [],
+      "selected_output": "curred during unsubscription:\\n1) Error: stream cleanup failed',\n  errors: [\n    Error: stream cleanup failed\n        at file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/[eval1]:1:385\n        at execFinalizer (/workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/rxjs/src/internal/Subscription.ts:208:5)\n        at OperatorSubscriber.Subscription.unsubscribe (/workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/rxjs/src/internal/Subscription.ts:80:13)\n        at OperatorSubscriber.Subscriber.unsubscribe (/workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/rxjs/src/internal/Subscriber.ts:107:24)\n        at OperatorSubscriber.OperatorSubscriber.unsubscribe (/workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/rxjs/src/internal/operators/OperatorSubscriber.ts:107:24)\n        at execFinalizer (/workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/rxjs/src/internal/Subscription.ts:210:15)\n        at OperatorSubscriber.Subscription.unsubscribe (/workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/rxjs/src/internal/Subscription.ts:80:13)\n        at OperatorSubscriber.Subscriber.unsubscribe (/workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/rxjs/src/internal/Subscriber.ts:107:24)\n        at OperatorSubscriber.OperatorSubscriber.unsubscribe (/workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/rxjs/src/internal/operators/OperatorSubscriber.ts:107:24)\n        at execFinalizer (/workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/rxjs/src/internal/Subscription.ts:210:15)\n  ]\n}\n"
+    },
+    {
+      "label": "review-node-sse-throwing-teardown",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "--import",
+        "tsx",
+        "--input-type=module",
+        "-e",
+        "import { createApp } from \"./src/server/core/app.ts\"; import { get } from \"./src/server/core/router.ts\"; import { stream$ } from \"./src/server/core/response.ts\"; import { Observable, of } from \"rxjs\"; import { createConnection } from \"node:net\"; import { once } from \"node:events\"; const source = new Observable(subscriber => { subscriber.next({ tick: 1 }); return () => { throw new Error(\"stream cleanup failed\"); }; }); const app = createApp([get(\"/events\", () => of(stream$(source)))]); const server = await app.start(0); const port = server.address().port; const response = await fetch(`http://127.0.0.1:${port}/events`); await response.body.getReader().read(); try { await app.stop(); console.log(\"stop succeeded\"); } catch (error) { console.log(\"stop threw\", error.name, error.message); } const socket = createConnection({host:\"127.0.0.1\", port}); await once(socket, \"connect\"); console.log(\"listening port still open after stop\", port); socket.destroy(); process.exit(0);"
+      ],
+      "started": "2026-09-18T12:21:00.216028+00:00",
+      "finished": "2026-09-18T12:21:00.577030+00:00",
+      "exit_code": 1,
+      "test_summary": [],
+      "selected_output": "iption.ts:208:5)\n        at OperatorSubscriber.Subscription.unsubscribe (/workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/rxjs/src/internal/Subscription.ts:80:13)\n        at OperatorSubscriber.Subscriber.unsubscribe (/workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/rxjs/src/internal/Subscriber.ts:107:24)\n        at OperatorSubscriber.OperatorSubscriber.unsubscribe (/workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/rxjs/src/internal/operators/OperatorSubscriber.ts:107:24)\n        at execFinalizer (/workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/rxjs/src/internal/Subscription.ts:210:15)\n        at OperatorSubscriber.Subscription.unsubscribe (/workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/rxjs/src/internal/Subscription.ts:80:13)\n        at OperatorSubscriber.Subscriber.unsubscribe (/workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/rxjs/src/internal/Subscriber.ts:107:24)\n        at OperatorSubscriber.OperatorSubscriber.unsubscribe (/workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/rxjs/src/internal/operators/OperatorSubscriber.ts:107:24)\n        at execFinalizer (/workspace/scratch/69635aad2014/rxjs-flow-recovery/node_modules/rxjs/src/internal/Subscription.ts:210:15)\n  ]\n}\nnode:internal/modules/run_main:123\n    triggerUncaughtException(\n    ^\n\nError: connect ECONNREFUSED 127.0.0.1:36761\n    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16) {\n  errno: -111,\n  code: 'ECONNREFUSED',\n  syscall: 'connect',\n  address: '127.0.0.1',\n  port: 36761\n}\n\nNode.js v22.22.1\n",
+      "disposition": "Intermediate failed regression/typecheck or exploratory harness result; corrected/superseded by final passing gates. See acceptance.md."
+    },
+    {
+      "label": "shared-green",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/server/core/middleware.test.ts",
+        "src/server/core/router.test.ts",
+        "src/server/core/validator.test.ts",
+        "src/server/todos/todo.effect.test.ts"
+      ],
+      "started": "2026-09-18T12:14:03.951941+00:00",
+      "finished": "2026-09-18T12:14:04.828717+00:00",
+      "exit_code": 0,
+      "test_summary": [
+        "Test Files  4 passed (4)",
+        "Tests  58 passed (58)"
+      ],
+      "selected_output": "\n> rxjs-flow@1.0.0 test\n> vitest run src/server/core/middleware.test.ts src/server/core/router.test.ts src/server/core/validator.test.ts src/server/todos/todo.effect.test.ts\n\n\n RUN  v4.1.6 /workspace/scratch/69635aad2014/rxjs-flow-recovery\n\n\n Test Files  4 passed (4)\n      Tests  58 passed (58)\n   Start at  15:14:04\n   Duration  455ms (transform 406ms, setup 0ms, import 998ms, tests 55ms, environment 0ms)\n\n(node:6) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:19) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:61) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:55) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:54) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:53) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "label": "smoke-dev",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "smoke:worker",
+        "--",
+        "--dev"
+      ],
+      "started": "2026-09-18T12:22:05.430236+00:00",
+      "finished": "2026-09-18T12:22:14.254354+00:00",
+      "exit_code": 0,
+      "test_summary": [],
+      "selected_output": "ev\n\n{\n  \"status\": \"passed\",\n  \"runtime\": \"local workerd\",\n  \"mode\": \"development\",\n  \"checks\": [\n    {\n      \"path\": \"/\",\n      \"status\": 200,\n      \"script\": \"/src/client/browser.ts\"\n    },\n    {\n      \"path\": \"/src/client/browser.ts\",\n      \"status\": 200,\n      \"bytes\": 974\n    },\n    {\n      \"path\": \"/api/foundation\",\n      \"status\": 200,\n      \"body\": {\n        \"runtime\": \"workerd\",\n        \"message\": \"rxjs-flow foundation\"\n      }\n    },\n    {\n      \"path\": \"/api\",\n      \"status\": 404,\n      \"body\": {\n        \"error\": \"Not found\"\n      }\n    },\n    {\n      \"path\": \"/api/missing\",\n      \"status\": 404,\n      \"body\": {\n        \"error\": \"Not found\"\n      }\n    },\n    {\n      \"path\": \"/api/api/todos\",\n      \"status\": 404,\n      \"body\": {\n        \"error\": \"Not found\"\n      }\n    },\n    {\n      \"path\": \"/api/todos\",\n      \"statuses\": [\n        200,\n        201,\n        200,\n        400,\n        422,\n        400,\n        200,\n        204,\n        404\n      ],\n      \"mode\": \"volatile local Todo CRUD and failure isolation\"\n    },\n    {\n      \"path\": \"/unknown-page\",\n      \"status\": 200,\n      \"script\": \"/src/client/browser.ts\"\n    }\n  ]\n}\n(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "label": "smoke-preview",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "smoke:worker"
+      ],
+      "started": "2026-09-18T12:24:55.880071+00:00",
+      "finished": "2026-09-18T12:25:01.532124+00:00",
+      "exit_code": 0,
+      "test_summary": [],
+      "selected_output": "xjs-flow@1.0.0 smoke:worker\n> node scripts/smoke-worker.mjs\n\n{\n  \"status\": \"passed\",\n  \"runtime\": \"local workerd\",\n  \"mode\": \"built-preview\",\n  \"checks\": [\n    {\n      \"path\": \"/\",\n      \"status\": 200,\n      \"script\": \"/assets/index-C8VqeqSo.js\"\n    },\n    {\n      \"path\": \"/assets/index-C8VqeqSo.js\",\n      \"status\": 200,\n      \"bytes\": 102701\n    },\n    {\n      \"path\": \"/api/foundation\",\n      \"status\": 200,\n      \"body\": {\n        \"runtime\": \"workerd\",\n        \"message\": \"rxjs-flow foundation\"\n      }\n    },\n    {\n      \"path\": \"/api\",\n      \"status\": 404,\n      \"body\": {\n        \"error\": \"Not found\"\n      }\n    },\n    {\n      \"path\": \"/api/missing\",\n      \"status\": 404,\n      \"body\": {\n        \"error\": \"Not found\"\n      }\n    },\n    {\n      \"path\": \"/api/api/todos\",\n      \"status\": 404,\n      \"body\": {\n        \"error\": \"Not found\"\n      }\n    },\n    {\n      \"path\": \"/api/todos\",\n      \"status\": 503,\n      \"mode\": \"authority not configured\",\n      \"body\": {\n        \"error\": \"Todo storage is not configured\"\n      }\n    },\n    {\n      \"path\": \"/unknown-page\",\n      \"status\": 200,\n      \"script\": \"/assets/index-C8VqeqSo.js\"\n    }\n  ]\n}\n(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "label": "typecheck-worker-first",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:worker"
+      ],
+      "started": "2026-09-18T12:17:55.371129+00:00",
+      "finished": "2026-09-18T12:17:56.693597+00:00",
+      "exit_code": 2,
+      "test_summary": [],
+      "selected_output": "\n> rxjs-flow@1.0.0 typecheck:worker\n> tsc -p tsconfig.worker.json\n\nsrc/worker/http-adapter.ts(42,45): error TS2345: Argument of type '{ fatal: true; }' is not assignable to parameter of type 'TextDecoderConstructorOptions'.\n  Property 'ignoreBOM' is missing in type '{ fatal: true; }' but required in type 'TextDecoderConstructorOptions'.\nsrc/worker/index.ts(93,7): error TS2367: This comparison appears to be unintentional because the types '\"disabled\"' and '\"enabled\"' have no overlap.\n(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n",
+      "disposition": "Intermediate failed regression/typecheck or exploratory harness result; corrected/superseded by final passing gates. See acceptance.md."
+    },
+    {
+      "label": "worker-client-initial",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker",
+        "--",
+        "src/worker/http-client.integration.test.ts"
+      ],
+      "started": "2026-09-18T12:18:20.094510+00:00",
+      "finished": "2026-09-18T12:18:23.968310+00:00",
+      "exit_code": 0,
+      "test_summary": [
+        "Test Files  1 passed (1)",
+        "Tests  38 passed (38)"
+      ],
+      "selected_output": "\n> rxjs-flow@1.0.0 test:worker\n> vitest run --config vitest.worker.config.ts src/worker/http-client.integration.test.ts\n\n\n RUN  v4.1.6 /workspace/scratch/69635aad2014/rxjs-flow-recovery\n\nUsing secrets defined in process.env\n\n Test Files  1 passed (1)\n      Tests  38 passed (38)\n   Start at  15:18:20\n   Duration  2.97s (transform 925ms, setup 0ms, import 1.89s, tests 43ms, environment 0ms)\n\n(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\u001b[33m\u25b2 \u001b[43;33m[\u001b[43;30mWARNING\u001b[43;33m]\u001b[0m \u001b[1mProxy environment variables detected. We'll use your proxy for fetch requests.\u001b[0m\n\n\n(node:18) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "label": "worker-client-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npx",
+        "tsc",
+        "-p",
+        "tsconfig.worker-test.json"
+      ],
+      "started": "2026-09-18T12:19:32.057964+00:00",
+      "finished": "2026-09-18T12:19:33.916399+00:00",
+      "exit_code": 0,
+      "test_summary": [],
+      "selected_output": "(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n"
+    }
+  ],
+  "git_publication": [
+    "git diff --check",
+    "git diff --exit-code 2b316a4 -- src/client src/shared package.json package-lock.json (exit0)",
+    "git add -- .github/workflows/ci.yml src/server src/worker scripts/smoke-worker.mjs vite.worker.config.ts wrangler.jsonc",
+    "git diff --cached --check (trailing blank line fixed; exit0 afterward)",
+    "git write-tree",
+    "GitHub create_tree verified equal to local tree; create_commit with parent starting commit; create_branch m05b/http-ownership",
+    "git fetch origin refs/heads/m05b/http-ownership:refs/remotes/origin/m05b/http-ownership",
+    "Tree equality guarded git reset --soft origin/m05b/http-ownership; git branch --set-upstream-to=origin/m05b/http-ownership m05b/http-ownership",
+    "Documentation-only evidence commit and PR follow implementation; PR tracks exact final-head CI."
+  ],
+  "review_fixes": [
+    "Authenticated domain faults no longer become401",
+    "Split UTF8 chars preserved; invalid UTF8 and JSON BOM rejected",
+    "Reentrant/partial startup and all-stop-hook cleanup",
+    "Node response/SSE teardown exceptions contained and port released",
+    "Unread Worker bodies canceled for early errors/abort",
+    "Finite operation deadline covers one-value-without-completion and late synchronous settlement"
+  ],
+  "blockers": [],
+  "limits": [
+    "Workerd unit/integration requests use real Web APIs and direct Hono dispatch; not socket-disconnect evidence. Real Node sockets cover disconnect and shutdown. Actual Worker HTTP smoke covers devCRUD and previewassets/errors.",
+    "No new automated browser assertions; M04 renderer unchanged.",
+    "LocalWorkerTodo demo uses explicit volatile memory; productionconfigured storage unavailable503; durableauthority M05c.",
+    "Worker SSE501; boundedlive delivery M05d; applicationlive integration M06.",
+    "No main merge, remote deployment, account/DNS/secret/resource changes, release or package publication.",
+    "ChatGPT Project reference copy remains separately unverified."
+  ]
+}

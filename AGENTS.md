@@ -21,12 +21,13 @@ M02 is accepted/merged in PR #7 at
 `7374557b6d264a9bfa572526a4f71233fc3aa24e`; see `docs/m02/acceptance.md`.
 M03 is accepted/merged in PR #8 at
 `c64fda113b599ff9b0b21ae3e20aeff0c473a358`; see `docs/m03/acceptance.md`.
-M04 is implemented; acceptance review/merge pending. See `docs/m04/acceptance.md`
+M04 is accepted and merged in PR #9 at `2b316a477600c91b3105c9e390949c29e90046d3`. See `docs/m04/acceptance.md`
 and `docs/m04/minimal-sample.md` for owned scalar bindings, a stable shell and keyed
 rows with child scopes. Rendering commits synchronously, preserving focus and
 selection; `todo.view.tsx` owns rendering and the app root connects its streams.
-M05b–M09 remain pending. M05b is next only after M04 acceptance and explicit
-authorization.
+M05b is implemented; acceptance review/merge pending. See `docs/m05b/acceptance.md`
+and `docs/m05b/local-development.md`. M05c–M09 remain pending; begin M05c only
+after M05b acceptance and explicit authorization.
 Do not repeat the import or reopen M00 because the platform target changed.
 The separate `m00/characterize-baseline` branch contains intentionally failing
 probes; do not merge it. Map each failure to a verified fix or tested replacement.
@@ -45,8 +46,9 @@ application class hierarchies or rewrite third-party libraries to remove classes
 The r2 target is Hono HTTP integration on Cloudflare Workers, Vite plus the
 Cloudflare Vite plugin, project-local Wrangler, and a minimal Durable Object
 collection authority. M05a establishes only a local Hono/RxJS probe, generated
-Worker types, builds and runtime tests; Todo migration, durable authority and
-application live SSE integration remain planned.
+Worker types, builds and runtime tests. M05b adds finite Hono Todo HTTP and
+request ownership with separate retained Node evidence. Durable authority and
+Worker live delivery/application SSE integration remain planned.
 The current Node HTTP application remains the migration baseline until equivalent
 behavior is verified.
 Keep its applicable lifecycle tests or explicitly document tested retirement.

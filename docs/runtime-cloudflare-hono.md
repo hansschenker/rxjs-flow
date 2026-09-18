@@ -9,8 +9,11 @@ Date: 2026-09-17. Plan revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
 **Subsequent implementation checkpoint:** M01 merged in PR #5 at `188f21f`.
 M05a is accepted/merged in PR #6 at `eeb8d29`, with [local foundation evidence](m05a/acceptance.md):
 a Hono/RxJS probe, generated types, Vite/Worker builds, workerd tests and local
-preview. The inspected planning baseline above is historical. Todo migration,
-durable authority, live synchronization and deployment remain unimplemented.
+preview. M04 is accepted/merged in PR #9 at `2b316a4`. M05b now implements
+[owned finite HTTP and compatibility](m05b/acceptance.md), with a [local Todo
+checkpoint](m05b/local-development.md); acceptance review/merge is pending.
+The inspected planning baseline above is historical. Durable authority, Worker
+live delivery, application live synchronization and deployment remain pending.
 
 ## 1. Context and authority
 

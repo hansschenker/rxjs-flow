@@ -4,7 +4,7 @@ Design revision: 2026-09-17. Target revision: **rxjs-flow migration r2 — Cloud
 
 Applies to the ChatGPT Project **`rxjs-flow`** and development repository **`hansschenker/rxjs-flow`**. Read with the [canonical roadmap](roadmap-gpt-6-astra-2026-09-15.md) and [Cloudflare/Hono runtime decision](runtime-cloudflare-hono.md). The historical source `rxjs-stack` and separate `rxjs-fullstack` repositories are not development targets.
 
-**Status:** target behavior, with implementation evidence recorded per milestone. M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e`; M01 is accepted/merged in PR #5. M05a is accepted/merged in PR #6. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is implemented; [acceptance review/merge pending](m04/acceptance.md). M05b–M09 remain pending; M05b requires M04 acceptance and authorization in the recommended serial order. A local Worker probe exists; Todo migration, durable authority, live integration and deployment remain unimplemented. The [r1 contract](archive/dataflow-architecture-r1-2026-09-15.md) and M00 evidence are preserved.
+**Status:** target behavior, with implementation evidence recorded per milestone. M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e`; M01 is accepted/merged in PR #5. M05a is accepted/merged in PR #6. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`. M05b is implemented; [acceptance review/merge pending](m05b/acceptance.md). M05c–M09 remain pending. M05b adapts the same finite server Effect and route definitions to Hono, with owned request execution and separately tested retained Node compatibility. Durable authority, Worker live delivery, live integration and deployment remain pending. The [r1 contract](archive/dataflow-architecture-r1-2026-09-15.md) and M00 evidence are preserved.
 
 r2 retains the reactive core, rendering and transport-correctness requirements while replacing the permanent Node-server assumption with an explicit Hono/Workers boundary and a minimal durable shared-state authority. Platform facts and primary references are separated from these project requirements in the runtime decision.
 
@@ -170,6 +170,18 @@ Preserve the existing application's domain and HTTP behavior while moving platfo
 Use Hono for matching, middleware integration and response construction. Extract validated input plus narrow capabilities before entering RxJS operation/domain code. Keep platform raw objects at the boundary and migrate shared types explicitly. Preserve route inference, validation, body bounds, headers, status/error behavior and authentication through a compatibility matrix. A Hono context is not the service API of the core.
 
 Each request owns its operation; each live response owns its subscription. Canceling one request or disconnecting one client must not stop other work. Retain Node startup/listen failure and shutdown/port-release requirements while that adapter remains supported. Its eventual retention or retirement needs an explicit tested decision, not an accidental deletion.
+
+The M05b checkpoint removes Node raw objects from `HttpRequest`, adds a request
+AbortSignal, and gives both HTTP adapters one explicit finite-operation owner.
+Exactly one response value plus completion is required; empty/multiple results
+fail with 500 and a default absolute 10-second settlement deadline fails with 504.
+Observing replayed outcomes never starts another execution. Input bytes are
+bounded to 1 MiB, and cancellation releases the request's work. The Hono adapter
+uses `/api` once and consumes canonical route definitions; the retained Node
+adapter keeps its unprefixed paths. See [M05b compatibility](m05b/acceptance.md).
+The local development Worker explicitly enables a volatile demo capability;
+production configuration leaves it disabled pending M05c. This does not implement
+the durable authority described below.
 
 ### Logical collection authority
 
