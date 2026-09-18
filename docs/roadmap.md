@@ -13,12 +13,13 @@ M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e` (PR #2).
 M01 is accepted/merged in PR #5 at `188f21f`; M05a in PR #6 at `eeb8d29`.
 M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557`.
 M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda1`.
-M04 is implemented; [acceptance review/merge pending](m04/acceptance.md).
+M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`.
 Its stable shell, owned scalar bindings and keyed rows commit synchronously and
 preserve focus and selection; see the [minimal binding sample](m04/minimal-sample.md).
-M05b–M09 remain pending. M05b is next only after M04 acceptance and
-authorization. Todo still uses Node HTTP;
-the local Worker probe does not implement Todo migration, persistence or live state.
+M05b is implemented; [acceptance review/merge pending](m05b/acceptance.md). M05c–M09 remain pending.
+The [local Hono Todo page](m05b/local-development.md) uses explicit volatile
+storage. The built Worker defaults to 503 until M05c supplies authority; Worker
+SSE and application live state remain M05d/M06.
 
 Recommended order: M01 → M05a → M02 → M03 → M04 → M05b → M05c → M05d → M06 → M07
 → M08 → M09. M05a establishes the platform/build path early. M05 is complete only

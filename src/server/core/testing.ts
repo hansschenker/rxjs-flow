@@ -1,4 +1,3 @@
-import type * as http from 'http';
 import { firstValueFrom, of } from 'rxjs';
 import { createRouter, type RouteDefinition } from './router';
 import type { AppContext, Effect, HttpRequest, HttpResponse } from './types';
@@ -19,7 +18,7 @@ export const createTestRequest = (
 	query: {},
 	body: {},
 	headers: {},
-	raw: {} as http.IncomingMessage,
+	signal: new AbortController().signal,
 	context: createTestContext(),
 	requestContext: { state: {} },
 	...overrides,

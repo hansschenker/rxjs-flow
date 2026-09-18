@@ -4,6 +4,10 @@ import {
 	type Observable,
 } from 'rxjs';
 import { foundationPath, type FoundationResult } from '../shared/foundation';
+import { get, flattenRoutes } from '../server/core/router';
+import { createTodoRoutes } from '../server/todos/todo.routes';
+import { createTodoStore, type TodoStore } from '../server/todos/todo.store-factory';
+import { createHonoApp } from './http-adapter';
 
 interface FoundationBindings {
 	FOUNDATION_LABEL: string;
@@ -49,11 +53,54 @@ export function createFoundationApp(operation: FoundationOperation = foundation$
 	});
 
 	// Wrangler sends /api and /api/* here before its SPA asset fallback.
-	// In particular /api/todos is not a migrated or implicitly public route.
+	// This isolated foundation probe intentionally exposes no Todo routes.
 	app.notFound(function notFound(context) {
 		return context.json({ error: 'not_found' }, 404);
 	});
 	return app;
 }
 
-export default { fetch: createFoundationApp().fetch } satisfies ExportedHandler<WorkerEnv>;
+export interface WorkerAppOptions {
+	/** Explicitly injected capability; construction never creates a collection. */
+	todoStore?: TodoStore;
+	foundationLabel?: string;
+}
+
+/** M05b migrates finite HTTP only. Durable authority and live bodies follow later. */
+export function createWorkerApp(options: WorkerAppOptions = {}) {
+	const todoRoutes = flattenRoutes(createTodoRoutes()).map(route => ({
+		...route,
+		effect: route.path === '/todos/stream'
+			? () => of({ status: 501, body: { error: 'Streaming responses are not supported by this adapter' } })
+			: options.todoStore
+				? route.effect
+				: () => of({ status: 503, body: { error: 'Todo storage is not configured' } }),
+	}));
+	return createHonoApp([
+		get('/foundation', () => of({ body: {
+			runtime: 'workerd', message: options.foundationLabel ?? 'rxjs-flow foundation',
+		} satisfies FoundationResult })),
+		...todoRoutes,
+	], { services: options.todoStore ? { todoStore: options.todoStore } : {} });
+}
+
+// An explicit development-only binding enables a volatile local demo. The
+// deployment configuration leaves this disabled; it is never durable authority.
+let localDemo: ReturnType<typeof createWorkerApp> | undefined;
+
+interface ApplicationBindings {
+	FOUNDATION_LABEL: string;
+	LOCAL_TODO_DEMO: string;
+}
+
+export default {
+	fetch(request, env, context) {
+		if (env.LOCAL_TODO_DEMO === 'enabled') {
+			localDemo ??= createWorkerApp({
+				todoStore: createTodoStore(), foundationLabel: env.FOUNDATION_LABEL,
+			});
+			return localDemo.fetch(request, env, context);
+		}
+		return createWorkerApp({ foundationLabel: env.FOUNDATION_LABEL }).fetch(request, env, context);
+	},
+} satisfies ExportedHandler<ApplicationBindings>;

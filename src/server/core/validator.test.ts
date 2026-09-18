@@ -2,7 +2,6 @@ import { firstValueFrom, of } from 'rxjs';
 import { z } from 'zod';
 import { validateBody, validateParams, validateQuery, ValidationError } from './validator';
 import type { HttpRequest } from './types';
-import type * as http from 'http';
 
 const mockReq = (body: unknown, overrides: Partial<HttpRequest> = {}): HttpRequest => ({
 	method: 'GET',
@@ -11,7 +10,7 @@ const mockReq = (body: unknown, overrides: Partial<HttpRequest> = {}): HttpReque
 	query: {},
 	body,
 	headers: {},
-	raw: {} as http.IncomingMessage,
+	signal: new AbortController().signal,
 	context: { services: {}, state: {} },
 	requestContext: { state: {} },
 	...overrides,

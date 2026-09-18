@@ -4,7 +4,7 @@ import { created, json, noContent, stream$ } from '../core/response';
 import type { Effect } from '../core/types';
 import { validateBody, validateParams, validateQuery } from '../core/validator';
 import { CreateTodoSchema, TodoListQuerySchema, TodoParamsSchema, UpdateTodoSchema } from './todo.validator';
-import type { TodoStore } from './todo.store';
+import type { TodoStore } from './todo.store-factory';
 import { routes, type RouteResponse } from '../../shared/routes';
 import type { Todo } from '../../shared/types';
 

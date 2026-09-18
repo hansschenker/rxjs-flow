@@ -1,4 +1,4 @@
-import { catchError, from, map, mergeMap, of, tap } from 'rxjs';
+import { catchError, defer, from, map, mergeMap, of, tap } from 'rxjs';
 import { Unauthorized, errorResponse } from './errors';
 import type { Effect, Middleware } from './types';
 
@@ -89,8 +89,12 @@ export const requireAuth = <TClaims>(
 					}
 
 					const token = authHeader.slice(7);
-					return from((async () => verify(token))()).pipe(
-						mergeMap(claims => {
+					return defer(() => from(Promise.resolve(verify(token)))).pipe(
+						map(claims => ({ kind: 'verified' as const, claims })),
+						catchError(() => of({ kind: 'denied' as const })),
+						mergeMap(result => {
+							if (result.kind === 'denied') return of(errorResponse(new Unauthorized()));
+							const claims = result.claims;
 							const enriched = {
 								...req,
 								requestContext: {
@@ -100,7 +104,6 @@ export const requireAuth = <TClaims>(
 							};
 							return effect(of(enriched));
 						}),
-						catchError(() => of(errorResponse(new Unauthorized()))),
 					);
 				}),
 			);

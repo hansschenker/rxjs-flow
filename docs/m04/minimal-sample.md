@@ -2,15 +2,16 @@
 
 This is the existing RxJS-Flow Todo application, now rendered through owned DOM
 bindings and keyed rows. It uses RxJS 7, TypeScript, our custom JSX and the retained
-Node HTTP backend. The Worker Todo API remains M05b work.
+Node HTTP backend. The local Worker continuation is documented in [M05b](../m05b/local-development.md).
 
 ## Run the page
 
-Use Node 22.22.1. From an existing checkout, select the M04 review branch:
+Use Node 22.22.1. From an existing checkout, use the merged main branch:
 
 ```bash
 git fetch origin
-git switch m04/owned-dom
+git switch main
+git merge --ff-only origin/main
 npm ci
 ```
 

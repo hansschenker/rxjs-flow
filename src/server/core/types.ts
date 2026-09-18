@@ -1,4 +1,3 @@
-import type * as http from 'http';
 import type { Observable, OperatorFunction } from 'rxjs';
 
 export interface AppContext<TServices extends object = Record<string, unknown>> {
@@ -22,7 +21,8 @@ export interface HttpRequest<
 	query: TQuery;
 	body: TBody;
 	headers: Record<string, string>;
-	raw: http.IncomingMessage;
+	/** Cancellation of this request operation; platform raw objects stay in adapters. */
+	signal: AbortSignal;
 	context: AppContext;
 	requestContext: RequestContext;
 }

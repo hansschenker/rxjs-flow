@@ -1,5 +1,8 @@
 # Local Cloudflare/Hono foundation
 
+> Historical M05a checkpoint. For the current Hono Todo API and page, use the
+> [M05b development guide](../m05b/local-development.md).
+
 M05a establishes a local Worker endpoint and the existing JSX asset build. The
 Todo backend still runs on Node; its Hono migration belongs to M05b. No Cloudflare
 account, login, domain, storage or remote binding is needed for this checkpoint.

@@ -1,10 +1,9 @@
-import { firstValueFrom, of } from 'rxjs';
+import { firstValueFrom, of, throwError } from 'rxjs';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { vi } from 'vitest';
 import { cors, logger, requestId, requireAuth } from './middleware';
 import type { Effect, HttpRequest, HttpResponse } from './types';
-import type * as http from 'http';
 
 const mockReq = (overrides: Partial<HttpRequest> = {}): HttpRequest => ({
 	method: 'GET',
@@ -13,7 +12,7 @@ const mockReq = (overrides: Partial<HttpRequest> = {}): HttpRequest => ({
 	query: {},
 	body: {},
 	headers: {},
-	raw: {} as http.IncomingMessage,
+	signal: new AbortController().signal,
 	context: { services: {}, state: {} },
 	requestContext: { state: {} },
 	...overrides,
@@ -120,6 +119,20 @@ describe('cors()', () => {
 });
 
 describe('requireAuth()', () => {
+	it('does not turn an authenticated handler failure into an authentication failure', async () => {
+		const failure = new Error('handler failed');
+		const wrapped = requireAuth(() => ({ id: '42' }))(() => throwError(() => failure));
+		await expect(firstValueFrom(wrapped(of(mockReq({ headers: { authorization: 'Bearer valid' } })))))
+			.rejects.toBe(failure);
+	});
+
+	it('does not hide a synchronous protected handler construction failure', async () => {
+		const failure = new Error('construction failed');
+		const wrapped = requireAuth(() => ({ id: '42' }))(() => { throw failure; });
+		await expect(firstValueFrom(wrapped(of(mockReq({ headers: { authorization: 'Bearer valid' } })))))
+			.rejects.toBe(failure);
+	});
+
 	const makeEffect = (response: HttpResponse): Effect =>
 		req$ => req$.pipe(map(() => response));
 

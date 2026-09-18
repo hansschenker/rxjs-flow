@@ -3,7 +3,6 @@ import { map, mergeMap } from 'rxjs/operators';
 import { createRouter } from './router';
 import { ValidationError } from './validator';
 import type { HttpRequest } from './types';
-import type * as http from 'http';
 
 const mockReq = (overrides: Partial<HttpRequest> = {}): HttpRequest => ({
 	method: 'GET',
@@ -12,7 +11,7 @@ const mockReq = (overrides: Partial<HttpRequest> = {}): HttpRequest => ({
 	query: {},
 	body: {},
 	headers: {},
-	raw: {} as http.IncomingMessage,
+	signal: new AbortController().signal,
 	context: { services: {}, state: {} },
 	requestContext: { state: {} },
 	...overrides,

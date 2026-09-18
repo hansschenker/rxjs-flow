@@ -12,9 +12,10 @@ M02 is accepted/merged in PR #7 at `7374557b6d264a9bfa572526a4f71233fc3aa24e`;
 see its [state and transition acceptance](docs/m02/acceptance.md).
 M03 is [accepted/merged in PR #8](docs/m03/acceptance.md) at
 `c64fda113b599ff9b0b21ae3e20aeff0c473a358`.
-M04 is implemented; [acceptance review/merge pending](docs/m04/acceptance.md).
+M04 is [accepted/merged in PR #9](docs/m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`.
 The [minimal binding sample](docs/m04/minimal-sample.md) explains the rendering contract.
-M05b–M09 remain pending. Use a dedicated branch and PR; do not start a milestone,
+M05b is implemented; [review/merge pending](docs/m05b/acceptance.md).
+M05c–M09 remain pending. Use a dedicated branch and PR; do not start a milestone,
 merge, publish, deploy, create remote resources or change `netxpert.ch` without
 appropriate explicit authorization. `rxjs-stack` and `rxjs-fullstack` are historical/
 separate repositories, not implementation targets.
@@ -22,11 +23,11 @@ separate repositories, not implementation targets.
 The r2 target is RxJS 7 + TypeScript + existing custom JSX, Hono HTTP integration
 on Cloudflare Workers, Vite/Cloudflare build tooling, project-local Wrangler, and
 a minimal Durable Object authority. M05a now provides the local platform foundation;
-Todo migration, authority and live integration remain planned. Keep Node
+M05b adds owned finite Todo HTTP; durable authority and live integration remain planned. Keep Node
 as the baseline during the tested transition. Hono does not replace our renderer.
 Do not use mutable Worker-global state as authority or pass Hono context into reducers.
 
-After M04 acceptance, the next implementation is M05b when authorized, followed by
+After M05b acceptance, the next implementation is M05c when authorized, followed by
 the remaining M05 substeps as specified in the roadmap. No permanent Node-only constraint or
 instruction to reopen M00 is in force. Do not merge the intentionally failing
 `m00/characterize-baseline` probes.
