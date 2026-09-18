@@ -51,3 +51,7 @@ jobs:
       - name: Smoke test local Worker Todo API
         timeout-minutes: 3
         run: npm run smoke:worker -- --dev
+
+      - name: Verify durable Todo process restart
+        timeout-minutes: 3
+        run: node scripts/m05c-checkpoint.mjs --preview

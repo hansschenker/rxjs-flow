@@ -6,8 +6,14 @@ import {
 import { foundationPath, type FoundationResult } from '../shared/foundation';
 import { get, flattenRoutes } from '../server/core/router';
 import { createTodoRoutes } from '../server/todos/todo.routes';
-import { createTodoStore, type TodoStore } from '../server/todos/todo.store-factory';
-import { createHonoApp } from './http-adapter';
+import type { TodoStore } from '../server/todos/todo.store-factory';
+import type { TodoRepository } from '../server/todos/todo.repository';
+import { HttpError } from '../server/core/errors';
+import { cancelUnreadBody, createHonoApp } from './http-adapter';
+import { authorizeTodoCollection, type TodoAccessBindings } from './todo-access';
+import { createDurableTodoRepository } from './todo-repository';
+import type { TodoCollection } from './todo-collection';
+export { TodoCollection } from './todo-collection';
 
 interface FoundationBindings {
 	FOUNDATION_LABEL: string;
@@ -63,16 +69,17 @@ export function createFoundationApp(operation: FoundationOperation = foundation$
 export interface WorkerAppOptions {
 	/** Explicitly injected capability; construction never creates a collection. */
 	todoStore?: TodoStore;
+	todoRepository?: TodoRepository;
 	foundationLabel?: string;
 }
 
-/** M05b migrates finite HTTP only. Durable authority and live bodies follow later. */
+/** Request capabilities are explicit; Worker streaming remains a later boundary. */
 export function createWorkerApp(options: WorkerAppOptions = {}) {
 	const todoRoutes = flattenRoutes(createTodoRoutes()).map(route => ({
 		...route,
 		effect: route.path === '/todos/stream'
 			? () => of({ status: 501, body: { error: 'Streaming responses are not supported by this adapter' } })
-			: options.todoStore
+			: options.todoRepository || options.todoStore
 				? route.effect
 				: () => of({ status: 503, body: { error: 'Todo storage is not configured' } }),
 	}));
@@ -81,25 +88,32 @@ export function createWorkerApp(options: WorkerAppOptions = {}) {
 			runtime: 'workerd', message: options.foundationLabel ?? 'rxjs-flow foundation',
 		} satisfies FoundationResult })),
 		...todoRoutes,
-	], { services: options.todoStore ? { todoStore: options.todoStore } : {} });
+	], { services: {
+		...(options.todoStore ? { todoStore: options.todoStore } : {}),
+		...(options.todoRepository ? { todoRepository: options.todoRepository } : {}),
+	} });
 }
 
-// An explicit development-only binding enables a volatile local demo. The
-// deployment configuration leaves this disabled; it is never durable authority.
-let localDemo: ReturnType<typeof createWorkerApp> | undefined;
-
-interface ApplicationBindings {
+export interface ApplicationBindings extends TodoAccessBindings {
 	FOUNDATION_LABEL: string;
-	LOCAL_TODO_DEMO: string;
+	TODO_COLLECTIONS?: DurableObjectNamespace<TodoCollection>;
 }
 
 export default {
 	fetch(request, env, context) {
-		if (env.LOCAL_TODO_DEMO === 'enabled') {
-			localDemo ??= createWorkerApp({
-				todoStore: createTodoStore(), foundationLabel: env.FOUNDATION_LABEL,
-			});
-			return localDemo.fetch(request, env, context);
+		// Hono retains HTTP matching. Only Todo API requests acquire a capability.
+		const path = new URL(request.url).pathname.replace(/\/+$/, '').replace(/\/{2,}/g, '/');
+		if (path === '/api/todos' || path.startsWith('/api/todos/')) {
+			try {
+				const collectionId = authorizeTodoCollection(request, env);
+				if (!env.TODO_COLLECTIONS) throw new HttpError(503, 'Todo storage is not configured');
+				const repository = createDurableTodoRepository(env.TODO_COLLECTIONS.getByName(collectionId), collectionId);
+				return createWorkerApp({ todoRepository: repository, foundationLabel: env.FOUNDATION_LABEL }).fetch(request, env, context);
+			} catch (error) {
+				cancelUnreadBody(request);
+				if (error instanceof HttpError) return Response.json({ error: error.message, details: error.details }, { status: error.status });
+				return Response.json({ error: 'Todo authority is unavailable' }, { status: 503 });
+			}
 		}
 		return createWorkerApp({ foundationLabel: env.FOUNDATION_LABEL }).fetch(request, env, context);
 	},
