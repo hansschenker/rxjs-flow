@@ -1,10 +1,10 @@
 # Dataflow architecture contract
 
-Design revision: 2026-09-17. Target revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
+Design revision: 2026-09-17; implementation checkpoint updated 2026-09-20. Target revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
 
 Applies to the ChatGPT Project **`rxjs-flow`** and development repository **`hansschenker/rxjs-flow`**. Read with the [canonical roadmap](roadmap-gpt-6-astra-2026-09-15.md) and [Cloudflare/Hono runtime decision](runtime-cloudflare-hono.md). The historical source `rxjs-stack` and separate `rxjs-fullstack` repositories are not development targets.
 
-**Status:** target behavior, with implementation evidence recorded per milestone. M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e`; M01 is accepted/merged in PR #5. M05a is accepted/merged in PR #6. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`. M05b is [accepted/merged in PR #10](m05b/acceptance.md) at `1cfbaec`. M05c is [accepted/merged in PR #11](m05c/acceptance.md) at `d5500da`. M05d implements bounded, owned live delivery; [acceptance review/merge is pending](m05d/acceptance.md). M05b adapts the same finite server Effect and route definitions to Hono, with owned request execution and separately tested retained Node compatibility. M05c adds a configured collection authority with attached SQLite storage, atomic state/metadata commit and reconstruction. M05d adds race-free authority registration and response-owned bounded delivery. The versioned public live protocol, Todo application integration and deployment remain pending. The [r1 contract](archive/dataflow-architecture-r1-2026-09-15.md) and M00 evidence are preserved.
+**Status:** target behavior, with implementation evidence recorded per milestone. M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e`; M01 is accepted/merged in PR #5. M05a is accepted/merged in PR #6. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`. M05b is [accepted/merged in PR #10](m05b/acceptance.md) at `1cfbaec`. M05c is [accepted/merged in PR #11](m05c/acceptance.md) at `d5500da`. M05d is [accepted/merged in PR #12](m05d/acceptance.md) at `540faec`; parent M05 is complete. M06 implements typed live synchronization and recovery; [acceptance review/merge is pending](m06/acceptance.md). M05b adapts the same finite server Effect and route definitions to Hono, with owned request execution and separately tested retained Node compatibility. M05c adds a configured collection authority with attached SQLite storage, atomic state/metadata commit and reconstruction. M05d adds race-free authority registration and response-owned bounded delivery. M06 adds the versioned public live protocol, authoritative Todo application snapshots and one bounded reconnect owner. M07–M09 and deployment remain pending. The [r1 contract](archive/dataflow-architecture-r1-2026-09-15.md) and M00 evidence are preserved.
 
 r2 retains the reactive core, rendering and transport-correctness requirements while replacing the permanent Node-server assumption with an explicit Hono/Workers boundary and a minimal durable shared-state authority. Platform facts and primary references are separated from these project requirements in the runtime decision.
 
@@ -76,7 +76,7 @@ Do not force a new `Command` vocabulary. Preserve `Action` compatibility where a
 
 The core and browser code must not import Node raw request types, Hono context, Worker bindings or Durable Object stubs. Restrict these to their adapter modules. Preserve one shared route contract and test its HTTP mapping; do not create independently maintained route trees.
 
-The M03 checkpoint extracts pure Todo intent interpretation and one app-owned effect graph. Reads use latest-read cancellation; accepted create/update/delete operations share a FIFO with a default capacity of 32 active plus waiting writes. Create exhaustion lasts through queued and active work. Expected failures return correlated facts, and unexpected graph/render faults reach the host's cleanup/reporting boundary. HTTP work is cold, uses response contracts and shared Zod schemas, preserves structured failures and aborts body consumption on disposal. The generic SSE adapter now requires a decoder from `unknown`; it is not connected to the Todo app. The versioned live protocol, reconnect policy and app connection remain M06.
+The M03 checkpoint extracts pure Todo intent interpretation and one app-owned effect graph. Reads use latest-read cancellation; accepted create/update/delete operations share a FIFO with a default capacity of 32 active plus waiting writes. Create exhaustion lasts through queued and active work. Expected failures return correlated facts, and unexpected graph/render faults reach the host's cleanup/reporting boundary. HTTP work is cold, uses response contracts and shared Zod schemas, preserves structured failures and aborts body consumption on disposal. The generic SSE adapter requires a decoder from `unknown`. M06 connects the app to a distinct versioned live route with one owned connection, explicit retry policy and accepted snapshots as the collection authority. The pure model can still explicitly select the finite HTTP mode used by retained fixtures; the actual mounted host selects live mode.
 
 The M04 checkpoint moves rendering into `todo.view.tsx`; the app root connects its already-shared view-model stream to the view. A stable shell holds scope-owned scalar bindings and keyed rows, each with a child scope. Commits are synchronous and targeted, retained rows preserve node identity, focus and selection, and removal disposes their listeners/bindings. Rendering does not initiate network work. See [acceptance evidence](m04/acceptance.md) and the [minimal binding sample](m04/minimal-sample.md).
 
@@ -125,15 +125,15 @@ owns the platform boundary. Its one persisted snapshot envelope contains schema
 version, collection identity, generation, revision and Todos. SQLite's synchronous
 transaction protects read/validate/transition/write; `storage.sync()` settles
 before any successful result is emitted. Authority admission is bounded to 32
-active-plus-waiting application operations. There is no live registration API yet;
-M05d must add and test the race-free registration/snapshot handoff.
+active-plus-waiting application operations. M05d adds `watch$()` registration
+through that owner, making the initial committed snapshot/live handoff race-free.
 
 An admitted authority operation remains owned even if its HTTP observer disappears.
 A known transaction rollback reports `not-committed`; a failed flush or lost reply
 reports `unknown`. No mutation is automatically retried. Failed flush also blocks
 further results from that activation until reconstruction. These outcome values
-belong to internal operation error details; the application live schema remains
-M06 work. Local configuration selects and authorizes the reference collection;
+belong to internal operation error details; M06 publishes a separate versioned
+application live schema. Local configuration selects and authorizes the reference collection;
 a request-supplied collection key cannot grant access.
 
 ## 5. Error, completion, and cancellation are different
@@ -229,8 +229,10 @@ The retained Node listener separately admits at most 32 active SSE responses.
 The Durable Object sends validated internal snapshot envelopes over a private
 Fetch NDJSON body. Each Worker response owns a cold reader and explicitly
 cancels that upstream body. The public `/api/todos/stream` endpoint keeps the
-legacy `todos` event with a bare Todo array. This private transport does not
-publish M06's versioned browser protocol or connect the Todo application's model.
+legacy `todos` event with a bare Todo array. M06 adds `/api/todos/live`, emitting
+the versioned `todo-snapshot` envelope through the same owned delivery path.
+Only the new route feeds the Todo application's live model; the legacy wire is
+not reinterpreted.
 
 The Worker body owner uses a zero-high-water-mark ReadableStream and a bounded
 pending queue. Generic events retain FIFO order with a 16-frame/256-KiB pending
@@ -249,15 +251,50 @@ Persistent storage does not make live responses durable and does not imply SSE h
 
 Use HTTP/SSE for the first complete loop. Committed server snapshots are the authoritative Todo collection. Mutation responses settle operation success/failure but do not separately append items already represented by snapshots. Connect to a complete current snapshot rather than racing an unversioned GET against pushes.
 
-The target envelope identifies `collectionId`, `stateGeneration` and `revision`; exact wire fields are versioned in M06. Revision increases within a collection history. Generation survives routine Worker handling and authority reconstruction; an explicit reset/replacement creates new history. Do not derive generation from a Worker instance or restart a durable revision counter on every activation.
+M06 publishes `event: todo-snapshot` on `/api/todos/live` (Worker) and
+`/todos/live` (Node). Its runtime-decoded envelope is `{ schemaVersion: 1,
+collectionId, stateGeneration, revision, todos }`. `/todos/stream` remains the
+legacy `todos` bare-array route. Finite client construction excludes live routes;
+a live contract is not consumed through `res.json()`.
 
-Connection/session identity is separate. Ignore notifications from superseded connections. A current connection establishes history through the documented resynchronization policy; arbitrary delayed different-generation messages must not reset the model. Compare revisions only within the same collection/generation.
+Revision increases within a collection history. Generation survives routine
+Worker handling and authority reconstruction; explicit reset/replacement creates
+new history. Generation is not derived from a Worker instance. The first accepted
+snapshot pins the app's collection. Compare revisions only within that collection
+and generation; duplicates/older revisions never replace collection content.
 
-Keep the old bare-array SSE route or change it through explicit coordinated version migration. Decode external values from `unknown`. Schema errors must be visible and recoverable according to the protocol, not allowed to corrupt state.
+Connection identity is separate and changes per attempt. Superseded notifications
+are ignored. Only the first validated snapshot of a new current connection may
+establish a changed generation for the pinned collection. A changed generation
+later in that connection requires manual resynchronization; a different collection
+is rejected. An equal first revision confirms the remembered snapshot without
+replacing it; an older first revision requires recovery rather than accepting a
+regression. These choices are a resnapshot policy, not an ordering of generation
+UUIDs.
 
-One connection is shared per mounted browser app. Choose one reconnect owner and cancel it on disposal. Show loading before the first accepted snapshot and stale/reconnecting state during a gap. Initial snapshot plus subsequent registration must have a tested no-lost-commit handoff.
+One live effect is owned by the mounted browser app. State and view consumers
+share its remembered output without opening extra connections. Before the first
+snapshot the UI shows loading; during a gap it retains accepted Todos with a
+stale/reconnecting status. Mutation replies settle their pending operation but
+never independently modify the live collection. Drafts, pending operations and
+mutation errors remain distinct from connection status/error.
 
-Reconnection repairs current collection state, not an exactly-once event log. It does not establish whether a disconnected mutation committed. Do not add optimistic writes until the authoritative model is proven. A retained Node in-memory demonstration has a separate explicit reset-generation policy and is not evidence of durable recovery.
+The RxJS connection owner closes EventSource on an interruption and is the only
+reconnect mechanism. It schedules at most four retries after 1, 2, 4 and 8 seconds,
+with an injected scheduler and a 10-second first-snapshot deadline per attempt.
+A valid snapshot resets consecutive failures. Protocol failure and exhaustion
+require manual Reconnect; disposal cancels the transport, retry and deadline.
+Native EventSource reconnect does not compete with this policy. The deadline
+only protects the first snapshot; there is no heartbeat or fixed detection time
+for a silent partition after synchronization. Runtime decoding begins from
+`unknown` and rejects malformed data before state replacement.
+
+Reconnection repairs current collection state, not an exactly-once event log.
+A disconnected mutation may already have committed; local cancellation is not
+rollback, and no mutation is automatically replayed. Retained Node factories and
+explicit resets start fresh in-memory generations and revisions. That separate
+reset policy is not evidence of durable recovery. See [M06 acceptance](m06/acceptance.md)
+and the [two-tab checkpoint](m06/local-development.md) for executable evidence.
 
 ## 10. Scope boundary and acceptance
 

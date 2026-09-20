@@ -13,7 +13,8 @@ import { HttpError } from '../server/core/errors';
 import { cancelUnreadBody, createHonoApp } from './http-adapter';
 import { authorizeTodoCollection, type TodoAccessBindings } from './todo-access';
 import { createDurableTodoRepository } from './todo-repository';
-import { createDurableTodoLive } from './todo-live';
+import { createDurableTodoLive, createDurableTodoSnapshots } from './todo-live';
+import type { TodoLiveSnapshot } from '../shared/todo-live';
 import type { TodoCollection } from './todo-collection';
 export { TodoCollection } from './todo-collection';
 
@@ -73,6 +74,7 @@ export interface WorkerAppOptions {
 	todoStore?: TodoStore;
 	todoRepository?: TodoRepository;
 	todoLive$?: Observable<SseEvent>;
+	todoSnapshots$?: Observable<TodoLiveSnapshot>;
 	foundationLabel?: string;
 }
 
@@ -87,6 +89,7 @@ export function createWorkerApp(options: WorkerAppOptions = {}) {
 		...(options.todoStore ? { todoStore: options.todoStore } : {}),
 		...(options.todoRepository ? { todoRepository: options.todoRepository } : {}),
 		...(options.todoLive$ ? { todoLive$: options.todoLive$ } : {}),
+		...(options.todoSnapshots$ ? { todoSnapshots$: options.todoSnapshots$ } : {}),
 	} });
 }
 
@@ -107,6 +110,7 @@ export default {
 				return createWorkerApp({
 					todoRepository: createDurableTodoRepository(stub, collectionId),
 					todoLive$: createDurableTodoLive(stub, collectionId),
+					todoSnapshots$: createDurableTodoSnapshots(stub, collectionId),
 					foundationLabel: env.FOUNDATION_LABEL,
 				}).fetch(request, env, context);
 			} catch (error) {

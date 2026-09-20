@@ -2,6 +2,8 @@ import { expectTypeOf } from 'vitest';
 import { apiPath, buildPath, routes, type RouteBody, type RouteParams, type RouteQuery, type RouteResponse } from './routes';
 import type { CreateTodoBody, Todo } from './types';
 import { todoListSchema, todoSchema } from './todo.schema';
+import { TODO_LIVE_EVENT, todoLiveSnapshotSchema, type TodoLiveSnapshot } from './todo-live';
+import type { AnyFiniteRoute, AnyLiveRoute } from './routes';
 
 describe('shared routes', () => {
 	it('builds concrete paths from typed route params', () => {
@@ -19,6 +21,10 @@ describe('shared routes', () => {
 		expectTypeOf<RouteQuery<typeof routes.todos.list>>().toEqualTypeOf<{ completed?: 'true' | 'false' }>();
 		expectTypeOf<RouteResponse<typeof routes.todos.create>>().toEqualTypeOf<Todo>();
 		expectTypeOf<RouteResponse<typeof routes.todos.list>>().toEqualTypeOf<Todo[]>();
+		expectTypeOf<RouteResponse<typeof routes.todos.live>>().toEqualTypeOf<TodoLiveSnapshot>();
+		expectTypeOf<typeof routes.todos.list>().toExtend<AnyFiniteRoute>();
+		expectTypeOf<typeof routes.todos.live>().toExtend<AnyLiveRoute>();
+		expectTypeOf<typeof routes.todos.live>().not.toExtend<AnyFiniteRoute>();
 	});
 
 	it('declares one runtime response contract for every route', () => {
@@ -26,7 +32,8 @@ describe('shared routes', () => {
 		expect(routes.todos.create.responseBody).toEqual({ kind: 'json', schema: todoSchema });
 		expect(routes.todos.update.responseBody).toEqual({ kind: 'json', schema: todoSchema });
 		expect(routes.todos.remove.responseBody).toEqual({ kind: 'empty', status: 204 });
-		expect(routes.todos.stream.responseBody).toEqual({ kind: 'stream' });
+		expect(routes.todos.stream.responseBody).toEqual({ kind: 'stream', event: 'todos', schema: todoListSchema });
+		expect(routes.todos.live.responseBody).toEqual({ kind: 'stream', event: TODO_LIVE_EVENT, schema: todoLiveSnapshotSchema });
 	});
 
 	it('validates Todo field types and required values at the shared boundary', () => {

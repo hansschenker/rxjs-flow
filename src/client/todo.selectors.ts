@@ -13,6 +13,7 @@ export interface ViewModel {
 	readonly pendingTodoIds: readonly string[];
 	readonly creating: boolean;
 	readonly connection: State['connection'];
+	readonly live: State['live'];
 	readonly canSubmit: boolean;
 }
 
@@ -35,6 +36,7 @@ export function selectViewModel(state: State): ViewModel {
 			'todoId' in operation ? [operation.todoId] : []))],
 		creating,
 		connection: state.connection,
+		live: state.live,
 		canSubmit: state.draft.trim().length > 0 && !creating,
 	};
 }
@@ -53,5 +55,6 @@ export function equalViewModel(left: ViewModel, right: ViewModel): boolean {
 		&& left.pendingTodoIds.every((id, index) => id === right.pendingTodoIds[index])
 		&& left.creating === right.creating
 		&& left.connection === right.connection
+		&& left.live === right.live
 		&& left.canSubmit === right.canSubmit;
 }

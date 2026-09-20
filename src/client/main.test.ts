@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { NEVER } from 'rxjs';
 
-const service = vi.hoisted(() => ({ getAll$: vi.fn(), create$: vi.fn(), update$: vi.fn(), remove$: vi.fn() }));
+const service = vi.hoisted(() => ({ getAll$: vi.fn(), create$: vi.fn(), update$: vi.fn(), remove$: vi.fn(), live$: vi.fn() }));
 vi.mock('./todo.service', () => service);
 
 afterEach(() => {
@@ -23,6 +23,7 @@ describe('M01 inert feature import', () => {
 		const { createTodoApp } = await import('./main');
 		const app = createTodoApp();
 		expect(service.getAll$).not.toHaveBeenCalled();
+		expect(service.live$).not.toHaveBeenCalled();
 		expect(lookup).not.toHaveBeenCalled();
 		expect(query).not.toHaveBeenCalled();
 		expect(create).not.toHaveBeenCalled();

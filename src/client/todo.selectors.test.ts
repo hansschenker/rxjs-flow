@@ -13,7 +13,7 @@ const second: Readonly<Todo> = Object.freeze({
 function stateWith(overrides: Partial<State> = {}): State {
 	return {
 		todos: [], draft: '', loadStatus: 'idle', pending: [], error: null, failure: null,
-		connection: 'idle', ...overrides,
+		connection: 'idle', live: null, ...overrides,
 	};
 }
 
@@ -36,7 +36,7 @@ describe('selectViewModel', () => {
 		expect(view).toEqual({
 			todos: [first, second], error: 'Recoverable failure', draft: '  Next  ',
 			loading: false, empty: false, total: 2, completed: 1, remaining: 1,
-			pendingCount: 2, pendingTodoIds: ['1'], creating: false, connection: 'connected', canSubmit: true,
+			pendingCount: 2, pendingTodoIds: ['1'], creating: false, connection: 'connected', live: null, canSubmit: true,
 		});
 		expect(view.todos).toBe(state.todos);
 		expect(view.completed + view.remaining).toBe(view.total);
@@ -117,6 +117,9 @@ describe('equalViewModel', () => {
 		pendingTodoIds: { pendingTodoIds: ['1'] },
 		creating: { creating: true },
 		connection: { connection: 'disconnected' },
+		live: { live: { expectedCollectionId: null, identity: null, connectionId: 1,
+			firstSnapshotPending: true, acceptingSnapshots: true, stale: false, attempt: 0,
+			retryDelayMs: null, error: null, resyncRequired: false } },
 		canSubmit: { canSubmit: true },
 	};
 

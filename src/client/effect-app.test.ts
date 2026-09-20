@@ -29,6 +29,12 @@ function appFor(api: TodoService, options?: TodoAppOptions) {
 	return app;
 }
 
+// These retained M03 cases exercise finite load/Refresh cancellation explicitly.
+// M06's live app interleavings are covered in live-app and workerd model tests.
+function finiteService(fetch: FetchTransport): TodoService {
+	return { ...createTodoService({ fetch }), live$: undefined };
+}
+
 function submit(value: string) {
 	input.value = value;
 	input.dispatchEvent(new Event('input'));
@@ -57,7 +63,7 @@ describe('M03 complete app effect loop', () => {
 	it('preserves a failed HTTP DELETE and its details, then accepts a successful retry without duplicate requests', async () => {
 		const responses = [Response.json([first, second]), Response.json({ error: 'Conflict', details: { id: '1' } }, { status: 409 }), new Response(null, { status: 204 })];
 		const fetch = vi.fn<FetchTransport>(() => Promise.resolve(responses.shift()!));
-		const app = appFor(createTodoService({ fetch }));
+		const app = appFor(finiteService(fetch));
 		const states: State[] = [];
 		app.state$.subscribe(state => states.push(state));
 		for (let i = 0; i < 3; i++) {
@@ -88,7 +94,7 @@ describe('M03 complete app effect loop', () => {
 	it('keeps a draft after malformed HTTP data and processes the next valid create', async () => {
 		const responses = [Response.json([]), Response.json({ id: 'bad' }), Response.json({ ...first, title: 'Retry' }, { status: 201 })];
 		const fetch = vi.fn<FetchTransport>(() => Promise.resolve(responses.shift()!));
-		const app = appFor(createTodoService({ fetch }));
+		const app = appFor(finiteService(fetch));
 		const loaded = nextFact(app, 'LOAD_SUCCEEDED');
 		app.start(document.body);
 		await loaded;
@@ -114,7 +120,7 @@ describe('M03 complete app effect loop', () => {
 		});
 		const responses = [new Response(stream, { status: 200 }), Response.json([second])];
 		const fetch = vi.fn<FetchTransport>(() => Promise.resolve(responses.shift()!));
-		const app = appFor(createTodoService({ fetch }));
+		const app = appFor(finiteService(fetch));
 		const facts: Action[] = [];
 		app.transitions$.subscribe(({ message }) => facts.push(message));
 		app.start(document.body);

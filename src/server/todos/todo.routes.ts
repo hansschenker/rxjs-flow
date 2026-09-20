@@ -8,6 +8,7 @@ export function createTodoRoutes(): RouteDefinition[] {
 	return [
 		handle(routes.todos.list, effects.getAll$),
 		handle(routes.todos.stream, effects.todoStream$),
+		handle(routes.todos.live, effects.todoLive$),
 		handle(routes.todos.create, effects.create$),
 		handle(routes.todos.update, effects.update$),
 		handle(routes.todos.remove, effects.delete$),

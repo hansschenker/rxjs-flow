@@ -2,33 +2,21 @@ import { EMPTY, Observable, ReplaySubject, Subject, defer, type Subscriber, type
 import { catchError, concatMap, finalize, single, tap } from 'rxjs/operators';
 import { z } from 'zod';
 import type { Todo } from '../../shared/types';
+import { TODO_SNAPSHOT_LIMITS, todoIdentitySchema, strictLiveTodoSchema, todoLiveSnapshotSchema } from '../../shared/todo-live';
 import { HttpError, UnprocessableEntity } from '../core/errors';
 import { createTodoTransition, deleteTodoTransition, filterTodos, updateTodoTransition } from './todo.transitions';
 
 export const TODO_AUTHORITY_LIMITS = Object.freeze({
 	maxPendingOperations: 32,
-	maxTodos: 1_000,
-	maxSnapshotBytes: 120 * 1_024,
+	...TODO_SNAPSHOT_LIMITS,
 	maxActiveSubscribers: 32,
 });
 
-const identitySchema = z.string().min(1).max(200);
-const strictTodoSchema = z.strictObject({
-	id: identitySchema, title: z.string().min(1), completed: z.boolean(), createdAt: z.iso.datetime(),
-});
+const identitySchema = todoIdentitySchema;
+const strictTodoSchema = strictLiveTodoSchema;
 
-/** Internal durable representation; the application live wire protocol remains M06. */
-export const todoSnapshotSchema = z.strictObject({
-	schemaVersion: z.literal(1),
-	collectionId: identitySchema,
-	stateGeneration: identitySchema,
-	revision: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
-	todos: z.array(strictTodoSchema).max(TODO_AUTHORITY_LIMITS.maxTodos),
-}).superRefine((snapshot, context) => {
-	if (new Set(snapshot.todos.map(todo => todo.id)).size !== snapshot.todos.length) {
-		context.addIssue({ code: 'custom', message: 'Duplicate Todo identity' });
-	}
-});
+/** Persistence and the versioned public snapshot use the same validated shape. */
+export const todoSnapshotSchema = todoLiveSnapshotSchema;
 
 export type TodoSnapshot = z.infer<typeof todoSnapshotSchema>;
 

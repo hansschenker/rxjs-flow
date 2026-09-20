@@ -25,7 +25,7 @@ describe('Todo initial state and intents', () => {
 	it('creates independent idle state, collection and pending arrays', () => {
 		const firstState = createInitialState();
 		const next = createInitialState();
-		expect(next).toEqual({ todos: [], draft: '', loadStatus: 'idle', pending: [], error: null, failure: null, connection: 'idle' });
+		expect(next).toEqual({ todos: [], draft: '', loadStatus: 'idle', pending: [], error: null, failure: null, connection: 'idle', live: null });
 		expect(next).not.toBe(firstState);
 		expect(next.todos).not.toBe(firstState.todos);
 		expect(next.pending).not.toBe(firstState.pending);
