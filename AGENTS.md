@@ -34,11 +34,14 @@ substeps are accepted. See `docs/m05d/acceptance.md` for bounded owned SSE and
 retained Node streaming. The owner authorized M06 from that verified merge.
 M06 is accepted and merged in PR #13 at
 `36d644f529d5660506d6f2aa90e90af562d01440`; see `docs/m06/acceptance.md`.
-The owner confirmed the two-page checkpoint and explicitly authorized M07 from
-that verified merge. M07 reference-app completion is implemented and locally verified;
-acceptance review/merge is pending; see
+M07 is accepted and merged in PR #14 at
+`92f25680072da22d45e815ac411abd3651d002a5`; see
 `docs/m07/acceptance.md` and `docs/m07/local-development.md`.
-M08–M09 remain pending and require their own authorization.
+The owner confirmed the reference application and explicitly authorized M08
+from that verified merge. M08 temporal tracing is implemented and locally verified;
+acceptance review/merge is pending. See `docs/m08/acceptance.md`,
+`docs/m08/temporal-traces.md` and `docs/m08/local-development.md`.
+M09 remains pending and requires its own authorization.
 Do not repeat the import or reopen M00 because the platform target changed.
 The separate `m00/characterize-baseline` branch contains intentionally failing
 probes; do not merge it. Map each failure to a verified fix or tested replacement.

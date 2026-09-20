@@ -1,9 +1,14 @@
 # M07 — Complete reference Todo application
 
 Date: 2026-09-20. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
-Status: implemented and locally verified; acceptance review/merge pending.
+Status: accepted and merged in [PR #14](https://github.com/hansschenker/rxjs-flow/pull/14)
+at **`92f25680072da22d45e815ac411abd3651d002a5`**, verified before M08 began.
 Final test total: **968 passed** (803 Node/DOM + 165 workerd),
 **37 more** than the pristine 931-test baseline.
+
+The owner confirmed the reference application and subsequently authorized M08.
+The implementation and command evidence below remains the historical M07 record;
+its execution ledger is unchanged. M08 has its own [acceptance record](../m08/acceptance.md).
 
 ## Provenance and scope
 
@@ -238,4 +243,5 @@ are retained in the ledger.
 No implementation blocker remains. All final local gates passed. The tested
 implementation is published at the commit/tree above. The following documentation
 commit and PR record review-head CI without a self-referential commit claim.
-Acceptance review/merge remains pending; M08 and M09 remain separate milestones.
+PR #14 is now accepted and merged at the verified commit above. M08 and M09
+remain separate milestones; subsequent M08 work does not rewrite these results.

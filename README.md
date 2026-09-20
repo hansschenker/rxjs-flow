@@ -22,12 +22,19 @@ PR #11 at `d5500da`. M05d's [bounded, owned live delivery](docs/m05d/acceptance.
 is accepted and merged in PR #12 at `540faec`; parent M05 is complete.
 M06's [typed live synchronization and recovery](docs/m06/acceptance.md) is
 accepted and merged in PR #13 at `36d644f`.
-M07's [reference-app completion](docs/m07/acceptance.md) is explicitly authorized
-and implemented; acceptance review/merge is pending. [Run the reference Todo application](docs/m07/local-development.md).
+M07's [reference-app completion](docs/m07/acceptance.md) is accepted and merged
+in PR #14 at `92f2568`. [Run the reference Todo application](docs/m07/local-development.md).
+The owner explicitly authorized M08 from that verified merge;
+[temporal tracing and adversarial evidence](docs/m08/acceptance.md) is implemented
+and locally verified, with acceptance review/merge pending. **1,018 tests pass**.
+[Read actual operation, cancellation and recovery traces](docs/m08/temporal-traces.md)
+or [inspect the existing application](docs/m08/local-development.md).
+Trace-disabled/enabled native-browser scenarios issue the same 13-request vector;
+owned listeners and current-document connections are released after disposal.
 The reference application adds All/Active/Completed filters, pure title validation
 and draft revision tracking so a late reply preserves newer typing. It exposes
 recoverable operation feedback and verifies explicit unmount/remount in both
-development and built browser/Worker modes. **968 tests pass**, with two actual
+development and built browser/Worker modes. **M07 passed 968 tests**, with two actual
 browser contexts confirming forms, live updates, failure recovery and cleanup.
 The Todo application receives committed snapshots live, shares one connection
 per mounted app and reconnects under a bounded policy. Changes from another
@@ -46,7 +53,7 @@ M05c adds bounded authority operations, atomic persistence and reconstruction.
 M05d adds atomic snapshot registration, bounded SSE delivery and cancellation.
 M06 connects versioned snapshots to application state, rejects obsolete values
 and exposes connection/recovery status. M07 completes the reference application;
-M08–M09 remain pending. No deployed Worker
+M08 adds bounded, redacted observations and temporal/resource evidence; M09 remains pending. No deployed Worker
 or domain configuration is claimed.
 
 ## Project documents
@@ -66,6 +73,9 @@ or domain configuration is claimed.
 - [M05d live ownership, resource limits and acceptance](docs/m05d/acceptance.md)
 - [M06 live synchronization, protocol and acceptance](docs/m06/acceptance.md)
 - [M07 reference application and form acceptance](docs/m07/acceptance.md)
+- [M08 temporal traces and adversarial acceptance](docs/m08/acceptance.md)
+- [Read temporal traces](docs/m08/temporal-traces.md)
+- [Run the M08 trace checkpoint](docs/m08/local-development.md)
 - [Run the complete reference application](docs/m07/local-development.md)
 - [M06 two-page live synchronization checkpoint](docs/m06/local-development.md)
 - [M05d legacy transport checkpoint](docs/m05d/local-development.md)
@@ -77,11 +87,11 @@ or domain configuration is claimed.
 
 | Area | Existing implementation | Work still planned |
 |---|---|---|
-| Client | Instance-owned state/effects, captured draft revisions, pure validation, local filters, recoverable operations and targeted custom-JSX rendering | M07 acceptance review; temporal traces (M08) |
+| Client | Instance-owned state/effects, captured drafts, pure validation, local filters and targeted custom-JSX rendering with optional bounded temporal traces | M08 acceptance review; final public-surface documentation (M09) |
 | HTTP server | Owned finite Todo operations and bounded live responses through Hono/workerd and the retained Node adapter | Final runtime-support review (M09) |
-| Shared state | Configured Durable Object collection, atomic persistence/reconstruction and race-free live registration; separate in-memory Node/test histories | Broader temporal/adversarial evidence (M08) |
-| Live updates | Accepted M06 protocol, one app-owned connection, stale/duplicate protection, bounded reconnect and explicit manual recovery | Wider trace evidence (M08) |
-| Reference app/delivery | Complete Todo UI verified in two native browser contexts through both development and built local Worker; form/filter/failure/restart and explicit remount evidence | M07 acceptance; traces (M08) and documented delivery review (M09) |
+| Shared state | Configured Durable Object collection, atomic persistence/reconstruction, race-free live registration and local commit/recovery traces; separate Node/test histories | M08 acceptance review; operational limits and delivery review (M09) |
+| Live updates | Accepted M06 protocol, one app-owned connection, stale/duplicate protection, bounded reconnect and trace-disabled/enabled request/resource parity | M08 acceptance review; documented delivery review (M09) |
+| Reference app/delivery | Complete Todo UI, actual readable traces and adversarial acceptance; development/built browser failure, restart and explicit remount evidence | M08 acceptance review and documented delivery review (M09) |
 
 The intended flow is events → state → derived values → rendering, with external
 operations returning typed results to state. Rendering must not initiate network
@@ -91,8 +101,8 @@ bindings update the relevant DOM values; keyed rows retain their nodes and child
 scopes across updates, preserve focus and selection, and release ownership on removal.
 
 The recommended sequence is M01 → M05a → M02 → M03 → M04 → M05b → M05c → M05d →
-M06 → M07 → M08 → M09. M00 stays closed; M06 is accepted and merged.
-M07 was explicitly authorized from its verified merge. M08 remains a later milestone. No SSR, Hono JSX, browser router or custom CLI is required for
+M06 → M07 → M08 → M09. M00 stays closed; M07 is accepted and merged.
+M08 was explicitly authorized from its verified merge. M09 remains a later milestone. No SSR, Hono JSX, browser router or custom CLI is required for
 this completion target.
 
 ## Run the existing development application

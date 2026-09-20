@@ -17,8 +17,10 @@ M05d is [accepted/merged in PR #12](m05d/acceptance.md) at `540faec`, completing
 parent M05. M06 is accepted and merged in PR #13 at
 `36d644f529d5660506d6f2aa90e90af562d01440`; it implements
 [typed live synchronization and recovery](m06/acceptance.md). The inspected planning baseline above is historical.
-M07 reference-app completion is [implemented and locally verified; acceptance review/merge pending](m07/acceptance.md).
-M08–M09 and deployment remain pending.
+M07 reference-app completion is [accepted/merged in PR #14](m07/acceptance.md)
+at `92f25680072da22d45e815ac411abd3651d002a5`. The owner explicitly authorized
+M08 from that verified merge; its [temporal-trace implementation](m08/acceptance.md)
+is locally verified with acceptance review/merge pending. M09 and deployment remain pending.
 
 ## 1. Context and authority
 
@@ -198,6 +200,21 @@ M00 remains closed. The recommended order is:
 Retain the Node baseline until corresponding behavior has Worker acceptance evidence. Node listen/readiness/stop/port-release checks remain applicable to a supported Node adapter. Before deleting or retiring it, map its characterized failures to either a verified fix or a tested replacement, and document the support decision. Do not maintain two competing routing implementations indefinitely and do not remove tests merely to make a migration appear complete.
 
 M05a must add a compatible Workers-runtime test setup, not wait until M08. Cloudflare provides an official Vitest integration [10]. M08 adds adversarial cross-boundary evidence. Pure reducer, RxJS policy, DOM, Worker, real-transport and browser tests have distinct responsibilities; one layer does not substitute for the others.
+
+M08's opt-in trace capability records the already owned request, response and
+authority boundaries. A local test may construct the functional authority over
+actual attached SQLite and join Hono/client metadata through a trusted
+in-process diagnostic bridge. This demonstrates the implementation in workerd;
+it is not evidence that a test controlled Cloudflare's global routing or traced
+production RPC across remote instances. No public tracing headers, Worker
+bindings, environment settings or access-policy changes are needed. Native
+browser runs separately observe real HTTP/EventSource and client records.
+
+Runtime-local sequences and clocks stay separate. Committed history and explicit
+operation correlation explain causality; wall-clock sorting does not create a
+distributed total order. Trace-disabled/enabled comparisons and direct resource
+counts check that observation does not repeat effects or retain owned work. See
+[M08 acceptance](m08/acceptance.md) and [temporal traces](m08/temporal-traces.md).
 
 ## 8. Release and non-goals
 
