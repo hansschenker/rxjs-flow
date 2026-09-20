@@ -2,7 +2,7 @@
 
 The active planning document is
 [roadmap-gpt-6-astra-2026-09-15.md](roadmap-gpt-6-astra-2026-09-15.md),
-revision **rxjs-flow migration r2 — Cloudflare/Hono**, dated 2026-09-17.
+revision **rxjs-flow migration r2 — Cloudflare/Hono**, updated 2026-09-20.
 
 Read it with the [architecture contract](dataflow-architecture.md),
 [Cloudflare/Hono runtime decision](runtime-cloudflare-hono.md),
@@ -22,15 +22,17 @@ M05c is [accepted/merged in PR #11](m05c/acceptance.md) at
 The [local Hono Todo page](m05c/local-development.md) uses attached SQLite storage
 and preserves committed state across runtime restarts. The built Worker leaves
 Todo access disabled; local execution of the built artifact requires an explicit
-Wrangler command. M05d implements race-free authority registration and bounded,
-owned SSE; [acceptance review/merge is pending](m05d/acceptance.md). The
-[live checkpoint](m05d/local-development.md) exercises independent consumer
-disconnect/reconnect. M06–M09 remain pending, including the versioned public live
-protocol and Todo application integration in M06.
+Wrangler command. M05d is [accepted/merged in PR #12](m05d/acceptance.md) at
+`540faec7086bb58223c5f475db91710ac0e7389b`; parent M05 is complete. Its legacy
+[live checkpoint](m05d/local-development.md) remains available. M06 implements
+typed live synchronization and recovery from that verified merge;
+[acceptance review/merge is pending](m06/acceptance.md). The actual Todo
+application now has a [two-tab synchronization/reconnect checkpoint](m06/local-development.md).
+M07–M09 remain pending.
 
 Recommended order: M01 → M05a → M02 → M03 → M04 → M05b → M05c → M05d → M06 → M07
-→ M08 → M09. M05a establishes the platform/build path early. M05 is complete only
-when all four substeps pass; starting implementation is not implied by this revision.
+→ M08 → M09. All four M05 substeps are accepted. M06 was explicitly authorized;
+M07 does not start until M06 acceptance and its own authorization.
 
 The [unmodified r1 roadmap](archive/roadmap-rxjs-flow-migration-r1-2026-09-15.md)
 and other [archived records](archive/) preserve provenance. They are not competing

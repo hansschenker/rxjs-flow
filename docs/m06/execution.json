@@ -1,0 +1,1149 @@
+{
+  "milestone": "M06",
+  "roadmap_revision": "rxjs-flow migration r2 — Cloudflare/Hono",
+  "repository": "hansschenker/rxjs-flow",
+  "branch": "m06/live-state",
+  "starting_commit": "540faec7086bb58223c5f475db91710ac0e7389b",
+  "starting_tree": "a56c0aabfc100731faf33d493e892f967bc9450d",
+  "starting_commit_evidence": "Coordinating agent verified GitHub PR #12 merged and main matching this SHA before creating the dedicated branch. The imported application/history and attribution remain preserved.",
+  "implementation_commit": "f99ac5ddd75b5a10f47dce35410a1c6d0e6699f1",
+  "implementation_tree": "05729a272471deb825697cda16737d83500e4dcd",
+  "inspection_record": {
+    "capture": "Inspection was performed with GitHub API, git, rg/cat/sed and local source/package reads. These calls were outside the timestamped validation runner; do not infer exact timestamps or exits from this grouped account.",
+    "operations": [
+      "Verify repository identity, current branch/worktree, origin/main and merged PR #12.",
+      "Read AGENTS.md, canonical r2 roadmap/M06, architecture/runtime decision, historical M00 audit/baseline, and M05d acceptance/checkpoint.",
+      "Read shared finite/stream contracts, client state/effects/ownership, authority and Node/Worker adapters, test configurations, scripts and installed runtime APIs.",
+      "Create m06/live-state from verified current main; wait for both pristine baseline suites before implementation edits.",
+      "Independent implementation review and git diff --check; final publication commands/results recorded separately when complete."
+    ]
+  },
+  "execution_capture": {
+    "runner": "/workspace/scratch/69635aad2014/m06-run.py",
+    "invocation": "python /workspace/scratch/69635aad2014/m06-run.py LABEL /workspace/scratch/69635aad2014/rxjs-flow-recovery COMMAND [ARGUMENTS...]",
+    "command_format": "Each command below is the exact argv array passed to subprocess.run; no shell evaluation is implied.",
+    "path_prefix": "/workspace/scratch/69635aad2014/m00-node22/node_modules/node-linux-x64/bin",
+    "timestamps": "UTC timestamps captured immediately before/after the subprocess; concurrent labels may overlap.",
+    "log_capture": "Concatenated stdout followed by stderr, not a globally ordered interleaving. Raw logs remain scratch evidence; the durable ledger retains exact argv, times, exits, test totals and SHA-256 digests.",
+    "filesystem": "Commands executed in the agent workspace, not on the owner’s Dell/WSL/Windows computer."
+  },
+  "toolchain": {
+    "node": "22.22.1",
+    "npm": "11.9.0",
+    "rxjs": "7.8.2",
+    "typescript": "6.0.3",
+    "hono": "4.13.8",
+    "vite": "8.0.12",
+    "vitest": "4.1.6",
+    "wrangler": "4.133.0",
+    "cloudflare_vite_plugin": "1.54.11",
+    "cloudflare_vitest_plugin": "1.1.11",
+    "workerd": "1.20260916.1",
+    "source": "Retained pinned M05d toolchain verified by the coordinating agent; Node 22.22.1 selected through the runner PATH. final-unchanged-dependencies confirms package.json, package-lock.json, Wrangler configuration, generated declarations and CI unchanged from the starting commit.",
+    "optional_browser": {
+      "playwright": "1.62.1",
+      "chromium": "153.0.8010.0",
+      "installed_in_repository": false
+    },
+    "dependency_install": "Existing local installation reused; no fresh local npm ci is claimed. Clean installation is a separate exact-head CI gate."
+  },
+  "baseline": {
+    "evidence_kind": "Both suites were freshly executed against the clean verified starting tree. Implementation agents waited for their completion before editing.",
+    "node_dom": {
+      "label": "baseline-node-dom",
+      "files": 40,
+      "tests": 676,
+      "exit_code": 0
+    },
+    "workerd": {
+      "label": "baseline-workerd",
+      "files": 6,
+      "tests": 158,
+      "exit_code": 0
+    },
+    "total": 834
+  },
+  "commands": [
+    {
+      "label": "baseline-node-dom",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-20T01:55:23.156499+00:00",
+      "finished": "2026-09-20T01:55:29.140026+00:00",
+      "exit_code": 0,
+      "log_file": "baseline-node-dom.log",
+      "log_bytes": 7762,
+      "log_sha256": "89eaff5ade3ac5a5c9bcde6b1bcc9bb3a531e8b617963bfdea10e8d7c39d0d59",
+      "result_lines": [
+        "Test Files  40 passed (40)",
+        "Tests  676 passed (676)"
+      ]
+    },
+    {
+      "label": "baseline-workerd",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker"
+      ],
+      "started": "2026-09-20T01:55:24.526263+00:00",
+      "finished": "2026-09-20T01:55:33.847141+00:00",
+      "exit_code": 0,
+      "log_file": "baseline-workerd.log",
+      "log_bytes": 10130,
+      "log_sha256": "d621662e574911006ddbd653a4702ee02eb5baaf13b8489acef12bdf3675bc0a",
+      "result_lines": [
+        "Test Files  6 passed (6)",
+        "Tests  158 passed (158)"
+      ]
+    },
+    {
+      "label": "connection-existing",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/sse.test.ts"
+      ],
+      "started": "2026-09-20T01:59:04.159014+00:00",
+      "finished": "2026-09-20T01:59:05.666617+00:00",
+      "exit_code": 0,
+      "log_file": "connection-existing.log",
+      "log_bytes": 920,
+      "log_sha256": "bfbc22f7dc8624b04bb9b5677ebad43916c1dd7e5f7b1aa2f5b9dafef353a102",
+      "result_lines": [
+        "Test Files  1 passed (1)",
+        "Tests  12 passed (12)"
+      ]
+    },
+    {
+      "label": "browser-view-focused",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/todo.view.test.ts",
+        "src/client/todo.selectors.test.ts"
+      ],
+      "started": "2026-09-20T02:00:31.324493+00:00",
+      "finished": "2026-09-20T02:00:32.599435+00:00",
+      "exit_code": 0,
+      "log_file": "browser-view-focused.log",
+      "log_bytes": 1136,
+      "log_sha256": "08d207a7a6ca66ec0179221cd6cd8d7fb1ed967761e0c49fb635ebc7e26b80ba",
+      "result_lines": [
+        "Test Files  2 passed (2)",
+        "Tests  30 passed (30)"
+      ]
+    },
+    {
+      "label": "protocol-node-focused",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/shared/routes.test.ts",
+        "src/shared/todo-live.test.ts",
+        "src/server/todos/todo.live.test.ts",
+        "src/server/todos/todo.authority.test.ts",
+        "src/server/todos/todo.store.test.ts",
+        "src/server/todos/todo.repository.test.ts",
+        "src/server/todos/todo.effect.test.ts"
+      ],
+      "started": "2026-09-20T02:00:37.508738+00:00",
+      "finished": "2026-09-20T02:00:38.435405+00:00",
+      "exit_code": 0,
+      "log_file": "protocol-node-focused.log",
+      "log_bytes": 2193,
+      "log_sha256": "1d72a55ac3b748053432e1921f812831a9774d1956ce78f7cc48548263d9e3ab",
+      "result_lines": [
+        "Test Files  7 passed (7)",
+        "Tests  126 passed (126)"
+      ]
+    },
+    {
+      "label": "state-focused",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/todo.live-state.test.ts",
+        "src/client/todo.state.test.ts",
+        "src/client/todo.model.test.ts",
+        "src/client/todo.intents.test.ts",
+        "src/client/todo.effects.test.ts"
+      ],
+      "started": "2026-09-20T02:01:45.817218+00:00",
+      "finished": "2026-09-20T02:01:47.165862+00:00",
+      "exit_code": 0,
+      "log_file": "state-focused.log",
+      "log_bytes": 1759,
+      "log_sha256": "070f451ac62320475a280e73ae7f312b5130520ef192d280a8ea66562c404bb2",
+      "result_lines": [
+        "Test Files  5 passed (5)",
+        "Tests  140 passed (140)"
+      ]
+    },
+    {
+      "label": "protocol-worker-focused",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker",
+        "--",
+        "src/worker/todo-versioned-live.test.ts",
+        "src/worker/todo-live.test.ts",
+        "src/worker/todo-authority.test.ts"
+      ],
+      "started": "2026-09-20T02:01:58.483391+00:00",
+      "finished": "2026-09-20T02:02:03.402975+00:00",
+      "exit_code": 0,
+      "log_file": "protocol-worker-focused.log",
+      "log_bytes": 11049,
+      "log_sha256": "73860900d1a3372cdd2d8bec21f1c404f5b4f1bfc148aa04b79da8f10d76f386",
+      "result_lines": [
+        "Test Files  3 passed (3)",
+        "Tests  46 passed (46)"
+      ]
+    },
+    {
+      "label": "protocol-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:tests"
+      ],
+      "started": "2026-09-20T02:02:04.308663+00:00",
+      "finished": "2026-09-20T02:02:08.337756+00:00",
+      "exit_code": 2,
+      "log_file": "protocol-typecheck.log",
+      "log_bytes": 21421,
+      "log_sha256": "372beb983e60e8b985ac57a42c7f19e016a8adf7b03870fd116b3a496876c4fc",
+      "result_lines": []
+    },
+    {
+      "label": "connection-focused",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/sse.test.ts",
+        "src/client/live-connection.test.ts"
+      ],
+      "started": "2026-09-20T02:02:04.461307+00:00",
+      "finished": "2026-09-20T02:02:05.829408+00:00",
+      "exit_code": 0,
+      "log_file": "connection-focused.log",
+      "log_bytes": 1131,
+      "log_sha256": "4cabb70edb346d7df70efc09b10a8efde81d6adf864951410c90740455f5d9a5",
+      "result_lines": [
+        "Test Files  2 passed (2)",
+        "Tests  39 passed (39)"
+      ]
+    },
+    {
+      "label": "protocol-typecheck-2",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:tests"
+      ],
+      "started": "2026-09-20T02:02:39.620930+00:00",
+      "finished": "2026-09-20T02:02:43.563237+00:00",
+      "exit_code": 2,
+      "log_file": "protocol-typecheck-2.log",
+      "log_bytes": 922,
+      "log_sha256": "63c946cc5d98cedfbdb62882487810a0cf6ef6a9b91d0affd82ac9d465268c75",
+      "result_lines": []
+    },
+    {
+      "label": "connection-iterative",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/sse.test.ts",
+        "src/client/live-connection.test.ts"
+      ],
+      "started": "2026-09-20T02:03:31.232166+00:00",
+      "finished": "2026-09-20T02:03:32.730508+00:00",
+      "exit_code": 0,
+      "log_file": "connection-iterative.log",
+      "log_bytes": 1131,
+      "log_sha256": "1b1fb45fe98dd443f6d7df25a893e749eeb976f105897cddc7d717f2f1e4a85f",
+      "result_lines": [
+        "Test Files  2 passed (2)",
+        "Tests  39 passed (39)"
+      ]
+    },
+    {
+      "label": "root-client-focused",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/live-app.test.ts",
+        "src/client/api.test.ts",
+        "src/client/todo.service.test.ts",
+        "src/client/app.test.ts",
+        "src/client/dom-app.test.ts"
+      ],
+      "started": "2026-09-20T02:03:31.533757+00:00",
+      "finished": "2026-09-20T02:03:33.422125+00:00",
+      "exit_code": 1,
+      "log_file": "root-client-focused.log",
+      "log_bytes": 2529,
+      "log_sha256": "64257ea4fa7689bde105897dc74f2bd4b67c9713408bba94b14a6aaf222e7f9f",
+      "result_lines": [
+        "Test Files  1 failed | 4 passed (5)",
+        "Tests  1 failed | 95 passed (96)"
+      ]
+    },
+    {
+      "label": "integrated-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started": "2026-09-20T02:03:32.845528+00:00",
+      "finished": "2026-09-20T02:04:20.104905+00:00",
+      "exit_code": 2,
+      "log_file": "integrated-typecheck.log",
+      "log_bytes": 4486,
+      "log_sha256": "2c0daf1225d4e6f3db572c55857bd1cd61188425a09995effed1567025c656bb",
+      "result_lines": []
+    },
+    {
+      "label": "browser-build",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "build:worker"
+      ],
+      "started": "2026-09-20T02:03:41.194445+00:00",
+      "finished": "2026-09-20T02:03:42.924420+00:00",
+      "exit_code": 0,
+      "log_file": "browser-build.log",
+      "log_bytes": 2061,
+      "log_sha256": "b8c535a0a235aaabcbe94436a2f9b1e9cbcfc53548145a37a7b38fc732fc8d11",
+      "result_lines": []
+    },
+    {
+      "label": "browser-live-first",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "env",
+        "PLAYWRIGHT_MODULE_PATH=/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+        "CHROMIUM_EXECUTABLE_PATH=/workspace/scratch/69635aad2014/m05d-browser-fallback/chromium",
+        "M06_CHROMIUM_ARGS=[\"--no-sandbox\",\"--disable-dev-shm-usage\",\"--single-process\",\"--no-zygote\",\"--use-gl=angle\",\"--use-angle=swiftshader\",\"--enable-unsafe-swiftshader\"]",
+        "M06_SCREENSHOT=/workspace/scratch/69635aad2014/m06-evidence/two-browser-app.png",
+        "node",
+        "scripts/m06-browser-checkpoint.mjs"
+      ],
+      "started": "2026-09-20T02:03:51.704260+00:00",
+      "finished": "2026-09-20T02:04:04.342222+00:00",
+      "exit_code": 1,
+      "log_file": "browser-live-first.log",
+      "log_bytes": 5175,
+      "log_sha256": "080be7cc41f2a4b442ac97ade905f32389ab2024933b571dda73950bec601ceb",
+      "result_lines": []
+    },
+    {
+      "label": "connection-stress",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/sse.test.ts",
+        "src/client/live-connection.test.ts"
+      ],
+      "started": "2026-09-20T02:04:07.613884+00:00",
+      "finished": "2026-09-20T02:04:09.109712+00:00",
+      "exit_code": 0,
+      "log_file": "connection-stress.log",
+      "log_bytes": 1131,
+      "log_sha256": "43ee2a587cbec90c9e1913fa4d5f01c270994f1ef00d335993db5b227fc527b3",
+      "result_lines": [
+        "Test Files  2 passed (2)",
+        "Tests  40 passed (40)"
+      ]
+    },
+    {
+      "label": "connection-client-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:client"
+      ],
+      "started": "2026-09-20T02:04:17.121249+00:00",
+      "finished": "2026-09-20T02:04:18.802887+00:00",
+      "exit_code": 0,
+      "log_file": "connection-client-types.log",
+      "log_bytes": 340,
+      "log_sha256": "fd2cd25473be3900c72d6525225a860027341ddded986f7223e8095f370befc3",
+      "result_lines": []
+    },
+    {
+      "label": "root-client-green",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/live-app.test.ts",
+        "src/client/api.test.ts",
+        "src/client/todo.service.test.ts",
+        "src/client/app.test.ts",
+        "src/client/dom-app.test.ts"
+      ],
+      "started": "2026-09-20T02:04:26.389121+00:00",
+      "finished": "2026-09-20T02:04:28.004441+00:00",
+      "exit_code": 0,
+      "log_file": "root-client-green.log",
+      "log_bytes": 1732,
+      "log_sha256": "a7c44460e03530e5e9a873a2969e38295f00caaf9dc54f78d2196270998ec87a",
+      "result_lines": [
+        "Test Files  5 passed (5)",
+        "Tests  97 passed (97)"
+      ]
+    },
+    {
+      "label": "connection-test-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:tests"
+      ],
+      "started": "2026-09-20T02:04:39.870098+00:00",
+      "finished": "2026-09-20T02:04:43.375235+00:00",
+      "exit_code": 2,
+      "log_file": "connection-test-types.log",
+      "log_bytes": 922,
+      "log_sha256": "aa155a1431ddbb2b5fa80407b742038fbf410c528ca8ccc9deed5d63c0996f64",
+      "result_lines": []
+    },
+    {
+      "label": "browser-live-offline-reconnect",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "env",
+        "PLAYWRIGHT_MODULE_PATH=/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+        "CHROMIUM_EXECUTABLE_PATH=/workspace/scratch/69635aad2014/m05d-browser-fallback/chromium",
+        "M06_CHROMIUM_ARGS=[\"--no-sandbox\",\"--disable-dev-shm-usage\",\"--single-process\",\"--no-zygote\",\"--use-gl=angle\",\"--use-angle=swiftshader\",\"--enable-unsafe-swiftshader\"]",
+        "M06_SCREENSHOT=/workspace/scratch/69635aad2014/m06-evidence/two-browser-app.png",
+        "node",
+        "scripts/m06-browser-checkpoint.mjs"
+      ],
+      "started": "2026-09-20T02:04:54.021307+00:00",
+      "finished": "2026-09-20T02:04:58.795855+00:00",
+      "exit_code": 1,
+      "log_file": "browser-live-offline-reconnect.log",
+      "log_bytes": 11242,
+      "log_sha256": "47720dcf251b740491fd6420c05422bf5cf1a44e52432c1428215ca2540ac762",
+      "result_lines": []
+    },
+    {
+      "label": "browser-view-final",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/todo.view.test.ts",
+        "src/client/todo.selectors.test.ts"
+      ],
+      "started": "2026-09-20T02:05:05.468274+00:00",
+      "finished": "2026-09-20T02:05:06.675733+00:00",
+      "exit_code": 0,
+      "log_file": "browser-view-final.log",
+      "log_bytes": 1136,
+      "log_sha256": "c8c2987156bc5db162cb9faa882c72de95fc6ba3b91783dc652529a909c6fa23",
+      "result_lines": [
+        "Test Files  2 passed (2)",
+        "Tests  30 passed (30)"
+      ]
+    },
+    {
+      "label": "browser-live-final",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "env",
+        "PLAYWRIGHT_MODULE_PATH=/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+        "CHROMIUM_EXECUTABLE_PATH=/workspace/scratch/69635aad2014/m05d-browser-fallback/chromium",
+        "M06_CHROMIUM_ARGS=[\"--no-sandbox\",\"--disable-dev-shm-usage\",\"--single-process\",\"--no-zygote\",\"--use-gl=angle\",\"--use-angle=swiftshader\",\"--enable-unsafe-swiftshader\"]",
+        "M06_SCREENSHOT=/workspace/scratch/69635aad2014/m06-evidence/two-browser-app.png",
+        "node",
+        "scripts/m06-browser-checkpoint.mjs"
+      ],
+      "started": "2026-09-20T02:05:45.377575+00:00",
+      "finished": "2026-09-20T02:05:50.209583+00:00",
+      "exit_code": 0,
+      "log_file": "browser-live-final.log",
+      "log_bytes": 3712,
+      "log_sha256": "4b5705a4312e3d217d9b349fde18f5a28781b19229bb94ac66bbe77360c529ef",
+      "result_lines": []
+    },
+    {
+      "label": "review-model-workerd",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker",
+        "--",
+        "src/worker/todo-model-live.test.ts"
+      ],
+      "started": "2026-09-20T02:05:50.377149+00:00",
+      "finished": "2026-09-20T02:05:55.372550+00:00",
+      "exit_code": 0,
+      "log_file": "review-model-workerd.log",
+      "log_bytes": 3518,
+      "log_sha256": "c78a08bc97182e8346a086db63a91d23d977cf3aeae250527d694234e2269276",
+      "result_lines": [
+        "Test Files  1 passed (1)",
+        "Tests  3 passed (3)"
+      ]
+    },
+    {
+      "label": "protocol-node-focused-2",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/shared/routes.test.ts",
+        "src/shared/todo-live.test.ts",
+        "src/server/todos/todo.live.test.ts",
+        "src/server/todos/todo.authority.test.ts",
+        "src/server/todos/todo.store.test.ts",
+        "src/server/todos/todo.repository.test.ts",
+        "src/server/todos/todo.effect.test.ts"
+      ],
+      "started": "2026-09-20T02:05:53.282953+00:00",
+      "finished": "2026-09-20T02:05:54.225718+00:00",
+      "exit_code": 0,
+      "log_file": "protocol-node-focused-2.log",
+      "log_bytes": 2193,
+      "log_sha256": "b283672cd1db24deb902e49861d6fff07cf116b1a24e1d11fb54e1dfa92a6ddf",
+      "result_lines": [
+        "Test Files  7 passed (7)",
+        "Tests  130 passed (130)"
+      ]
+    },
+    {
+      "label": "protocol-typecheck-3",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:tests"
+      ],
+      "started": "2026-09-20T02:05:54.549307+00:00",
+      "finished": "2026-09-20T02:05:58.137096+00:00",
+      "exit_code": 2,
+      "log_file": "protocol-typecheck-3.log",
+      "log_bytes": 709,
+      "log_sha256": "678e191ef5864e130c668460f62b7633072e0a227ea75e4d0f67ef9e7e264ef4",
+      "result_lines": []
+    },
+    {
+      "label": "protocol-typecheck-4",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:tests"
+      ],
+      "started": "2026-09-20T02:06:22.894259+00:00",
+      "finished": "2026-09-20T02:06:26.540002+00:00",
+      "exit_code": 2,
+      "log_file": "protocol-typecheck-4.log",
+      "log_bytes": 482,
+      "log_sha256": "a12a48b4411d637e5dd9921ebddbf2290c924e0c3a0cb74aff68a92c6150a9c7",
+      "result_lines": []
+    },
+    {
+      "label": "protocol-typecheck-final",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:tests"
+      ],
+      "started": "2026-09-20T02:07:04.493820+00:00",
+      "finished": "2026-09-20T02:07:10.176627+00:00",
+      "exit_code": 2,
+      "log_file": "protocol-typecheck-final.log",
+      "log_bytes": 806,
+      "log_sha256": "4333ead8f39d012192c3035084e344416f43abd6f675fbb350faec60b99dee0c",
+      "result_lines": []
+    },
+    {
+      "label": "review-worker-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "tsconfig.worker-test.json"
+      ],
+      "started": "2026-09-20T02:07:33.534136+00:00",
+      "finished": "2026-09-20T02:07:35.658800+00:00",
+      "exit_code": 2,
+      "log_file": "review-worker-typecheck.log",
+      "log_bytes": 319,
+      "log_sha256": "33a392ecb80707ed3cd6e4ffcdf3fd289cd792182377b8aa65316dcd44bd5292",
+      "result_lines": []
+    },
+    {
+      "label": "final-workerd",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker"
+      ],
+      "started": "2026-09-20T02:10:00.036035+00:00",
+      "finished": "2026-09-20T02:10:11.228144+00:00",
+      "exit_code": 0,
+      "log_file": "final-workerd.log",
+      "log_bytes": 14091,
+      "log_sha256": "8a32c833117fe7e6ecdd1e0ad31b28018969e0597bf87e939e02fcfd9da2a233",
+      "result_lines": [
+        "Test Files  8 passed (8)",
+        "Tests  165 passed (165)"
+      ]
+    },
+    {
+      "label": "final-node-dom",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-20T02:10:00.036038+00:00",
+      "finished": "2026-09-20T02:10:16.938660+00:00",
+      "exit_code": 1,
+      "log_file": "final-node-dom.log",
+      "log_bytes": 12611,
+      "log_sha256": "f5712a9e6a8e732cfff3d0bfb1936ec72514e5fd528b82c5f62f0f0e671cf7bf",
+      "result_lines": [
+        "Test Files  2 failed | 44 passed (46)",
+        "Tests  4 failed | 762 passed (766)"
+      ]
+    },
+    {
+      "label": "connection-cross-runtime-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:tests"
+      ],
+      "started": "2026-09-20T02:10:09.971864+00:00",
+      "finished": "2026-09-20T02:10:15.980236+00:00",
+      "exit_code": 2,
+      "log_file": "connection-cross-runtime-types.log",
+      "log_bytes": 1275,
+      "log_sha256": "3f71a424953a80ee7a91108e3da32fbc005afe244a58b738e6240febbb9846d6",
+      "result_lines": []
+    },
+    {
+      "label": "final-build",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "build:worker"
+      ],
+      "started": "2026-09-20T02:10:23.547647+00:00",
+      "finished": "2026-09-20T02:10:24.959388+00:00",
+      "exit_code": 0,
+      "log_file": "final-build.log",
+      "log_bytes": 2061,
+      "log_sha256": "aaec03e3893eb0dad1f5933ee5c4f284e2d74d6f00de838103c06344f08a05aa",
+      "result_lines": []
+    },
+    {
+      "label": "connection-cross-runtime-types-final",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:tests"
+      ],
+      "started": "2026-09-20T02:10:48.400897+00:00",
+      "finished": "2026-09-20T02:10:54.078612+00:00",
+      "exit_code": 0,
+      "log_file": "connection-cross-runtime-types-final.log",
+      "log_bytes": 373,
+      "log_sha256": "699c3f15cc8c3b9ceac638ae61028bceb4da4a256b45e4860260f7edee1d0e91",
+      "result_lines": []
+    },
+    {
+      "label": "final-smoke-preview",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "smoke:worker"
+      ],
+      "started": "2026-09-20T02:10:50.286390+00:00",
+      "finished": "2026-09-20T02:10:52.058353+00:00",
+      "exit_code": 0,
+      "log_file": "final-smoke-preview.log",
+      "log_bytes": 1681,
+      "log_sha256": "5641a7791b5f57f79eb9fc6acab4fbff471b91d1d682d47689f3d3585847685f",
+      "result_lines": []
+    },
+    {
+      "label": "final-smoke-dev",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "smoke:worker",
+        "--",
+        "--dev"
+      ],
+      "started": "2026-09-20T02:11:07.089950+00:00",
+      "finished": "2026-09-20T02:11:11.217160+00:00",
+      "exit_code": 0,
+      "log_file": "final-smoke-dev.log",
+      "log_bytes": 1743,
+      "log_sha256": "75f98371c50763e14c9c864abd1019375ff80381eac42dac66cc17af915fcb9d",
+      "result_lines": []
+    },
+    {
+      "label": "final-node-dom-2",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-20T02:11:08.417609+00:00",
+      "finished": "2026-09-20T02:11:13.857674+00:00",
+      "exit_code": 0,
+      "log_file": "final-node-dom-2.log",
+      "log_bytes": 8818,
+      "log_sha256": "bb0f000f6517bf4b43d70a3f651fb2dcd8fde7c3d54f341e86b556854cb963b2",
+      "result_lines": [
+        "Test Files  46 passed (46)",
+        "Tests  766 passed (766)"
+      ]
+    },
+    {
+      "label": "final-durable-restart",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "scripts/m05c-checkpoint.mjs",
+        "--preview"
+      ],
+      "started": "2026-09-20T02:11:16.759364+00:00",
+      "finished": "2026-09-20T02:11:19.523791+00:00",
+      "exit_code": 0,
+      "log_file": "final-durable-restart.log",
+      "log_bytes": 1876,
+      "log_sha256": "2e58edee6fa8f3c2195e9fed4c8c18bb09312677d9f9fe1e52e65f5d012be577",
+      "result_lines": []
+    },
+    {
+      "label": "final-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started": "2026-09-20T02:11:25.574215+00:00",
+      "finished": "2026-09-20T02:11:49.327848+00:00",
+      "exit_code": 0,
+      "log_file": "final-typecheck.log",
+      "log_bytes": 3937,
+      "log_sha256": "69882d3f3171cf01f53e1723f83f461ee7c20dad31da34b0bb56ae4a9f2d26ac",
+      "result_lines": []
+    },
+    {
+      "label": "final-legacy-live-dev",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "scripts/m05d-checkpoint.mjs"
+      ],
+      "started": "2026-09-20T02:11:27.685111+00:00",
+      "finished": "2026-09-20T02:11:32.999821+00:00",
+      "exit_code": 0,
+      "log_file": "final-legacy-live-dev.log",
+      "log_bytes": 2308,
+      "log_sha256": "cce138d619f9458b67dc9276a158c454b1933415aed7fc2b482efb02da162e5e",
+      "result_lines": []
+    },
+    {
+      "label": "final-legacy-live-built",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "scripts/m05d-checkpoint.mjs",
+        "--preview"
+      ],
+      "started": "2026-09-20T02:11:42.741361+00:00",
+      "finished": "2026-09-20T02:11:45.814668+00:00",
+      "exit_code": 0,
+      "log_file": "final-legacy-live-built.log",
+      "log_bytes": 2326,
+      "log_sha256": "d801103ace8de0cb9a188576d7fd5be3fec06e56725e04a8ddf3b2fe2e2adecb",
+      "result_lines": []
+    },
+    {
+      "label": "final-generated-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "cf:typecheck"
+      ],
+      "started": "2026-09-20T02:12:13.442354+00:00",
+      "finished": "2026-09-20T02:12:23.584757+00:00",
+      "exit_code": 0,
+      "log_file": "final-generated-types.log",
+      "log_bytes": 1036,
+      "log_sha256": "ed6e6bcb40af59160d72e1b2044bc77b7ec4a058893be8b09964009ac80de44d",
+      "result_lines": []
+    },
+    {
+      "label": "final-unchanged-dependencies",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "540faec7086bb58223c5f475db91710ac0e7389b",
+        "--",
+        "package.json",
+        "package-lock.json",
+        "wrangler.jsonc",
+        "worker-configuration.d.ts",
+        ".github/workflows/ci.yml"
+      ],
+      "started": "2026-09-20T02:12:14.708623+00:00",
+      "finished": "2026-09-20T02:12:14.712909+00:00",
+      "exit_code": 0,
+      "log_file": "final-unchanged-dependencies.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_lines": []
+    },
+    {
+      "label": "stage-implementation",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "git",
+        "add",
+        "src",
+        "index.html",
+        "scripts/m06-browser-checkpoint.mjs"
+      ],
+      "started": "2026-09-20T02:12:15.082341+00:00",
+      "finished": "2026-09-20T02:12:15.094551+00:00",
+      "exit_code": 0,
+      "log_file": "stage-implementation.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_lines": []
+    },
+    {
+      "label": "fetch-implementation",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "git",
+        "fetch",
+        "origin",
+        "m06/live-state"
+      ],
+      "started": "2026-09-20T02:13:09.007253+00:00",
+      "finished": "2026-09-20T02:13:20.138754+00:00",
+      "exit_code": 0,
+      "log_file": "fetch-implementation.log",
+      "log_bytes": 158,
+      "log_sha256": "48a1ddaca16c450ad52066930b98cbfe91a77b3af325eb288ac447d84a354e80",
+      "result_lines": []
+    },
+    {
+      "label": "align-implementation",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "python",
+        "-c",
+        "import subprocess; g=lambda *a: subprocess.check_output([\"git\",*a],text=True).strip(); sha=\"f99ac5ddd75b5a10f47dce35410a1c6d0e6699f1\"; assert g(\"rev-parse\",\"HEAD\")==\"540faec7086bb58223c5f475db91710ac0e7389b\"; assert g(\"write-tree\")==g(\"rev-parse\",sha+\"^{tree}\")==\"05729a272471deb825697cda16737d83500e4dcd\"; subprocess.run([\"git\",\"reset\",\"--soft\",sha],check=True); print(g(\"rev-parse\",\"HEAD\"))"
+      ],
+      "started": "2026-09-20T02:13:33.439052+00:00",
+      "finished": "2026-09-20T02:13:33.479698+00:00",
+      "exit_code": 0,
+      "log_file": "align-implementation.log",
+      "log_bytes": 41,
+      "log_sha256": "57fffdaadd05880d2aad0d386f986c06fb63194c0ac7f36c7e5d77a5cc05698d",
+      "result_lines": []
+    },
+    {
+      "label": "final-diff-check",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "started": "2026-09-20T02:15:40.341727+00:00",
+      "finished": "2026-09-20T02:15:40.348470+00:00",
+      "exit_code": 0,
+      "log_file": "final-diff-check.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_lines": []
+    }
+  ],
+  "intermediate_failure_dispositions": [
+    {
+      "labels": [
+        "protocol-typecheck"
+      ],
+      "cause": "Initial discriminated finite/live route types excluded broader existing RouteContract generic instantiations used by route helpers and documented examples.",
+      "resolution": "Preserved finite compatibility and inference while explicitly excluding stream routes from finite client construction.",
+      "verified_by": [
+        "final-typecheck",
+        "final-node-dom-2"
+      ]
+    },
+    {
+      "labels": [
+        "integrated-typecheck",
+        "connection-test-types",
+        "protocol-typecheck-2"
+      ],
+      "cause": "Parallel integration exposed a finite-client arity assertion, an untyped test error callback and an incomplete HttpRequest test fixture missing signal/requestContext.",
+      "resolution": "Corrected fixture typing and explicit finite call arguments; no behavior assertion removed.",
+      "verified_by": [
+        "final-typecheck",
+        "final-node-dom-2"
+      ]
+    },
+    {
+      "labels": [
+        "protocol-typecheck-3",
+        "protocol-typecheck-4"
+      ],
+      "cause": "The reentrant Node publication Subscriber initially omitted required observer terminal handlers, then had an untyped error parameter.",
+      "resolution": "Provide complete observer terminal handling and unknown error typing.",
+      "verified_by": [
+        "final-typecheck",
+        "protocol-node-focused-2",
+        "final-node-dom-2"
+      ]
+    },
+    {
+      "labels": [
+        "protocol-typecheck-final",
+        "review-worker-typecheck",
+        "connection-cross-runtime-types"
+      ],
+      "cause": "Importing real client connection code into workerd tests exposed DOM/Cloudflare MessageEvent generic and EventSource listener variance differences; one review fixture also had an unused TodoCollection import.",
+      "resolution": "Use a narrow structural SSE message contract compatible with both environments, retain explicit unknown decoding, and remove the unused import. No runtime behavior was changed for the typing adaptation.",
+      "verified_by": [
+        "connection-cross-runtime-types-final",
+        "final-typecheck",
+        "final-workerd"
+      ]
+    },
+    {
+      "labels": [
+        "root-client-focused"
+      ],
+      "cause": "An M01 finite-request cancellation fixture used the new default live-capable service, so its expected finite fetch was no longer constructed.",
+      "resolution": "The finite compatibility fixture explicitly omits live capability; its real fetch cancellation assertion remains. Actual mounted app coverage separately verifies live ownership.",
+      "verified_by": [
+        "root-client-green",
+        "final-node-dom-2"
+      ]
+    },
+    {
+      "labels": [
+        "final-node-dom"
+      ],
+      "cause": "The first full run passed 762 tests and failed four older fixtures: three M03 finite HTTP app tests implicitly selected the new live default, and an inert-import mock omitted the new live$ export.",
+      "resolution": "Finite fixtures explicitly select retained HTTP mode, preserving existing request/error/cancellation assertions. The import mock includes live$ and asserts zero live construction on import.",
+      "verified_by": [
+        "final-node-dom-2",
+        "final-typecheck"
+      ]
+    },
+    {
+      "labels": [
+        "browser-live-first"
+      ],
+      "cause": "Chromium offline emulation did not terminate already-open native EventSource requests, so waiting for a stale state timed out.",
+      "resolution": "The offline scenario now requests Reconnect while offline, proving failed replacement transport and automatic recovery. Full runtime stop separately proves spontaneous established-stream interruption.",
+      "verified_by": [
+        "browser-live-final"
+      ]
+    },
+    {
+      "labels": [
+        "browser-live-offline-reconnect"
+      ],
+      "cause": "The scenario reached recovery but parallel browser-context shutdown conflicted with the supplied scratch Chromium single-process mode.",
+      "resolution": "Adjusted checkpoint context cleanup for that environment; final pages/contexts and browser close successfully.",
+      "verified_by": [
+        "browser-live-final"
+      ]
+    }
+  ],
+  "final_verification": {
+    "status": "All local final gates passed; M06 acceptance review/merge pending.",
+    "node_dom": {
+      "label": "final-node-dom-2",
+      "tests": 766,
+      "files": 46,
+      "exit_code": 0
+    },
+    "workerd": {
+      "label": "final-workerd",
+      "tests": 165,
+      "files": 8,
+      "exit_code": 0
+    },
+    "total_tests": 931,
+    "increase_over_pristine_baseline": 97,
+    "gates": {
+      "final-typecheck": 0,
+      "final-generated-types": 0,
+      "final-build": 0,
+      "final-unchanged-dependencies": 0,
+      "final-smoke-dev": 0,
+      "final-smoke-preview": 0,
+      "final-durable-restart": 0,
+      "final-legacy-live-dev": 0,
+      "final-legacy-live-built": 0,
+      "browser-live-final": 0
+    },
+    "interpretation": "Focused tests supplement the complete suites and are not added again to their count. Browser/HTTP gates are separate from unit/runtime test totals.",
+    "diagnostics": "Intentional cancellation and forced authority-failure probes emit workerd diagnostics already seen in the pristine M05d baseline; local proxy/toolchain warnings remain visible. This does not contradict zero uncaught errors in the separate browser checkpoint."
+  },
+  "browser_checkpoint": {
+    "label": "browser-live-final",
+    "script": "scripts/m06-browser-checkpoint.mjs",
+    "target": "Built Todo application and built local Worker through local Wrangler with isolated temporary SQLite persistence.",
+    "native_transport": "Two independent browser contexts; native EventSource payloads passively observed through DevTools, without transport/state replacement.",
+    "mutation_requests": 6,
+    "accepted_writes": 6,
+    "methods": [
+      "POST",
+      "POST",
+      "PUT",
+      "DELETE",
+      "POST",
+      "POST"
+    ],
+    "finite_list_requests": 0,
+    "duplicate_rows": 0,
+    "stream_requests": {
+      "a": 5,
+      "b": 2
+    },
+    "received_snapshots": {
+      "a": 9,
+      "b": 8
+    },
+    "uncaught_browser_errors": 0,
+    "keyed_rows_and_draft_focus_selection_preserved": true,
+    "manual_reconnect_isolated": true,
+    "offline_replacement_attempt_and_automatic_recovery": true,
+    "full_runtime_restart_preserves_history": true,
+    "final_pages_and_contexts_closed": true,
+    "offline_limit": "Chromium setOffline(true) did not terminate already-open EventSource requests; the offline test explicitly selects Reconnect to make a new failing request. Full process shutdown separately proves spontaneous active-stream interruption.",
+    "screenshot_review": "Browser agent inspected the captured page for readable layout/status/controls. Screenshot is optional scratch verification, not a required checked-in artifact.",
+    "normal_ci_gate": false
+  },
+  "policies": {
+    "authoritative_collection": "Only accepted committed snapshots replace live collection content; HTTP mutation replies settle pending operation facts.",
+    "public_protocol": {
+      "route": "/todos/live",
+      "event": "todo-snapshot",
+      "schema_version": 1,
+      "fields": [
+        "schemaVersion",
+        "collectionId",
+        "stateGeneration",
+        "revision",
+        "todos"
+      ]
+    },
+    "legacy_protocol": {
+      "route": "/todos/stream",
+      "event": "todos",
+      "payload": "Todo[]"
+    },
+    "identity": "Pin collection, compare revisions only within the same generation, ignore superseded connection callbacks. Only the first valid snapshot on a new current connection can establish changed history.",
+    "regressions": "Equal first revision confirms remembered content without replacement. Older first revision or mid-connection changed generation requires manual recovery; later duplicates/older revisions are ignored.",
+    "reconnect_owner": "RxJS; EventSource closes immediately on failure before a scheduled replacement attempt.",
+    "retry_delays_ms": [
+      1000,
+      2000,
+      4000,
+      8000
+    ],
+    "first_snapshot_deadline_ms": 10000,
+    "failure_budget_reset": "Validated snapshot, not connecting status.",
+    "manual_recovery": "Protocol failure, exhausted retries, or explicit user reconnect.",
+    "idle_partition_detection": "No heartbeat or fixed detection bound after first snapshot; retry begins when EventSource reports transport failure or the user reconnects.",
+    "dispose": "Close current transport, remove listeners and cancel pending retry/deadline/recovery ownership.",
+    "node_memory": "Independent factory/new reset creates new generation and revision 0. Reset interrupts versioned streams; legacy streams remain active. Ordinary durable reconstruction preserves stored history.",
+    "uncertainty": "Cancellation is not rollback; a lost reply may follow a committed mutation. No automatic mutation replay, event log or exactly-once claim."
+  },
+  "publication": {
+    "status": "Implementation published on dedicated branch; evidence/documentation commit and PR follow. Exact review-head CI is recorded in the PR after verification.",
+    "base_reverified_before_publication": "540faec7086bb58223c5f475db91710ac0e7389b",
+    "implementation_commit": "f99ac5ddd75b5a10f47dce35410a1c6d0e6699f1",
+    "implementation_tree": "05729a272471deb825697cda16737d83500e4dcd",
+    "implementation_file_count": 36,
+    "actions": [
+      "Stage only implementation/runtime/tests and optional browser probe; compute local git write-tree.",
+      "GitHub create_tree under hansschenker/rxjs-flow from verified base tree; returned tree exactly equals local 05729a272471deb825697cda16737d83500e4dcd.",
+      "GitHub create_commit with parent 540faec7086bb58223c5f475db91710ac0e7389b returned f99ac5ddd75b5a10f47dce35410a1c6d0e6699f1.",
+      "GitHub create_branch m06/live-state at the implementation commit; no existing branch rewritten.",
+      "Fetch published branch; compare index and remote implementation trees before guarded soft reset. Document edits are preserved unstaged.",
+      "A following evidence/documentation commit will be published to the same branch, then a dedicated PR opened; final exact-head CI evidence belongs in the PR description."
+    ],
+    "api_capture": "API operations are the coordinating agent’s verified publication record, not subprocess-runner commands; exact API timestamps were not captured here.",
+    "merge_performed": false,
+    "deployment_performed": false
+  },
+  "limitations": [
+    "Local workerd, local real HTTP and browser checks are distinct from remote deployment/global scheduler evidence.",
+    "Production Todo access remains disabled; no authentication/release policy is added.",
+    "Application SSE budgets do not bound platform, socket or browser transport buffers.",
+    "Optional browser tooling stays outside repository dependencies and normal CI.",
+    "M07–M09 remain pending and are not automatically authorized.",
+    "Git changes do not automatically update the ChatGPT Project reference copy."
+  ],
+  "blockers": []
+}

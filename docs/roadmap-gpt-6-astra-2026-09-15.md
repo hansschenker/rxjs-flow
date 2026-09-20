@@ -1,6 +1,6 @@
 # RxJS-Flow: dataflow implementation roadmap
 
-Updated: 2026-09-18. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**. Filename retained: `roadmap-gpt-6-astra-2026-09-15.md`.
+Updated: 2026-09-20. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**. Filename retained: `roadmap-gpt-6-astra-2026-09-15.md`.
 
 **ChatGPT Project:** `rxjs-flow`  
 **Development repository:** `hansschenker/rxjs-flow`  
@@ -8,7 +8,7 @@ Updated: 2026-09-18. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**. F
 **Original audited source baseline:** `cbc91eefbccdeaf17221d06c75bdd237fe5e5499` on the source repository's `main`.  
 **Inspected destination baseline for this revision:** `c9197b68591e390a0a3add4667e5dd23717d6b6e` on `rxjs-flow/main`.
 
-**Implementation status, 2026-09-18:** M00 is accepted and closed by merged PR #2 at the destination baseline above. M01 is accepted/merged in PR #5 at `188f21f`. M05a is accepted/merged in PR #6 at `eeb8d29`. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`. M05b is [accepted/merged in PR #10](m05b/acceptance.md) at `1cfbaeca0cede3a08c90631e16cf6bdf2fa750c8`. M05c is [accepted/merged in PR #11](m05c/acceptance.md) at `d5500da407611e7856e9e67481a08e15e530aece`. Its [local Todo checkpoint](m05c/local-development.md) uses a configured Durable Object collection with attached SQLite storage, bounded admission, atomic state/metadata persistence and restart reconstruction. The built configuration leaves Todo access disabled; an explicit local Wrangler command is available. M05d implements bounded, owned SSE with a race-free authority handoff; [acceptance review/merge is pending](m05d/acceptance.md). Its [live checkpoint](m05d/local-development.md) demonstrates independent consumers and reconnect. M06–M09 remain pending, including the versioned live protocol and Todo application integration in M06. The retained Node application and independent test stores remain in memory. The ChatGPT Project reference copy remains separately unverified.
+**Implementation status, 2026-09-20:** M00 is accepted and closed by merged PR #2 at the destination baseline above. M01 is accepted/merged in PR #5 at `188f21f`. M05a is accepted/merged in PR #6 at `eeb8d29`. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`. M05b is [accepted/merged in PR #10](m05b/acceptance.md) at `1cfbaeca0cede3a08c90631e16cf6bdf2fa750c8`. M05c is [accepted/merged in PR #11](m05c/acceptance.md) at `d5500da407611e7856e9e67481a08e15e530aece`. Its [local Todo checkpoint](m05c/local-development.md) uses a configured Durable Object collection with attached SQLite storage, bounded admission, atomic state/metadata persistence and restart reconstruction. The built configuration leaves Todo access disabled; an explicit local Wrangler command is available. M05d is [accepted/merged in PR #12](m05d/acceptance.md) at `540faec7086bb58223c5f475db91710ac0e7389b`, completing parent M05. Its legacy [live checkpoint](m05d/local-development.md) remains available. The owner authorized M06 from that verified merge. M06 implements typed live synchronization and bounded recovery in the actual Todo application; [acceptance review/merge is pending](m06/acceptance.md). Its [two-tab checkpoint](m06/local-development.md) demonstrates convergence without Refresh and reconnect. M07–M09 remain pending. The retained Node application and independent test stores remain in memory. The ChatGPT Project reference copy remains separately unverified.
 
 This is a continuation of the existing application, not a fresh scaffold, repository rename, history reset or import from `rxjs-fullstack`. It explicitly amends r1's permanent Node HTTP and in-memory-only target assumptions. Preserve domain behavior and tested contracts while moving the platform boundary through reviewable steps. No runtime replacement occurs in this documentation change.
 
@@ -96,12 +96,12 @@ Node retirement is an explicit later decision: retain the baseline until corresp
 | M02 | Instance-owned state and coherent derived streams | M01 | Accepted/merged; [PR #7 at `7374557`](m02/acceptance.md) |
 | M03 | Effect policies and correct HTTP outcomes | M02 | Accepted/merged; [PR #8 at `c64fda1`](m03/acceptance.md) |
 | M04 | Owned, targeted reactive DOM rendering | M02, M03 | Accepted/merged; [PR #9 at `2b316a4`](m04/acceptance.md) |
-| M05 | Cloudflare/Hono request, authority and SSE correctness | M05a–M05d | Acceptance review pending; [all four substeps recorded](m05d/acceptance.md) |
+| M05 | Cloudflare/Hono request, authority and SSE correctness | M05a–M05d | Accepted; [all four substeps merged](m05d/acceptance.md) |
 | M05a | Cloudflare/Hono development and build foundation | M01 | Accepted/merged; PR #6 at `eeb8d29` |
 | M05b | HTTP compatibility and request ownership | M05a | Accepted/merged; [PR #10 at `1cfbaec`](m05b/acceptance.md) |
 | M05c | Durable shared Todo authority | M05b | Accepted/merged; [PR #11 at `d5500da`](m05c/acceptance.md) |
-| M05d | Owned SSE and bounded authority-to-client delivery | M05b, M05c | Implemented; [acceptance review/merge pending](m05d/acceptance.md) |
-| M06 | Typed live synchronization and recovery | M03, M05 | Pending |
+| M05d | Owned SSE and bounded authority-to-client delivery | M05b, M05c | Accepted/merged; [PR #12 at `540faec`](m05d/acceptance.md) |
+| M06 | Typed live synchronization and recovery | M03, M05 | Implemented; [acceptance review/merge pending](m06/acceptance.md) |
 | M07 | Complete reference Todo app and forms | M04, M06 | Pending |
 | M08 | Temporal traces and adversarial integration evidence | M07 | Pending |
 | M09 | Documented API/builds, release readiness and completion review | M08 | Pending |
@@ -311,11 +311,11 @@ Refresh request. M05d/M06 remain independently reviewed milestones.
 
 ### M05d — SSE ownership and bounded live delivery
 
-**Implementation checkpoint, 2026-09-18:** [acceptance record](m05d/acceptance.md)
-and [two-consumer live checkpoint](m05d/local-development.md). The verified start
-is M05c PR #11 merge `d5500da407611e7856e9e67481a08e15e530aece`. Acceptance
-review/merge is pending. The public legacy `todos` event retains its bare-array
-payload; M06 owns versioned live state and Todo application integration.
+**Accepted/merged, verified 2026-09-20:** [PR #12](https://github.com/hansschenker/rxjs-flow/pull/12)
+at `540faec7086bb58223c5f475db91710ac0e7389b`. The [acceptance record](m05d/acceptance.md)
+records 834 passing tests and the [two-consumer live checkpoint](m05d/local-development.md).
+All four parent M05 substeps are accepted. The public legacy `todos` event retains
+its bare-array payload; M06 adds a separate versioned route for application state.
 
 **Depends on:** M05b, M05c.
 
@@ -334,6 +334,17 @@ payload; M06 owns versioned live state and Todo application integration.
 **Visible checkpoint:** two locally connected live consumers, one disconnect/reconnect, and a resource-lifetime record. M05 closes only after M05a–M05d pass.
 
 ## M06 — Close the server-to-client live-state loop
+
+**Implementation checkpoint, 2026-09-20:** [acceptance record](m06/acceptance.md)
+and [two-tab Todo synchronization/reconnect checkpoint](m06/local-development.md).
+The verified start is M05d PR #12 merge `540faec7086bb58223c5f475db91710ac0e7389b`;
+both pristine baseline suites passed before editing (834 tests). M06 was explicitly
+authorized. The new `/todos/live` route emits schema-versioned `todo-snapshot`
+events; `/todos/stream` keeps its legacy bare-array event. One app-owned live
+connection feeds authoritative snapshots into state; HTTP replies only settle
+pending operations. Bounded RxJS-owned retry, separate connection identity and
+manual recovery make interruptions explicit. Acceptance review/merge is pending;
+M07 does not start automatically.
 
 **Purpose:** integrate the verified SSE path with the actual application using logical authority identity and a defined consistency policy.
 
@@ -439,7 +450,6 @@ Keep documentation, dependency/toolchain changes, platform adapters, storage aut
 
 After a roadmap amendment is merged/accepted, refresh the ChatGPT Project reference copy with this same filename and revision. Until that refresh is confirmed, report it as pending rather than claiming automatic Project synchronization. GitHub branch content is not proof that main or the Project copy has changed.
 
-**Next implementation session:** review and accept M05d and its parent M05
-acceptance record, verify the actual current repository state, then begin M06
-only when authorized. M00, M01, M05a, M02, M03, M04, M05b and M05c remain
-accepted/merged. M06–M09 do not start automatically.
+**Next implementation session:** review and accept M06, verify the actual current
+repository state, then begin M07 only when authorized. M00, M01, M05a, M02, M03,
+M04, M05b, M05c and M05d remain accepted/merged. M07–M09 do not start automatically.

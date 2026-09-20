@@ -1,7 +1,10 @@
 # M05d — SSE ownership and bounded live delivery
 
 Date: 2026-09-18. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
-Status: implemented and locally verified; acceptance review/merge pending.
+Status: accepted and merged in [PR #12](https://github.com/hansschenker/rxjs-flow/pull/12)
+at `540faec7086bb58223c5f475db91710ac0e7389b` (merge verified 2026-09-20).
+This remains the dated M05d implementation report; later M06 behavior is recorded
+in [M06 acceptance](../m06/acceptance.md).
 Final test total: **834 passed**. Command/CI evidence is recorded below.
 
 ## Provenance and scope
@@ -129,8 +132,8 @@ that has handed a frame to its transport cannot retract that frame.
 
 M05's four substeps are separately evidenced. This report combines their
 recorded commits with current regression gates; it does not relabel old test
-counts as current results. Parent M05 acceptance remains review pending until
-all rows and the M05d gates are verified.
+counts as current results. Parent M05 is accepted: all four substeps and their
+recorded gates are complete, with M05d merged in PR #12.
 
 | Parent requirement | Evidence identity and disposition |
 |---|---|
@@ -250,5 +253,6 @@ Cloudflare global routing or prove a remote outage. Application resource budgets
 do not bound network/platform buffers, establish production capacity or supply a
 public release access policy. Production Todo access remains disabled. There is
 no remote deployment, login/account verification or ChatGPT Project reference-copy
-synchronization claim. No implementation blocker remains. Parent M05 acceptance
-and the M05d merge remain review decisions; M06 does not start automatically.
+synchronization claim. No implementation blocker remained at M05d closeout.
+PR #12 is now merged and parent M05 is accepted. The owner subsequently authorized
+M06; its implementation and newer evidence are recorded separately.

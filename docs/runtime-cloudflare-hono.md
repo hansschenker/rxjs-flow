@@ -13,9 +13,11 @@ preview. M04 is accepted/merged in PR #9 at `2b316a4`. M05b's
 [owned finite HTTP and compatibility](m05b/acceptance.md) is accepted/merged in
 PR #10 at `1cfbaec`. M05c is [accepted/merged in PR #11](m05c/acceptance.md) at
 `d5500da`, with durable authority and a [local restart checkpoint](m05c/local-development.md).
-M05d implements [bounded, owned live delivery](m05d/acceptance.md); acceptance
+M05d is [accepted/merged in PR #12](m05d/acceptance.md) at `540faec`, completing
+parent M05. M06 was explicitly authorized from that merge and implements
+[typed live synchronization and recovery](m06/acceptance.md); acceptance
 review/merge is pending. The inspected planning baseline above is historical.
-Versioned application live synchronization and deployment remain pending.
+M07–M09 and deployment remain pending.
 
 ## 1. Context and authority
 
@@ -102,7 +104,7 @@ is promised. See [M05c acceptance](m05c/acceptance.md) for exact evidence and li
 
 Retain HTTP for operations and SSE for live collection snapshots. The authority supplies committed full snapshots; mutation responses settle operation state rather than independently appending items to the UI collection.
 
-The target ordering identity is `collectionId + stateGeneration + revision`. Names are proposed wire fields until M06 publishes a versioned schema. Generation denotes a collection history, not a Worker instance. It survives ordinary request handling and authority reconstruction; explicit reset/replacement creates a new history. Revisions increase within a history. Compare revisions only within the same collection and generation.
+The ordering identity is `collectionId + stateGeneration + revision`. M06 publishes these fields in the runtime-decoded schema-version-1 `todo-snapshot` event on a new `/todos/live` route, retaining `/todos/stream` as the legacy bare-array route. Generation denotes a collection history, not a Worker instance. It survives ordinary request handling and authority reconstruction; explicit reset/replacement creates a new history. Revisions increase within a history. Compare revisions only within the same collection and generation.
 
 Track connection identity separately. Drop notifications from superseded connections, and accept a new generation only through the defined current-connection/resynchronization policy. Do not accept arbitrary delayed payloads merely because their generation differs.
 
@@ -135,13 +137,33 @@ subscriptions, and do not substitute JSON after headers. Native transport buffer
 are outside these application counts. There are no detached write chains,
 perpetual timer subscriptions, heartbeat service or hibernation claim.
 
-The [M05d live checkpoint](m05d/local-development.md) demonstrates two consumers,
-one disconnect/reconnect and continuing committed state. It is separate from the
-existing Todo application, which still uses Refresh for another caller's changes.
-M06 owns the versioned public live-state schema, reconnect ownership, stale-state
-UI and complete application feedback loop. Node remains a tested retained mode
-with an in-memory collection, at most 32 active SSE responses per listener,
-`drain`-aware writes, explicit stream shutdown and port release; M09
+The [M05d live checkpoint](m05d/local-development.md) preserves the legacy
+transport demonstration. M06 connects the actual Todo application to a separate
+versioned live route; two pages now converge without Refresh. One mounted app
+owns one connection, independent of the number of state/view consumers.
+HTTP mutation replies settle pending operations; accepted committed snapshots
+alone replace the collection. A separate connection identity rejects superseded
+callbacks. The first valid snapshot pins the collection; only the first snapshot
+of a new current connection can establish changed history. Older/duplicate
+revisions never replace accepted collection content.
+
+The RxJS connection owner immediately closes an interrupted EventSource, then
+schedules at most four retries after 1, 2, 4 and 8 seconds using injected timing.
+Each attempt has a 10-second first-snapshot deadline. It is not an idle watchdog:
+there is no heartbeat or fixed detection time for a later silent partition.
+A valid snapshot resets consecutive failures; protocol failure and exhaustion
+require manual Reconnect.
+Disposal cancels the active source and scheduled work. Native EventSource retry
+does not run alongside this policy. Loading before the first snapshot and stale/
+reconnecting status during a gap are visible in the app; the latest accepted
+collection remains visible. The [M06 guide](m06/local-development.md) records the
+two-page synchronization/restart workflow. Local cancellation is not rollback,
+and reconnect never automatically replays an uncertain mutation.
+
+Node remains a tested retained mode
+with an in-memory collection and a fresh generation per factory/reset, at most
+32 active SSE responses per listener, `drain`-aware writes, explicit stream
+shutdown and port release. Durable restart instead preserves history. M09
 reviews its final support disposition. No remote deployment was performed.
 
 ## 6. Vite and Wrangler workflow

@@ -3,21 +3,22 @@
 Revision: **rxjs-flow migration r2 — Cloudflare/Hono**. The durable collection now
 feeds a bounded SSE response for each live consumer. Disconnecting one consumer
 releases that connection; the other continues and the collection remains stored.
-The existing Todo page still uses Refresh for another caller's changes. M06 will
-connect this verified live path to the application's state model.
+This guide preserves the M05d legacy transport checkpoint, accepted in PR #12.
+At that milestone the Todo page still used Refresh. The current application uses
+M06's separate versioned live route; see the [two-tab application guide](../m06/local-development.md).
 
 ## Run the local checkpoint
 
-Use Node **22.22.1**. While this milestone PR is under review:
+Use Node **22.22.1** with updated `main` (PR #12 is merged):
 
 ```bash
-git fetch origin
-git switch m05d/owned-sse
+git switch main
+git pull --ff-only
 npm ci
 npm run dev:worker
 ```
 
-After merge, use updated `main` instead. Open **http://localhost:5174** for the
+Open **http://localhost:5174** for the
 existing Todo page. One command runs the assets, Hono API and local Durable Object
 with attached SQLite storage. No separate Node backend is required.
 

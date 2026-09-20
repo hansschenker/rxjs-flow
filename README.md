@@ -6,7 +6,7 @@ An **RxJS 7 + TypeScript application-dataflow foundation**, demonstrated by a
 custom-JSX Todo application. This repository continues the implementation
 originally developed in [rxjs-stack](https://github.com/hansschenker/rxjs-stack).
 
-**Implementation status, 2026-09-18: M00 is accepted and closed.** PR #2 merged at
+**Implementation status, 2026-09-20: M00 is accepted and closed.** PR #2 merged at
 [`c9197b6`](https://github.com/hansschenker/rxjs-flow/commit/c9197b68591e390a0a3add4667e5dd23717d6b6e).
 M01 is accepted and merged in PR #5 at `188f21f`; M05a in PR #6 at `eeb8d29`.
 M02's [instance-owned state and coherent derived streams](docs/m02/acceptance.md)
@@ -19,13 +19,15 @@ M05b's [HTTP compatibility and request ownership](docs/m05b/acceptance.md) is
 accepted and merged in PR #10 at `1cfbaec`.
 M05c's [durable Todo authority](docs/m05c/acceptance.md) is accepted and merged in
 PR #11 at `d5500da`. M05d's [bounded, owned live delivery](docs/m05d/acceptance.md)
-is implemented; acceptance review/merge is pending.
-[Run the live checkpoint](docs/m05d/local-development.md).
-The local Workers runtime stores each configured collection in attached SQLite
-storage, so saved Todos survive a runtime restart. The retained Node sample uses
-memory. Two diagnostic consumers can now receive committed updates live; the Todo
-application's live-state loop remains M06 and still requires Refresh for another
-caller's changes.
+is accepted and merged in PR #12 at `540faec`; parent M05 is complete.
+M06's [typed live synchronization and recovery](docs/m06/acceptance.md) is
+implemented; acceptance review/merge is pending.
+[Run the two-tab Todo checkpoint](docs/m06/local-development.md).
+The Todo application now receives committed snapshots live, shares one connection
+per mounted app and reconnects under a bounded policy. Changes from another
+caller appear without Refresh. The local Workers runtime stores the configured
+collection in attached SQLite storage, so saved Todos and their ordering identity
+survive a runtime restart. The retained Node sample uses separate memory.
 M00's dated test results and separate failing characterization remain evidence,
 not a claim that every planned behavior works.
 
@@ -36,7 +38,9 @@ operations. M05a supplies project-local Wrangler, Vite/Workers builds and a type
 Hono/RxJS probe. M05b adds finite Todo HTTP compatibility and request ownership;
 M05c adds bounded authority operations, atomic persistence and reconstruction.
 M05d adds atomic snapshot registration, bounded SSE delivery and cancellation.
-Versioned application live synchronization remains M06. No deployed Worker or domain configuration is claimed.
+M06 connects versioned snapshots to application state, rejects obsolete values
+and exposes connection/recovery status. M07–M09 remain pending. No deployed Worker
+or domain configuration is claimed.
 
 ## Project documents
 
@@ -53,7 +57,9 @@ Versioned application live synchronization remains M06. No deployed Worker or do
 - [M05b acceptance and route compatibility](docs/m05b/acceptance.md)
 - [M05c durable authority and restart/failure acceptance](docs/m05c/acceptance.md)
 - [M05d live ownership, resource limits and acceptance](docs/m05d/acceptance.md)
-- [Run the live checkpoint](docs/m05d/local-development.md)
+- [M06 live synchronization, protocol and acceptance](docs/m06/acceptance.md)
+- [Run two synchronized Todo pages](docs/m06/local-development.md)
+- [M05d legacy transport checkpoint](docs/m05d/local-development.md)
 - [Persistent local Todo page and restart checks](docs/m05c/local-development.md)
 - [Historical M05a foundation guide](docs/m05a/local-development.md)
 - [Historical source audit](docs/repository-audit-2026-09-15.md)
@@ -62,11 +68,11 @@ Versioned application live synchronization remains M06. No deployed Worker or do
 
 | Area | Existing implementation | Work still planned |
 |---|---|---|
-| Client | Instance-owned state and effects, ordered mutation queue, cancellable reads, validated HTTP outcomes, coherent view model, custom JSX, a stable shell and owned scalar/keyed DOM bindings | Live protocol integration (M06) |
-| HTTP server | Owned finite Todo operations and bounded live responses through Hono/workerd and the retained Node adapter | M05d acceptance; final runtime-support review (M09) |
-| Shared state | One Durable Object per configured collection, atomic persistence/reconstruction and race-free live registration; separate in-memory Node/test factories | Versioned application snapshot protocol (M06) |
-| Live updates | Bounded authority-to-Worker SSE and retained Node SSE; subscription-owned EventSource adapter with a required decoder | Versioned live protocol, reconnect semantics and app integration (M06) |
-| Reference app/delivery | Existing Todo application and separate development processes | Complete browser loop, platform tests/traces and documented Cloudflare-ready build (M07–M09) |
+| Client | Instance-owned state/effects, ordered mutation queue, authoritative live snapshots, coherent view model, custom JSX and owned scalar/keyed DOM bindings | Complete reference-app/form behavior (M07) |
+| HTTP server | Owned finite Todo operations and bounded live responses through Hono/workerd and the retained Node adapter | Final runtime-support review (M09) |
+| Shared state | Configured Durable Object collection, atomic persistence/reconstruction and race-free live registration; separate in-memory Node/test histories | Broader temporal/adversarial evidence (M08) |
+| Live updates | Versioned runtime-decoded snapshots, one app-owned connection, stale/duplicate protection, bounded reconnect and explicit manual recovery | M06 acceptance; wider trace evidence (M08) |
+| Reference app/delivery | Todo pages synchronize through committed snapshots and expose connection state | Reference-app completion, platform tests/traces and documented Cloudflare-ready build (M07–M09) |
 
 The intended flow is events → state → derived values → rendering, with external
 operations returning typed results to state. Rendering must not initiate network
@@ -76,8 +82,8 @@ bindings update the relevant DOM values; keyed rows retain their nodes and child
 scopes across updates, preserve focus and selection, and release ownership on removal.
 
 The recommended sequence is M01 → M05a → M02 → M03 → M04 → M05b → M05c → M05d →
-M06 → M07 → M08 → M09. M00 stays closed; M06 starts only after M05d acceptance and
-its own authorization. No SSR, Hono JSX, browser router or custom CLI is required for
+M06 → M07 → M08 → M09. M00 stays closed; M06 was explicitly authorized after
+M05d merged. M07 starts only after M06 acceptance and its own authorization. No SSR, Hono JSX, browser router or custom CLI is required for
 this completion target.
 
 ## Run the existing development application
@@ -126,7 +132,9 @@ checks actual local Todo HTTP behavior; `node scripts/m05c-checkpoint.mjs` also
 restarts the local runtime using an isolated temporary database.
 Open **http://localhost:5174/m05d-live.html** for two live consumers with independent
 Connect/Disconnect controls. The [M05d guide](docs/m05d/local-development.md)
-explains the checkpoint and response-lifetime evidence. The Todo page itself still uses Refresh until M06.
+explains the legacy checkpoint and response-lifetime evidence. The Todo page now
+uses `/api/todos/live`; open it in two tabs for the [M06 synchronization and
+reconnect checkpoint](docs/m06/local-development.md).
 The built configuration leaves Todo access disabled (503); the guide documents
 an explicit local Wrangler command. Local persistence does not deploy a service.
 

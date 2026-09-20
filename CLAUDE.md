@@ -16,11 +16,14 @@ M04 is [accepted/merged in PR #9](docs/m04/acceptance.md) at `2b316a477600c91b31
 The [minimal binding sample](docs/m04/minimal-sample.md) explains the rendering contract.
 M05b is [accepted/merged in PR #10](docs/m05b/acceptance.md) at `1cfbaeca0cede3a08c90631e16cf6bdf2fa750c8`.
 M05c is [accepted/merged in PR #11](docs/m05c/acceptance.md) at
-`d5500da407611e7856e9e67481a08e15e530aece`. M05d implements bounded, owned SSE;
-[acceptance review/merge is pending](docs/m05d/acceptance.md). The
-[live checkpoint](docs/m05d/local-development.md) demonstrates two live consumers
-and independent disconnect/reconnect. The Todo application still requires Refresh
-for another caller's changes until M06 integrates live state. M06–M09 remain pending. Use a dedicated branch and PR; do not start a milestone,
+`d5500da407611e7856e9e67481a08e15e530aece`. M05d is
+[accepted/merged in PR #12](docs/m05d/acceptance.md) at
+`540faec7086bb58223c5f475db91710ac0e7389b`; parent M05 is complete. M06 was
+explicitly authorized from that merge and implements typed live synchronization
+and recovery; [acceptance review/merge is pending](docs/m06/acceptance.md).
+[Two Todo pages](docs/m06/local-development.md) receive committed snapshots
+without Refresh, with one owned connection per app and bounded reconnect.
+M07–M09 remain pending. Use a dedicated branch and PR; do not start a milestone,
 merge, publish, deploy, create remote resources or change `netxpert.ch` without
 appropriate explicit authorization. `rxjs-stack` and `rxjs-fullstack` are historical/
 separate repositories, not implementation targets.
@@ -30,12 +33,14 @@ on Cloudflare Workers, Vite/Cloudflare build tooling, project-local Wrangler, an
 a minimal Durable Object authority. M05a now provides the local platform foundation;
 M05b adds owned finite Todo HTTP; M05c adds bounded collection authority, attached
 SQLite persistence and reconstruction. M05d adds race-free authority registration
-and bounded response-owned live delivery. The application live protocol and
-integration remain M06. Keep Node
+and bounded response-owned live delivery. M06 adds the versioned `/todos/live`
+protocol, authoritative application snapshots and one bounded RxJS reconnect
+owner. Legacy `/todos/stream` arrays remain unchanged. HTTP mutation replies
+settle pending status; snapshots alone replace collection content. Keep Node
 as the baseline during the tested transition. Hono does not replace our renderer.
 Do not use mutable Worker-global state as authority or pass Hono context into reducers.
 
-After M05d acceptance, the next implementation is M06 when authorized, as
+After M06 acceptance, the next implementation is M07 when authorized, as
 specified in the roadmap. No permanent Node-only constraint or
 instruction to reopen M00 is in force. Do not merge the intentionally failing
 `m00/characterize-baseline` probes.
@@ -47,8 +52,8 @@ checkpoints. Module-global client state and positional replay defaults were repl
 in M02. M03 extracts owned effects, validates HTTP responses with Zod and requires
 a decoder for generic SSE values. M04 adds owned scalar bindings and keyed DOM rows
 under a stable shell, with synchronous commits that preserve focus and selection.
-The live protocol and its app integration remain M06 work. Preserve tested behavior while
-changing its ownership. The unmodified earlier guide is archived at
+M06 adds versioned live state with explicit connection identity, cancellation,
+sharing and recovery. Preserve tested behavior while changing its ownership. The unmodified earlier guide is archived at
 [CLAUDE-before-cloudflare-r2-2026-09-17.md](docs/archive/CLAUDE-before-cloudflare-r2-2026-09-17.md).
 Existing `src/claude-md.test.ts` examples remain baseline tests.
 
