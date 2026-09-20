@@ -24,15 +24,17 @@ and preserves committed state across runtime restarts. The built Worker leaves
 Todo access disabled; local execution of the built artifact requires an explicit
 Wrangler command. M05d is [accepted/merged in PR #12](m05d/acceptance.md) at
 `540faec7086bb58223c5f475db91710ac0e7389b`; parent M05 is complete. Its legacy
-[live checkpoint](m05d/local-development.md) remains available. M06 implements
-typed live synchronization and recovery from that verified merge;
-[acceptance review/merge is pending](m06/acceptance.md). The actual Todo
-application now has a [two-tab synchronization/reconnect checkpoint](m06/local-development.md).
-M07–M09 remain pending.
+[live checkpoint](m05d/local-development.md) remains available. M06's typed live
+synchronization and recovery is [accepted/merged in PR #13](m06/acceptance.md)
+at `36d644f529d5660506d6f2aa90e90af562d01440`. The owner confirmed the
+[two-tab checkpoint](m06/local-development.md) and explicitly authorized M07.
+M07 reference-app completion is [implemented; acceptance review/merge pending](m07/acceptance.md); its
+[local guide](m07/local-development.md) covers the complete application.
+M08–M09 remain pending.
 
 Recommended order: M01 → M05a → M02 → M03 → M04 → M05b → M05c → M05d → M06 → M07
-→ M08 → M09. All four M05 substeps are accepted. M06 was explicitly authorized;
-M07 does not start until M06 acceptance and its own authorization.
+→ M08 → M09. All four M05 substeps and M06 are accepted. M07 was explicitly
+authorized from the verified M06 merge. M08 requires its own authorization.
 
 The [unmodified r1 roadmap](archive/roadmap-rxjs-flow-migration-r1-2026-09-15.md)
 and other [archived records](archive/) preserve provenance. They are not competing

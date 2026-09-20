@@ -4,7 +4,7 @@ Date: 2026-09-17. Plan revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
 
 **Decision status:** selected planning direction following the owner's request to revise the plan. This document does not mean that Hono, Wrangler, a Worker, or Durable Object storage has been implemented or deployed. Repository adoption is reviewed through the documentation PR; implementation remains governed by the [canonical roadmap](roadmap-gpt-6-astra-2026-09-15.md).
 
-**Inspected implementation baseline:** `c9197b68591e390a0a3add4667e5dd23717d6b6e` (`main`, M00 closeout, PR #2). M00 stays accepted. M01–M09 remain pending. The original application uses Node HTTP and an in-memory Todo store.
+**Inspected implementation baseline:** `c9197b68591e390a0a3add4667e5dd23717d6b6e` (`main`, M00 closeout, PR #2). M00 stays accepted. At that inspected planning baseline, M01–M09 were pending and the application used Node HTTP and an in-memory Todo store. Subsequent implementation status follows below.
 
 **Subsequent implementation checkpoint:** M01 merged in PR #5 at `188f21f`.
 M05a is accepted/merged in PR #6 at `eeb8d29`, with [local foundation evidence](m05a/acceptance.md):
@@ -14,10 +14,11 @@ preview. M04 is accepted/merged in PR #9 at `2b316a4`. M05b's
 PR #10 at `1cfbaec`. M05c is [accepted/merged in PR #11](m05c/acceptance.md) at
 `d5500da`, with durable authority and a [local restart checkpoint](m05c/local-development.md).
 M05d is [accepted/merged in PR #12](m05d/acceptance.md) at `540faec`, completing
-parent M05. M06 was explicitly authorized from that merge and implements
-[typed live synchronization and recovery](m06/acceptance.md); acceptance
-review/merge is pending. The inspected planning baseline above is historical.
-M07–M09 and deployment remain pending.
+parent M05. M06 is accepted and merged in PR #13 at
+`36d644f529d5660506d6f2aa90e90af562d01440`; it implements
+[typed live synchronization and recovery](m06/acceptance.md). The inspected planning baseline above is historical.
+M07 reference-app completion is [implemented and locally verified; acceptance review/merge pending](m07/acceptance.md).
+M08–M09 and deployment remain pending.
 
 ## 1. Context and authority
 
@@ -165,6 +166,16 @@ with an in-memory collection and a fresh generation per factory/reset, at most
 32 active SSE responses per listener, `drain`-aware writes, explicit stream
 shutdown and port release. Durable restart instead preserves history. M09
 reviews its final support disposition. No remote deployment was performed.
+
+M07 completes the reference UI around these unchanged HTTP/SSE boundaries.
+Local filters and captured draft revisions stay in browser state; server
+validation and committed snapshots remain authoritative. The [M07 checkpoint](m07/local-development.md)
+runs the same two-context browser scenario in Vite/Cloudflare development and
+against built browser/Worker output. A preserved browser entry export exposes
+the ordinary app lifetime for explicit disposal/remount tests; this build change
+does not alter Worker access policy, persistence, bindings or routing.
+Current results and controlled failure/delay probes are recorded in
+[M07 acceptance](m07/acceptance.md).
 
 ## 6. Vite and Wrangler workflow
 

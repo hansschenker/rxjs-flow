@@ -19,11 +19,16 @@ M05c is [accepted/merged in PR #11](docs/m05c/acceptance.md) at
 `d5500da407611e7856e9e67481a08e15e530aece`. M05d is
 [accepted/merged in PR #12](docs/m05d/acceptance.md) at
 `540faec7086bb58223c5f475db91710ac0e7389b`; parent M05 is complete. M06 was
-explicitly authorized from that merge and implements typed live synchronization
-and recovery; [acceptance review/merge is pending](docs/m06/acceptance.md).
+explicitly authorized from that merge and is now
+[accepted/merged in PR #13](docs/m06/acceptance.md) at
+`36d644f529d5660506d6f2aa90e90af562d01440`.
 [Two Todo pages](docs/m06/local-development.md) receive committed snapshots
 without Refresh, with one owned connection per app and bounded reconnect.
-M07–M09 remain pending. Use a dedicated branch and PR; do not start a milestone,
+M07 reference-app completion is implemented and locally verified;
+acceptance review/merge is pending;
+see [M07 acceptance](docs/m07/acceptance.md) and the
+[complete local reference-app guide](docs/m07/local-development.md).
+M08–M09 remain pending. Use a dedicated branch and PR; do not start a milestone,
 merge, publish, deploy, create remote resources or change `netxpert.ch` without
 appropriate explicit authorization. `rxjs-stack` and `rxjs-fullstack` are historical/
 separate repositories, not implementation targets.
@@ -40,8 +45,8 @@ settle pending status; snapshots alone replace collection content. Keep Node
 as the baseline during the tested transition. Hono does not replace our renderer.
 Do not use mutable Worker-global state as authority or pass Hono context into reducers.
 
-After M06 acceptance, the next implementation is M07 when authorized, as
-specified in the roadmap. No permanent Node-only constraint or
+M07 starts from the verified M06 merge after the owner's explicit authorization.
+M08 requires M07 acceptance and its own authorization, as specified in the roadmap. No permanent Node-only constraint or
 instruction to reopen M00 is in force. Do not merge the intentionally failing
 `m00/characterize-baseline` probes.
 
@@ -106,7 +111,7 @@ RxJS middleware uses `OperatorFunction`; this is distinct from Hono middleware.
 | `src/server/core/errors.ts` | `HttpError` hierarchy; `errorResponse()` maps any thrown error to a response |
 | `src/server/core/response.ts` | `json / created / noContent / redirect` helpers |
 | `src/server/core/testing.ts` | `runEffect / runRequest` (in-memory) and `createHttpTestClient` (live HTTP) |
-| `src/server/todos/` | Concrete CRUD: store (BehaviorSubject), validator (Zod schemas), effects |
+| `src/server/todos/` | Concrete CRUD: bounded memory/durable authorities, Zod validation, pure transitions and effects |
 
 Effects retrieve their `TodoStore` from `req.context.services`, so the store is injectable and unit-testable without HTTP.
 
@@ -198,7 +203,9 @@ serve the retained memory adapter and the durable collection authority. Type inf
 | `src/client/dom/keyed-list.ts` | Stable keyed rows, each with a child scope; targeted updates and removal cleanup |
 | `src/client/components/todo-item.tsx` | Stable row construction, row bindings and typed DOM intents |
 | `src/client/todo.view.tsx` | Stable shell lookup and synchronous bindings from coherent projections of owned state |
-| `src/client/main.tsx` | Inert app factory; connects views/feedback before external inputs and startup |
+| `src/client/todo.program.ts` | Inert Todo feature program; owns model, DOM sources, view/effect wiring and disposal |
+| `src/client/main.tsx` | Construction/mount/disposal entry and compatible `createTodoApp` export |
+| `src/client/browser.ts` | Executable browser entry with module-owned application handle and mount function |
 
 The M02 model is inert until its owner starts it. Subscribe feedback and views
 before start; then activate external inputs. After disposal, construct a fresh
@@ -248,8 +255,9 @@ const snapshots$ = fromEventSource('/api/todos/stream', 'todos', value => todoLi
 Constructing this Observable is inert. Each subscription owns its connection;
 unsubscribe, transport failure or decode failure removes listeners and closes it.
 The same legacy bare-array `todos` event is available from the M05d Worker route.
-This adapter is not yet connected to the Todo app; M06 owns its versioned live
-protocol, recovery rules and integration.
+M06 connects the Todo application through the same owned adapter using the
+separate `/api/todos/live` versioned protocol, bounded RxJS recovery and runtime
+decoding. The legacy example above remains available for transport diagnostics.
 
 ### JSX configuration
 

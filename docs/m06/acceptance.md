@@ -1,7 +1,9 @@
 # M06 — Typed live synchronization and recovery
 
 Date: 2026-09-20. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
-Status: implemented and locally verified; acceptance review/merge pending.
+Status: accepted and merged in [PR #13](https://github.com/hansschenker/rxjs-flow/pull/13)
+at **`36d644f529d5660506d6f2aa90e90af562d01440`**. The owner confirmed the
+two-page checkpoint and subsequently authorized M07.
 Final test total: **931 passed** (766 Node/DOM + 165 workerd).
 
 ## Provenance and scope
@@ -26,7 +28,7 @@ suites to finish before editing. Original Git history and attribution remain.
 This milestone connects the verified live delivery path to the mounted Todo
 application. It keeps RxJS 7, custom JSX, finite HTTP contracts, the legacy SSE
 endpoint, the local collection access policy and bounded server ownership.
-M07–M09 remain pending. No package release, remote resource creation, migration,
+M07–M09 were outside the M06 implementation scope. No package release, remote resource creation, migration,
 deployment, account change or domain change is part of this work.
 
 ## Canonical task mapping
@@ -187,8 +189,10 @@ stress case checks that the retry owner does not retain an ever-growing chain.
 
 The implementation tree is `05729a272471deb825697cda16737d83500e4dcd`.
 Implementation commit: `f99ac5ddd75b5a10f47dce35410a1c6d0e6699f1`.
-Exact review-head CI will be recorded in the
-PR after verification, separately from these local gates.
+The subsequent [PR #13 review record](https://github.com/hansschenker/rxjs-flow/pull/13)
+contains review-head CI evidence, separately from these local gates. M06 merged
+at `36d644f529d5660506d6f2aa90e90af562d01440`; this closeout does not rewrite
+the historical command ledger.
 
 `package.json` and `package-lock.json` are unchanged; the pinned M05d dependencies
 were reused locally without upgrade. Local Node is 22.22.1 and npm is 11.9.0.
@@ -251,5 +255,7 @@ No implementation blocker remains. Intentional cancellation/failure probes emit
 workerd diagnostics also seen in the pristine baseline; local proxy/toolchain
 warnings remain visible. These server diagnostics are separate from the zero
 uncaught errors observed in the actual browser scenario.
-M06 review/merge and later milestone authorization remain separate decisions. M07 reference-app completion, M08 traces
-and adversarial coverage, and M09 delivery review do not begin with this change.
+M06 was subsequently accepted and merged in PR #13; its final evidence above
+remains the M06 record. The owner separately authorized [M07 reference-app
+completion](../m07/acceptance.md). M08 traces/adversarial coverage and M09 delivery
+review remain later milestones. The historical M06 command ledger is unchanged.
