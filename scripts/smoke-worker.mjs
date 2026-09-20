@@ -119,7 +119,8 @@ export async function runWorkerSmoke({ development = false, restart = false, che
     const scriptPaths = Array.from(html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/g), match => match[1]);
     const scriptPath = scriptPaths.find(candidate => development
       ? candidate === '/src/client/browser.ts'
-      : candidate.startsWith('/assets/'));
+      // The explicit browser entry can follow shared schema/polyfill scripts.
+      : candidate.startsWith('/assets/browser-') && candidate.endsWith('.js'));
     assert.ok(scriptPath, `${path}: expected ${mode} JSX entry`);
     checks.push({ path, status: response.status, script: scriptPath });
     return scriptPath;

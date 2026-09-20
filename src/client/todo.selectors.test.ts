@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Todo } from '../shared/types';
-import type { State } from './todo.state';
+import { createInitialState, reducer, type State } from './todo.state';
+import { interpretTodoIntent } from './todo.intents';
 import { equalViewModel, selectViewModel, type ViewModel } from './todo.selectors';
 
 const first: Readonly<Todo> = Object.freeze({
@@ -12,12 +13,40 @@ const second: Readonly<Todo> = Object.freeze({
 
 function stateWith(overrides: Partial<State> = {}): State {
 	return {
-		todos: [], draft: '', loadStatus: 'idle', pending: [], error: null, failure: null,
-		connection: 'idle', live: null, ...overrides,
+		...createInitialState(), ...overrides,
 	};
 }
 
 describe('selectViewModel', () => {
+	it.each([
+		['all', ['1', '2']], ['active', ['1']], ['completed', ['2']],
+	] as const)('shows the %s subset while retaining full-collection counts', (filter, ids) => {
+		const state = stateWith({ todos: [first, second], loadStatus: 'ready', draft: 'Unsent' });
+		const message = { type: 'FILTER_CHANGED' as const, filter };
+		const filtered = reducer(state, message);
+		const view = selectViewModel(filtered);
+		expect(view.todos.map(todo => todo.id)).toEqual(ids);
+		expect(view).toMatchObject({ filter, visibleCount: ids.length, total: 2, completed: 1, remaining: 1, draft: 'Unsent' });
+		expect(filtered.todos).toBe(state.todos);
+		expect(filtered.pending).toBe(state.pending);
+		expect(reducer(filtered, message)).toBe(filtered);
+		expect(interpretTodoIntent({ previous: state, state: filtered, message })).toBeNull();
+	});
+
+	it('distinguishes an empty selected filter from an empty collection and initial loading', () => {
+		const activeOnly = stateWith({ todos: [first], filter: 'completed', loadStatus: 'ready' });
+		expect(selectViewModel(activeOnly)).toMatchObject({ empty: false, filteredEmpty: true, visibleCount: 0, total: 1 });
+		expect(selectViewModel({ ...activeOnly, todos: [] })).toMatchObject({ empty: true, filteredEmpty: false });
+		expect(selectViewModel({ ...activeOnly, loadStatus: 'loading' })).toMatchObject({ empty: false, filteredEmpty: false });
+	});
+
+	it('recomputes the selected subset from a server snapshot without changing the local filter or draft', () => {
+		const state = stateWith({ todos: [first, second], filter: 'active', loadStatus: 'ready', draft: 'Still typing' });
+		const next = reducer(state, { type: 'SERVER_SNAPSHOT', todos: [{ ...first, completed: true }, second] });
+		expect(selectViewModel(next)).toMatchObject({ filter: 'active', draft: 'Still typing', todos: [],
+			filteredEmpty: true, total: 2, completed: 2, remaining: 0 });
+	});
+
 	it('derives coherent counts and preserves readonly snapshot data', () => {
 		const state = Object.freeze(stateWith({
 			todos: Object.freeze([first, second]),
@@ -35,6 +64,8 @@ describe('selectViewModel', () => {
 
 		expect(view).toEqual({
 			todos: [first, second], error: 'Recoverable failure', draft: '  Next  ',
+			draftError: null, draftInvalid: false, filter: 'all', visibleCount: 2, filteredEmpty: false,
+			recoveryHint: 'Your draft is kept. Review the message before trying again.',
 			loading: false, empty: false, total: 2, completed: 1, remaining: 1,
 			pendingCount: 2, pendingTodoIds: ['1'], creating: false, connection: 'connected', live: null, canSubmit: true,
 		});
@@ -96,6 +127,23 @@ describe('selectViewModel', () => {
 	});
 });
 
+describe('operation-specific recovery guidance', () => {
+	it.each(['update', 'delete'] as const)('does not describe a draft submission after uncertain %s work', kind => {
+		const current = stateWith({ failedOperation: kind, error: 'Reply lost.',
+			failure: { kind: 'network', message: 'Reply lost.' } });
+		const hint = selectViewModel(current).recoveryHint;
+		expect(hint).toContain('Refresh and review the list before repeating the change');
+		expect(hint).not.toMatch(/draft|submitting/);
+		const live = createInitialState({ collectionSource: 'live' }).live;
+		expect(selectViewModel({ ...current, live }).recoveryHint).toContain('Reconnect and review');
+	});
+
+	it('gives a read-specific recovery path for an initial finite load failure', () => {
+		const failed = stateWith({ failedOperation: 'load', error: 'Offline.', failure: { kind: 'network', message: 'Offline.' } });
+		expect(selectViewModel(failed).recoveryHint).toBe('Refresh to load the current list again.');
+	});
+});
+
 describe('equalViewModel', () => {
 	const view = selectViewModel(stateWith({ todos: [first, second], loadStatus: 'ready' }));
 
@@ -105,9 +153,15 @@ describe('equalViewModel', () => {
 	});
 
 	const changes: Record<keyof ViewModel, Partial<ViewModel>> = {
-		todos: { todos: [...view.todos] },
+		todos: { todos: [second, first] },
 		error: { error: 'Failed' },
 		draft: { draft: 'Changed' },
+		draftError: { draftError: 'Enter a task title.' },
+		draftInvalid: { draftInvalid: true },
+		filter: { filter: 'active' },
+		visibleCount: { visibleCount: 0 },
+		filteredEmpty: { filteredEmpty: true },
+		recoveryHint: { recoveryHint: 'Review the list.' },
 		loading: { loading: true },
 		empty: { empty: true },
 		total: { total: 3 },
@@ -122,6 +176,15 @@ describe('equalViewModel', () => {
 			retryDelayMs: null, error: null, resyncRequired: false } },
 		canSubmit: { canSubmit: true },
 	};
+
+	it('treats equal filtered item identities as unchanged without sharing mutable selector caches', () => {
+		const initial = stateWith({ todos: [first, second], filter: 'active', loadStatus: 'ready' });
+		const left = selectViewModel(initial);
+		const right = selectViewModel({ ...initial, draftRevision: initial.draftRevision + 1 });
+		expect(left.todos).not.toBe(right.todos);
+		expect(equalViewModel(left, right)).toBe(true);
+		expect(equalViewModel(left, { ...right, todos: [{ ...first, title: 'Updated' }] })).toBe(false);
+	});
 
 	it.each(Object.entries(changes))('detects a change to %s', (_field, change) => {
 		const changed = { ...view, ...change };

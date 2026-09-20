@@ -22,6 +22,9 @@ h1 { font-size: clamp(34px, 6vw, 46px); font-weight: 650; letter-spacing: -.045e
 #title-input { width: 100%; min-width: 0; padding: 13px 14px; border: 1px solid #d2ddd6; border-radius: 8px; color: inherit; background: #fbfcfa; }
 #title-input::placeholder { color: #81918b; }
 #add-form button { border: 0; border-radius: 8px; padding: 12px 22px; background: #245e50; color: white; font-weight: 600; white-space: nowrap; }
+.field-hint { min-height: 18px; margin: 8px 0 0; color: #6a7a75; font-size: 12px; line-height: 1.5; }
+.field-hint[data-invalid="true"] { color: #a83b33; }
+#title-input[aria-invalid="true"] { border-color: #b35a4d; background: #fff9f7; }
 .list-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 30px; padding-bottom: 10px; }
 #todo-summary { font-size: 13px; color: #6a7a75; margin: 0; }
 #refresh-todos { border: 1px solid #dee6e0; background: white; color: #46655a; border-radius: 6px; padding: 7px 11px; font-size: 12px; }
@@ -34,6 +37,14 @@ h1 { font-size: clamp(34px, 6vw, 46px); font-weight: 650; letter-spacing: -.045e
 #connection-state[data-state="stale"] .connection-dot { background: #b68532; }
 #connection-state[data-state="error"] { background: #fff1ed; color: #a04434; }
 #connection-state[data-state="error"] .connection-dot { background: #b24e3b; }
+.todo-filters { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; border: 0; margin: 22px 0 10px; }
+.todo-filters legend { margin-bottom: 9px; padding: 0; font-size: 12px; font-weight: 650; color: #6a7a75; }
+.todo-filters label { position: relative; cursor: pointer; }
+.todo-filters input { position: absolute; width: 1px; height: 1px; margin: 0; opacity: 0; }
+.todo-filters span { display: block; border: 1px solid #dbe4dd; border-radius: 7px; padding: 7px 13px; color: #526e60; font-size: 12px; }
+.todo-filters input:checked + span { background: #e9f2ed; border-color: #9ebbab; color: #245e50; font-weight: 650; }
+.todo-filters input:focus-visible { outline: none; }
+.todo-filters input:focus-visible + span { outline: 3px solid #79b8a9; outline-offset: 3px; }
 #todo-list { list-style: none; padding: 0; margin: 0; }
 #todo-list li { display: flex; align-items: center; gap: 13px; min-height: 62px; padding: 12px 0; border-bottom: 1px solid #edf0eb; }
 #todo-list input { width: 19px; height: 19px; margin: 0; flex-shrink: 0; accent-color: #245e50; }
@@ -45,6 +56,8 @@ h1 { font-size: clamp(34px, 6vw, 46px); font-weight: 650; letter-spacing: -.045e
 .placeholder { text-align: center; color: #81918b; font-size: 14px; padding: 30px 14px; line-height: 1.6; }
 #error-msg { color: #a83b33; font-size: 14px; line-height: 1.5; margin: 14px 0 0; }
 #error-msg:empty { display: none; }
+#error-recovery { color: #6f655f; font-size: 12px; line-height: 1.6; margin: 6px 0 0; }
+#dismiss-error { border: 1px solid #e4d8d1; color: #8b5145; background: #fffaf7; border-radius: 6px; font-size: 12px; padding: 7px 11px; margin-top: 10px; }
 footer { display: flex; align-items: center; gap: 7px; margin-top: 22px; color: #7b8b82; font-size: 11px; }
 .status-dot { width: 5px; height: 5px; border-radius: 50%; background: #82a58b; }
 @media (max-width: 480px) {

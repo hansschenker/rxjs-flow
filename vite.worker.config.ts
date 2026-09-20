@@ -18,7 +18,11 @@ export default defineConfig(({ command, isPreview }) => ({
   ],
   oxc: { jsx: { runtime: 'classic', pragma: 'h', pragmaFrag: 'null' } },
   environments: {
-    client: { build: { rolldownOptions: { input: ['index.html', 'm05d-live.html'] } } },
+    client: { build: { manifest: true, rolldownOptions: {
+      // Keep the executable host's ESM lifecycle handle available in built apps.
+      input: ['index.html', 'm05d-live.html', 'src/client/browser.ts'],
+      preserveEntrySignatures: 'exports-only',
+    } } },
   },
   server: { host: '127.0.0.1', port: 5174, strictPort: true },
   preview: { host: '127.0.0.1', port: 4174, strictPort: true },

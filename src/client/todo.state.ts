@@ -1,12 +1,20 @@
 import type { Todo } from '../shared/types';
 import type { RequestFailure } from '../shared/http-error';
 import type { TodoLiveSnapshot } from '../shared/todo-live';
+import { validateTodoDraft } from './todo.form';
 
 export type RememberedFailure = Omit<RequestFailure, 'cause'>;
 
+export interface SubmittedDraft {
+	readonly value: string;
+	readonly revision: number;
+}
+
+export type TodoFilter = 'all' | 'active' | 'completed';
+
 export type Operation =
 	| { readonly id: string; readonly kind: 'load' }
-	| { readonly id: string; readonly kind: 'create'; readonly title: string }
+	| { readonly id: string; readonly kind: 'create'; readonly title: string; readonly submittedDraft?: SubmittedDraft }
 	| { readonly id: string; readonly kind: 'update'; readonly todoId: string }
 	| { readonly id: string; readonly kind: 'delete'; readonly todoId: string };
 
@@ -38,6 +46,8 @@ export interface LiveState {
 // In live mode only a validated, admitted snapshot can replace the collection.
 export type Action =
 	| { readonly type: 'DRAFT_CHANGED'; readonly value: string }
+	| { readonly type: 'DRAFT_BLURRED' }
+	| { readonly type: 'FILTER_CHANGED'; readonly filter: TodoFilter }
 	| { readonly type: 'LOAD_REQUESTED' }
 	| { readonly type: 'CREATE_REQUESTED'; readonly title: string }
 	| { readonly type: 'TOGGLE_REQUESTED'; readonly id: string; readonly completed: boolean }
@@ -61,17 +71,22 @@ export type Action =
 export interface State {
 	readonly todos: readonly Readonly<Todo>[];
 	readonly draft: string;
+	readonly draftRevision: number;
+	readonly draftTouched: boolean;
+	readonly filter: TodoFilter;
 	readonly loadStatus: LoadStatus;
 	readonly pending: readonly Operation[];
 	readonly error: string | null;
 	readonly failure: RememberedFailure | null;
+	readonly failedOperation: Operation['kind'] | null;
 	readonly connection: ConnectionStatus;
 	readonly live: LiveState | null;
 }
 
 export function createInitialState(options: TodoStateOptions = {}): State {
 	return {
-		todos: [], draft: '', loadStatus: 'idle', pending: [], error: null, failure: null, connection: 'idle',
+		todos: [], draft: '', draftRevision: 0, draftTouched: false, filter: 'all',
+		loadStatus: 'idle', pending: [], error: null, failure: null, failedOperation: null, connection: 'idle',
 		live: options.collectionSource === 'live' ? {
 			expectedCollectionId: options.collectionId ?? null, identity: null, connectionId: 0,
 			firstSnapshotPending: false, acceptingSnapshots: false, stale: false, attempt: 0,
@@ -116,6 +131,17 @@ function upsertTodo(todos: State['todos'], incoming: Readonly<Todo>): State['tod
 
 function removeOperation(state: State, id: string): readonly Operation[] {
 	return state.pending.filter(operation => operation.id !== id);
+}
+
+function ownedOperation(operation: Operation): Operation {
+	return operation.kind === 'create' && operation.submittedDraft
+		? { ...operation, submittedDraft: { ...operation.submittedDraft } }
+		: { ...operation };
+}
+
+function isCurrentDraft(state: State, operation: Extract<Operation, { kind: 'create' }>): boolean {
+	const submitted = operation.submittedDraft;
+	return submitted !== undefined && submitted.revision === state.draftRevision && submitted.value === state.draft;
 }
 
 function finishLoad(state: State, pending: readonly Operation[], failed: boolean): LoadStatus {
@@ -170,9 +196,17 @@ function admitSnapshot(state: State, connectionId: number, snapshot: TodoLiveSna
 export function reducer(state: State, action: Action): State {
 	switch (action.type) {
 		case 'DRAFT_CHANGED':
-			return state.draft === action.value ? state : { ...state, draft: action.value };
-		case 'LOAD_REQUESTED':
+			return state.draft === action.value ? state : {
+				...state, draft: action.value, draftRevision: state.draftRevision + 1,
+			};
+		case 'DRAFT_BLURRED':
+			return state.draftTouched ? state : { ...state, draftTouched: true };
+		case 'FILTER_CHANGED':
+			return state.filter === action.filter ? state : { ...state, filter: action.filter };
 		case 'CREATE_REQUESTED':
+			return !state.draftTouched && action.title === state.draft && validateTodoDraft(action.title).error
+				? { ...state, draftTouched: true } : state;
+		case 'LOAD_REQUESTED':
 		case 'TOGGLE_REQUESTED':
 		case 'DELETE_REQUESTED':
 			return state;
@@ -181,11 +215,12 @@ export function reducer(state: State, action: Action): State {
 			if (state.pending.some(operation => operation.id === action.operation.id)) return state;
 			return {
 				...state,
-				pending: [...state.pending, { ...action.operation }],
+				pending: [...state.pending, ownedOperation(action.operation)],
 				loadStatus: action.operation.kind === 'load' && state.loadStatus !== 'ready'
 					? 'loading' : state.loadStatus,
 				error: null,
 				failure: null,
+				failedOperation: null,
 			};
 		}
 		case 'LOAD_SUCCEEDED': {
@@ -193,16 +228,19 @@ export function reducer(state: State, action: Action): State {
 			if (state.live) return { ...state, pending: removeOperation(state, action.operationId) };
 			return {
 				...state, todos: replaceCollection(state.todos, action.todos),
-				pending: removeOperation(state, action.operationId), loadStatus: 'ready', error: null, failure: null,
+				pending: removeOperation(state, action.operationId), loadStatus: 'ready', error: null, failure: null, failedOperation: null,
 			};
 		}
 		case 'CREATE_SUCCEEDED': {
 			const operation = state.pending.find(operation => operation.id === action.operationId);
 			if (operation?.kind !== 'create') return state;
+			const clearDraft = isCurrentDraft(state, operation);
 			return {
 				...state, todos: state.live ? state.todos : upsertTodo(state.todos, action.todo),
 				pending: removeOperation(state, action.operationId),
-				draft: state.draft.trim() === operation.title ? '' : state.draft,
+				draft: clearDraft ? '' : state.draft,
+				draftRevision: clearDraft ? state.draftRevision + 1 : state.draftRevision,
+				draftTouched: clearDraft ? false : state.draftTouched,
 			};
 		}
 		case 'UPDATE_SUCCEEDED': {
@@ -232,10 +270,11 @@ export function reducer(state: State, action: Action): State {
 				loadStatus: operation.kind === 'load' ? finishLoad(state, pending, failed) : state.loadStatus,
 				error: failed ? action.message : state.error,
 				failure: failed ? rememberFailure(action.failure) : state.failure,
+				failedOperation: failed ? operation.kind : state.failedOperation,
 			};
 		}
 		case 'MUTATION_REJECTED':
-			return { ...state, error: action.message, failure: null };
+			return { ...state, error: action.message, failure: null, failedOperation: null };
 		case 'SERVER_SNAPSHOT': {
 			if (state.live) return state;
 			const todos = replaceCollection(state.todos, action.todos);
@@ -268,6 +307,7 @@ export function reducer(state: State, action: Action): State {
 			};
 		}
 		case 'ERROR_DISMISSED':
-			return state.error === null && state.failure === null ? state : { ...state, error: null, failure: null };
+			return state.error === null && state.failure === null && state.failedOperation === null
+				? state : { ...state, error: null, failure: null, failedOperation: null };
 	}
 }
