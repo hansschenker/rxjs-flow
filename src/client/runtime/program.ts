@@ -1,4 +1,5 @@
 import { Observable, ReplaySubject, Subject, scan, startWith } from 'rxjs';
+import { allocateTraceId, emitTrace, type Trace, type TraceDetails } from '../../shared/trace';
 import { createScope } from './scope';
 
 export interface Transition<State, Message> {
@@ -20,6 +21,11 @@ export interface Program<State, Message> {
 export interface ProgramOptions<State, Message> {
 	readonly initialState: () => State;
 	readonly reduce: (state: State, message: Message) => State;
+	readonly trace?: Trace;
+	readonly scopeId?: string;
+	readonly sourceId?: string;
+	readonly messageTrace?: (message: Message) => TraceDetails;
+	readonly transitionTrace?: (transition: Transition<State, Message>) => TraceDetails;
 }
 
 interface Frame<State, Message> {
@@ -29,7 +35,10 @@ interface Frame<State, Message> {
 
 /** One inert state machine; its root owns accumulation until explicit disposal. */
 export function createProgram<State, Message>(options: ProgramOptions<State, Message>): Program<State, Message> {
-	const scope = createScope();
+	const trace = options.trace;
+	const scopeId = options.scopeId ?? allocateTraceId(trace, 'program');
+	const sourceId = options.sourceId ?? 'program.ingress';
+	const scope = createScope({ trace, id: `${scopeId}/state` });
 	const input = new Subject<Message>();
 	let states = new ReplaySubject<State>(1);
 	const transitions = new Subject<Transition<State, Message>>();
@@ -43,6 +52,27 @@ export function createProgram<State, Message>(options: ProgramOptions<State, Mes
 	// retain this program or either public Observable. Subjects stay private.
 	const state$ = new Observable<State>(subscriber => states.subscribe(subscriber));
 	const transitions$ = new Observable<Transition<State, Message>>(subscriber => transitions.subscribe(subscriber));
+
+	function describe<Value>(project: ((value: Value) => TraceDetails) | undefined, value: Value): TraceDetails {
+		if (!trace || !project) return {};
+		try { return project(value); } catch { return {}; }
+	}
+
+	function traceState(frame: Frame<State, Message>): void {
+		if (!trace) return;
+		try {
+			const transition = frame.transition;
+			const message = transition ? describe(options.messageTrace, transition.message) : {};
+			const details = transition ? describe(options.transitionTrace, transition) : {};
+			emitTrace(trace, {
+				...message, ...details, event: 'state.transition', scopeId, sourceId,
+				metadata: {
+					...message.metadata, ...details.metadata,
+					...(transition ? { changed: transition.previous !== transition.state } : { reason: 'initial' }),
+				},
+			});
+		} catch { /* A diagnostic projection, including its getters, cannot stop state publication. */ }
+	}
 
 	function finish(failure?: { readonly error: unknown }): void {
 		if (closed) return;
@@ -96,6 +126,8 @@ export function createProgram<State, Message>(options: ProgramOptions<State, Mes
 			scope.subscribe(accumulation, {
 				next: frame => {
 					if (closed) return;
+					traceState(frame);
+					if (closed) return;
 					states.next(frame.state);
 					if (!closed && frame.transition) transitions.next(frame.transition);
 				},
@@ -120,6 +152,11 @@ export function createProgram<State, Message>(options: ProgramOptions<State, Mes
 		dispatch(message) {
 			if (!started || closed) return false;
 			queue.push(message);
+			if (trace) {
+				try { emitTrace(trace, {
+					...describe(options.messageTrace, message), event: 'source.received', scopeId, sourceId,
+				}); } catch { /* Isolate diagnostic projection getters. */ }
+			}
 			drain();
 			return true;
 		},

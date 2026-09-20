@@ -1,4 +1,5 @@
 import { Observable, Subscription, type Observer, type TeardownLogic } from 'rxjs';
+import { allocateTraceId, emitTrace, type Trace } from '../../shared/trace';
 
 export interface Scope {
 	readonly closed: boolean;
@@ -8,12 +9,21 @@ export interface Scope {
 	subscribe<T>(source: Observable<T>, observer?: Partial<Observer<T>>): Subscription;
 }
 
-/** An inert owner; source activation happens only through an explicit subscribe. */
-export function createScope(): Scope {
-	return scopeFor(new Subscription());
+export interface ScopeOptions {
+	readonly trace?: Trace;
+	readonly id?: string;
 }
 
-function scopeFor(owner: Subscription): Scope {
+/** An inert owner; source activation happens only through an explicit subscribe. */
+export function createScope(options: ScopeOptions = {}): Scope {
+	return scopeFor(new Subscription(), options.trace, options.id ?? allocateTraceId(options.trace, 'scope'));
+}
+
+function scopeFor(owner: Subscription, trace?: Trace, id?: string): Scope {
+	let children = 0;
+	// This records cancellation initiation. Actual resource release is established
+	// by the owned teardowns, not by the presence of this diagnostic event.
+	if (trace && id) owner.add(() => emitTrace(trace, { event: 'scope.dispose', scopeId: id, sourceId: 'scope' }));
 	return {
 		get closed() { return owner.closed; },
 		add(teardown) { owner.add(teardown); },
@@ -21,7 +31,7 @@ function scopeFor(owner: Subscription): Scope {
 			const child = new Subscription();
 			// RxJS removes an unsubscribed child from its parent automatically.
 			owner.add(child);
-			return scopeFor(child);
+			return scopeFor(child, trace, id ? `${id}/${++children}` : undefined);
 		},
 		dispose() { owner.unsubscribe(); },
 		subscribe<T>(source: Observable<T>, observer?: Partial<Observer<T>>) {

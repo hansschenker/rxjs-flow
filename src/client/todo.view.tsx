@@ -42,6 +42,7 @@ export function bindTodoView(
 	viewModel$: Observable<ViewModel>,
 	onIntent: (action: Action) => void,
 	onError: (error: unknown) => void,
+	onCommit?: () => void,
 ): void {
 	const { list, error, form, input, submit, refresh, summary, pending, loading, empty,
 		connection, connectionLabel, connectionDetail, filters, draftHint, filteredEmpty,
@@ -87,7 +88,9 @@ export function bindTodoView(
 		rowScope.add(() => updates.complete());
 		return { element, update: value => { if (!rowScope.closed) updates.next(value); } };
 	}
-	bindKeyedList(scope, list, viewModel$.pipe(map(todoRows)), rowKey, createRow, onError);
+	// This final sink runs after the scalar bindings and reports only once the
+	// keyed rows have been updated and placed successfully.
+	bindKeyedList(scope, list, viewModel$.pipe(map(todoRows)), rowKey, createRow, onError, onCommit);
 }
 
 export function remainingText(view: ViewModel): string {
