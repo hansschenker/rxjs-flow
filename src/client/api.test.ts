@@ -2,7 +2,7 @@ import { expectTypeOf, vi } from 'vitest';
 import { firstValueFrom } from 'rxjs';
 import { z } from 'zod';
 import { createClient, type FetchTransport } from './api';
-import { defineRoute, routes } from '../shared/routes';
+import { defineRoute, routes, type AnyFiniteRoute } from '../shared/routes';
 import type { CreateTodoBody, Todo, UpdateTodoBody } from '../shared/types';
 
 const todo: Todo = { id: '1', title: 'Test', completed: false, createdAt: '2026-01-01T00:00:00.000Z' };
@@ -37,6 +37,9 @@ describe('createClient()', () => {
 		expectTypeOf(client.todos.create).toEqualTypeOf<(body: CreateTodoBody) => import('rxjs').Observable<Todo>>();
 		expectTypeOf(client.todos.update).toEqualTypeOf<(params: { id: string }, body: UpdateTodoBody) => import('rxjs').Observable<Todo>>();
 		expectTypeOf(client.todos.remove).toEqualTypeOf<(params: { id: string }) => import('rxjs').Observable<void>>();
+		expectTypeOf<keyof typeof client.todos>().toEqualTypeOf<'list' | 'create' | 'update' | 'remove'>();
+		expect(client.todos).not.toHaveProperty('stream');
+		expect(client.todos).not.toHaveProperty('live');
 	});
 
 	it('defers URL construction, body serialization and transport until each subscription', async () => {
@@ -116,9 +119,11 @@ describe('createClient()', () => {
 		});
 	});
 
-	it('reports finite-client misuse of the streaming route without fetching', async () => {
+	it('contains untyped finite-client misuse of a streaming route without fetching', async () => {
 		const fetch = vi.fn<FetchTransport>();
-		await expect(firstValueFrom(createClient(routes, { fetch }).todos.stream())).rejects.toMatchObject({
+		// JavaScript/unsafe casts cannot bypass the runtime transport boundary.
+		const unsafe = createClient(routes.todos.live as unknown as AnyFiniteRoute, { fetch });
+		await expect(firstValueFrom(unsafe(undefined, undefined))).rejects.toMatchObject({
 			kind: 'unsupported-response', message: expect.stringContaining('stream'),
 		});
 		expect(fetch).not.toHaveBeenCalled();

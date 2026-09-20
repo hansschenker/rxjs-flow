@@ -1,5 +1,6 @@
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import type { SseEvent } from '../server/core/types';
+import type { TodoLiveSnapshot } from '../shared/todo-live';
 import { HttpError } from '../server/core/errors';
 import { decodeTodoSnapshot, TODO_AUTHORITY_LIMITS } from '../server/todos/todo.authority';
 import type { TodoCollection } from './todo-collection';
@@ -10,9 +11,18 @@ export const TODO_WATCH_CONTENT_TYPE = 'application/x-ndjson';
 /**
  * One cold transport per response. Observable ownership stays local: cancelling
  * the reader explicitly propagates cancellation to the Durable Object body.
- * This private NDJSON envelope is not the browser's M06 live wire contract.
+ * The private NDJSON framing stays independent of either public SSE endpoint.
  */
 export function createDurableTodoLive(stub: DurableObjectStub<TodoCollection>, collectionId: string): Observable<SseEvent> {
+	return createDurableTodoSnapshots(stub, collectionId).pipe(map(legacyTodoEvent));
+}
+
+function legacyTodoEvent(snapshot: TodoLiveSnapshot): SseEvent {
+	return { event: 'todos', data: snapshot.todos };
+}
+
+/** A cold registration exposes committed history without inventing Worker epochs. */
+export function createDurableTodoSnapshots(stub: DurableObjectStub<TodoCollection>, collectionId: string): Observable<TodoLiveSnapshot> {
 	return new Observable(observer => {
 		const controller = new AbortController();
 		let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
@@ -62,8 +72,7 @@ export function createDurableTodoLive(stub: DurableObjectStub<TodoCollection>, c
 						if (newline !== -1) {
 							const snapshot = decodeTodoSnapshot(JSON.parse(decoder.decode(frame.subarray(0, frameBytes))), collectionId);
 							frameBytes = 0;
-							// Preserve the existing public event name and bare-array payload.
-							observer.next({ event: 'todos', data: snapshot.todos });
+							observer.next(snapshot);
 						}
 					}
 				}

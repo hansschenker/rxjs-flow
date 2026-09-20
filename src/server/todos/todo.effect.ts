@@ -8,11 +8,13 @@ import { CreateTodoSchema, TodoListQuerySchema, TodoParamsSchema, UpdateTodoSche
 import type { TodoStore } from './todo.store-factory';
 import { routes, type RouteResponse } from '../../shared/routes';
 import { createMemoryTodoRepository, type TodoRepository } from './todo.repository';
+import { TODO_LIVE_EVENT, type TodoLiveSnapshot } from '../../shared/todo-live';
 
 export interface TodoServices {
 	todoStore?: TodoStore;
 	todoRepository?: TodoRepository;
 	todoLive$?: Observable<SseEvent>;
+	todoSnapshots$?: Observable<TodoLiveSnapshot>;
 }
 
 export const createTodoEffects = () => ({
@@ -57,6 +59,15 @@ export const createTodoEffects = () => ({
 				return { ...stream$(store.todos$, 'todos'), streamPolicy: 'latest-snapshot' as const };
 			}),
 		)) as Effect,
+
+	todoLive$: ((req$) =>
+		req$.pipe(map(req => {
+			const snapshots = req.context.services.todoSnapshots$ as Observable<TodoLiveSnapshot> | undefined;
+			const store = req.context.services.todoStore as TodoStore | undefined;
+			const source = snapshots ?? store?.snapshot$;
+			if (!source) throw new HttpError(503, 'Todo live storage is not configured');
+			return { ...stream$(source, TODO_LIVE_EVENT), streamPolicy: 'latest-snapshot' as const };
+		}))) as Effect,
 });
 
 const defaultEffects = createTodoEffects();
@@ -65,6 +76,7 @@ export const create$ = defaultEffects.create$;
 export const update$ = defaultEffects.update$;
 export const delete$ = defaultEffects.delete$;
 export const todoStream$ = defaultEffects.todoStream$;
+export const todoLive$ = defaultEffects.todoLive$;
 
 function getTodoRepository(req: { context: { services: Record<string, unknown> } }): TodoRepository {
 	const capability = req.context.services.todoRepository as TodoRepository | undefined;

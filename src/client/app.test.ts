@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Todo } from '../shared/types';
 import { createTodoApp, mountTodoApp, type TodoService } from './main';
 import type { State } from './todo.state';
+import { createTodoService } from './todo.service';
 
 const todo: Todo = { id: '1', title: 'First', completed: false, createdAt: '2026-09-17T00:00:00Z' };
 const second: Todo = { ...todo, id: '2', title: 'Second' };
@@ -328,13 +329,13 @@ describe('M01 app activation and disposal', () => {
 		expect(api.create$).not.toHaveBeenCalled();
 	});
 
-	it('aborts the real client fetch before headers when disposed', () => {
+	it('aborts the real finite compatibility client fetch before headers when disposed', () => {
 		let signal: AbortSignal | undefined;
 		vi.stubGlobal('fetch', vi.fn((_url: unknown, init: RequestInit) => {
 			signal = init.signal ?? undefined;
 			return new Promise<Response>(() => {});
 		}));
-		const app = createTodoApp();
+		const app = createTodoApp({ ...createTodoService(), live$: undefined });
 		apps.push(app);
 		app.start(document.body);
 		expect(signal?.aborted).toBe(false);

@@ -15,7 +15,7 @@ export type MutationIntent = Exclude<TodoIntent, { readonly kind: 'load' }>;
 export function interpretTodoIntent({ message, state }: Transition<State, Action>): TodoIntent | null {
 	switch (message.type) {
 		case 'LOAD_REQUESTED':
-			return { kind: 'load' };
+			return state.live ? null : { kind: 'load' };
 		case 'CREATE_REQUESTED': {
 			const title = message.title.trim();
 			return title ? { kind: 'create', title } : null;

@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 import type { CreateTodoBody, Todo, UpdateTodoBody } from './types';
 import { todoListSchema, todoSchema } from './todo.schema';
+import { TODO_LIVE_EVENT, TODO_LIVE_PATH, todoLiveSnapshotSchema } from './todo-live';
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
@@ -11,10 +12,18 @@ export type RouteParams<Path extends string> =
 			? { [Key in Param]: string }
 			: Record<never, never>;
 
-export type ResponseBody<TResponse> =
+export type FiniteResponseBody<TResponse> =
 	| { readonly kind: 'json'; readonly schema: z.ZodType<TResponse> }
-	| { readonly kind: 'empty'; readonly status: 204 }
-	| { readonly kind: 'stream' };
+	| { readonly kind: 'empty'; readonly status: 204 };
+
+export type LiveResponseBody<TResponse> = {
+	readonly kind: 'stream';
+	readonly event: string;
+	readonly schema: z.ZodType<TResponse>;
+};
+
+export type ResponseBody<TResponse> = FiniteResponseBody<TResponse> | LiveResponseBody<TResponse>;
+export type ResponseKind = ResponseBody<unknown>['kind'];
 
 export interface RouteContract<
 	TMethod extends HttpMethod,
@@ -22,16 +31,29 @@ export interface RouteContract<
 	TBody = undefined,
 	TQuery = undefined,
 	TResponse = unknown,
+	TKind extends ResponseKind = ResponseKind,
 > {
 	method: TMethod;
 	path: TPath;
 	body: TBody;
 	query: TQuery;
 	response: TResponse;
-	responseBody: ResponseBody<TResponse>;
+	responseBody: Extract<ResponseBody<TResponse>, { kind: TKind }>;
 }
 
-export type AnyRoute = RouteContract<HttpMethod, string, unknown, unknown, unknown>;
+/** Structural boundary avoids widening a route's discriminant during inference. */
+export interface AnyRoute {
+	method: HttpMethod;
+	path: string;
+	body: unknown;
+	query: unknown;
+	response: unknown;
+	responseBody: ResponseBody<unknown>;
+}
+export type AnyFiniteRoute = Omit<AnyRoute, 'responseBody'> & { responseBody: FiniteResponseBody<unknown> };
+export type AnyLiveRoute = Omit<AnyRoute, 'method' | 'body' | 'query' | 'responseBody'> & {
+	method: 'GET'; body: undefined; query: undefined; responseBody: LiveResponseBody<unknown>;
+};
 export type RouteBody<TRoute extends AnyRoute> = TRoute['body'];
 export type RouteQuery<TRoute extends AnyRoute> = TRoute['query'];
 export type RouteResponse<TRoute extends AnyRoute> = TRoute['response'];
@@ -51,9 +73,9 @@ export const defineRoute = <
 >(
 	method: TMethod,
 	path: TPath,
-	responseBody: ResponseBody<TResponse>,
+	responseBody: FiniteResponseBody<TResponse>,
 	hasQuery?: boolean,
-): RouteContract<TMethod, TPath, TBody, TQuery, TResponse> => ({
+): RouteContract<TMethod, TPath, TBody, TQuery, TResponse, 'json' | 'empty'> => ({
 	method,
 	path,
 	body: undefined as TBody,
@@ -62,13 +84,24 @@ export const defineRoute = <
 	responseBody,
 });
 
+/** Live contracts are intentionally separate from finite JSON client methods. */
+export function defineLiveRoute<TPath extends string, TResponse>(
+	path: TPath,
+	event: string,
+	schema: z.ZodType<TResponse>,
+): RouteContract<'GET', TPath, undefined, undefined, TResponse, 'stream'> {
+	return { method: 'GET', path, body: undefined, query: undefined, response: undefined as TResponse,
+		responseBody: { kind: 'stream', event, schema } };
+}
+
 export const routes = {
 	todos: {
 		list: defineRoute<'GET', '/todos', undefined, { completed?: 'true' | 'false' }, Todo[]>('GET', '/todos', { kind: 'json', schema: todoListSchema }, true),
 		create: defineRoute<'POST', '/todos', CreateTodoBody, undefined, Todo>('POST', '/todos', { kind: 'json', schema: todoSchema }),
 		update: defineRoute<'PUT', '/todos/:id', UpdateTodoBody, undefined, Todo>('PUT', '/todos/:id', { kind: 'json', schema: todoSchema }),
 		remove: defineRoute<'DELETE', '/todos/:id', undefined, undefined, void>('DELETE', '/todos/:id', { kind: 'empty', status: 204 }),
-		stream: defineRoute('GET', '/todos/stream', { kind: 'stream' }),
+		stream: defineLiveRoute('/todos/stream', 'todos', todoListSchema),
+		live: defineLiveRoute(TODO_LIVE_PATH, TODO_LIVE_EVENT, todoLiveSnapshotSchema),
 	},
 } as const;
 

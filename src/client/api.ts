@@ -3,6 +3,8 @@ import { createRequestFailure, isRequestFailure, type RequestFailure } from '../
 import {
 	apiPath,
 	type AnyRoute,
+	type AnyFiniteRoute,
+	type AnyLiveRoute,
 	type RouteBody,
 	type RouteParams,
 	type RouteQuery,
@@ -24,7 +26,7 @@ type HasParams<TRoute extends AnyRoute> =
 type HasQuery<TRoute extends AnyRoute> =
 	RouteQuery<TRoute> extends undefined ? false : true;
 
-export type ClientMethod<TRoute extends AnyRoute> =
+export type ClientMethod<TRoute extends AnyFiniteRoute> =
 	RouteBody<TRoute> extends undefined
 		? HasParams<TRoute> extends true
 			? HasQuery<TRoute> extends true
@@ -42,11 +44,13 @@ export type ClientMethod<TRoute extends AnyRoute> =
 				: (body: RouteBody<TRoute>) => Observable<RouteResponse<TRoute>>;
 
 export type ClientFor<TContract> =
-	TContract extends AnyRoute
+	TContract extends AnyLiveRoute
+		? never
+		: TContract extends AnyFiniteRoute
 		? ClientMethod<TContract>
-		: { [Key in keyof TContract]: ClientFor<TContract[Key]> };
+		: { [Key in keyof TContract as TContract[Key] extends AnyLiveRoute ? never : Key]: ClientFor<TContract[Key]> };
 
-export const request$ = <TRoute extends AnyRoute>(
+export const request$ = <TRoute extends AnyFiniteRoute>(
 	route: TRoute,
 	params: RouteParams<TRoute['path']>,
 	query: RouteQuery<TRoute>,
@@ -189,7 +193,9 @@ export const createClient = <TContract>(contract: TContract, options: ClientOpti
 		}
 
 		return Object.fromEntries(
-			Object.entries(node as Record<string, unknown>).map(([key, value]) => [key, build(value)]),
+			Object.entries(node as Record<string, unknown>)
+				.filter(([, value]) => !isRoute(value) || value.responseBody.kind !== 'stream')
+				.map(([key, value]) => [key, build(value)]),
 		);
 	};
 

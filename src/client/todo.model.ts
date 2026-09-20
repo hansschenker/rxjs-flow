@@ -1,10 +1,11 @@
 import { distinctUntilChanged, map, type Observable } from 'rxjs';
 import { createProgram } from './runtime/program';
-import { createInitialState, reducer, type Action, type State } from './todo.state';
+import { createInitialState, reducer, type Action, type State, type TodoStateOptions } from './todo.state';
 import { equalViewModel, selectViewModel, type ViewModel } from './todo.selectors';
 
-export function createTodoModel() {
-	const program = createProgram<State, Action>({ initialState: createInitialState, reduce: reducer });
+export function createTodoModel(options: TodoStateOptions = {}) {
+	function initialState(): State { return createInitialState(options); }
+	const program = createProgram<State, Action>({ initialState, reduce: reducer });
 	const state$ = program.state$.pipe(distinctUntilChanged());
 	const viewModel$: Observable<ViewModel> = state$.pipe(
 		map(selectViewModel),

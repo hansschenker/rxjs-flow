@@ -24,6 +24,9 @@ export function findTodoElements(root: ParentNode) {
 		pending: root.querySelector<HTMLElement>('#pending-msg'),
 		loading: root.querySelector<HTMLElement>('#loading-state'),
 		empty: root.querySelector<HTMLElement>('#empty-state'),
+		connection: root.querySelector<HTMLElement>('#connection-state'),
+		connectionLabel: root.querySelector<HTMLElement>('#connection-label'),
+		connectionDetail: root.querySelector<HTMLElement>('#connection-detail'),
 	};
 }
 
@@ -35,7 +38,8 @@ export function bindTodoView(
 	onIntent: (action: Action) => void,
 	onError: (error: unknown) => void,
 ): void {
-	const { list, error, form, input, submit, summary, pending, loading, empty } = elements;
+	const { list, error, form, input, submit, refresh, summary, pending, loading, empty,
+		connection, connectionLabel, connectionDetail } = elements;
 	bindText(scope, error, viewModel$.pipe(map(errorText)), onError);
 	bindProperty(scope, input, 'value', viewModel$.pipe(map(draftValue)), onError);
 	bindAttribute(scope, form, 'aria-busy', viewModel$.pipe(map(formBusy)), onError);
@@ -47,6 +51,10 @@ export function bindTodoView(
 	if (pending) bindText(scope, pending, viewModel$.pipe(map(pendingText)), onError);
 	if (loading) bindIf(scope, loading, viewModel$.pipe(map(isLoading)), loadingContent, onError);
 	if (empty) bindIf(scope, empty, viewModel$.pipe(map(isEmpty)), emptyContent, onError);
+	if (refresh) bindText(scope, refresh, viewModel$.pipe(map(recoveryText)), onError);
+	if (connection) bindAttribute(scope, connection, 'data-state', viewModel$.pipe(map(connectionTone)), onError);
+	if (connectionLabel) bindText(scope, connectionLabel, viewModel$.pipe(map(connectionText)), onError);
+	if (connectionDetail) bindText(scope, connectionDetail, viewModel$.pipe(map(connectionDetailText)), onError);
 
 	function createRow(initial: TodoRowView, rowScope: Scope): KeyedRow<TodoRowView> {
 		const updates = new Subject<TodoRowView>();
@@ -62,6 +70,31 @@ export function remainingText(view: ViewModel): string {
 }
 
 function errorText(view: ViewModel): string { return view.error ?? ''; }
+function recoveryText(view: ViewModel): string { return view.live ? 'Reconnect' : 'Refresh'; }
+function connectionTone(view: ViewModel): string {
+	if (!view.live) return 'manual';
+	if (view.connection === 'disconnected') return 'error';
+	if (view.connection === 'connected' && !view.live.stale) return 'live';
+	return view.live.identity ? 'stale' : 'loading';
+}
+function connectionText(view: ViewModel): string {
+	if (!view.live) return 'Manual refresh';
+	if (view.connection === 'disconnected') return 'Connection stopped';
+	if (view.connection === 'connected' && !view.live.stale) return 'Live';
+	return view.live.identity ? 'Reconnecting…' : 'Connecting…';
+}
+function connectionDetailText(view: ViewModel): string {
+	const live = view.live;
+	if (!live) return 'Refresh to see changes made elsewhere.';
+	if (view.connection === 'disconnected') {
+		return `${live.error ?? 'Live updates are unavailable.'} Select Reconnect to try again.`;
+	}
+	if (view.connection === 'connected' && !live.stale) return 'Changes appear here automatically.';
+	const retained = live.identity ? 'Showing the last confirmed list. ' : 'Waiting for the saved list. ';
+	return live.retryDelayMs === null
+		? `${retained}Connecting${live.attempt > 1 ? ` (retry ${live.attempt - 1})` : ''}…`
+		: `${retained}Retry ${live.attempt - 1} in ${live.retryDelayMs / 1_000} s.`;
+}
 function draftValue(view: ViewModel): string { return view.draft; }
 function formBusy(view: ViewModel): string { return String(view.creating); }
 function submitDisabled(view: ViewModel): boolean { return !view.canSubmit; }

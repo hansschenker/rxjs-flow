@@ -24,6 +24,10 @@
           <p id="todo-summary" aria-live="polite"></p>
           <button id="refresh-todos" type="button">Refresh</button>
         </div>
+        <div id="connection-state" data-state="loading" role="status" aria-live="polite">
+          <span class="connection-dot" aria-hidden="true"></span>
+          <div><strong id="connection-label">Connecting…</strong><p id="connection-detail">Waiting for the saved list.</p></div>
+        </div>
         <div id="loading-state" role="status"></div>
         <ul id="todo-list" aria-label="Todo list"></ul>
         <div id="empty-state"></div>
