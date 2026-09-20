@@ -10,10 +10,14 @@ import {
 } from './todo.intents';
 import type { TodoService } from './todo.service';
 import type { Action, Operation, State } from './todo.state';
+import { allocateTraceId, emitTrace, traceObservable, type Trace, type TraceContext } from '../shared/trace';
+import { todoOperationId } from './todo.model';
 
 export interface TodoEffectsOptions {
 	/** Active plus waiting writes. The default is 32; overflow emits MUTATION_REJECTED. */
 	readonly mutationCapacity?: number;
+	readonly trace?: Trace;
+	readonly traceScope?: string;
 }
 
 interface MutationTask {
@@ -34,13 +38,23 @@ function request$(intent: TodoIntent, service: TodoService): Observable<unknown>
 	}
 }
 
-function operation$(intent: TodoIntent, operation: Operation, service: TodoService): Observable<Action> {
-	const result$ = defer(() => request$(intent, service)).pipe(
+function operation$(intent: TodoIntent, operation: Operation, service: TodoService,
+	trace?: Trace, context?: TraceContext): Observable<Action> {
+	function selectedRequest(): Observable<unknown> {
+		const selectedService = context?.operationId && service.withOperation
+			? service.withOperation(context.operationId) : service;
+		return request$(intent, selectedService);
+	}
+	const finite$ = defer(selectedRequest).pipe(
 		take(1),
-		map((value): RequestOutcome => ({ value })),
 		throwIfEmpty(() => createRequestFailure({
 			kind: 'decode', message: `No result received for ${intent.kind} request.`,
 		})),
+	);
+	// The finite capability selects one result. Its completion is distinct from
+	// take(1) releasing the underlying source, and failures precede recovery facts.
+	const result$ = traceObservable(finite$, trace, context ?? { scopeId: 'todo.effects', sourceId: 'todo.request' }).pipe(
+		map((value): RequestOutcome => ({ value })),
 		// Only the finite capability boundary recovers. Interpretation and result
 		// projection remain outside catchError, so programming faults reach the host.
 		catchError((failure: unknown) => of<RequestOutcome>({ failure })),
@@ -78,6 +92,7 @@ export function todoEffects$(
 	options: TodoEffectsOptions = {},
 ): Observable<Action> {
 	return new Observable<Action>(subscriber => {
+		const scopeId = options.traceScope ?? allocateTraceId(options.trace, 'todo.effects');
 		const capacity = options.mutationCapacity ?? 32;
 		if (!Number.isSafeInteger(capacity) || capacity < 1) {
 			throw new RangeError('mutationCapacity must be a positive safe integer.');
@@ -86,10 +101,24 @@ export function todoEffects$(
 		const mutations = new Subject<MutationTask>();
 		let nextId = 0;
 		let admitted = 0;
+		let activeWrites = 0;
 		let activeRead: Operation | undefined;
+		function operationContext(operation: Operation): TraceContext {
+			return { scopeId, sourceId: `todo.${operation.kind}`,
+				...(options.trace ? { operationId: todoOperationId(options.trace, scopeId, operation.id) } : {}),
+				metadata: { kind: operation.kind } };
+		}
+		function queueState(reason: string): void {
+			emitTrace(options.trace, { event: 'resource.state', scopeId, sourceId: 'todo.mutation-queue',
+				metadata: { active: activeWrites, queued: admitted - activeWrites, count: admitted, capacity, reason } });
+		}
+		function accepted(operation: Operation): void {
+			emitTrace(options.trace, { event: 'intent.accepted', ...operationContext(operation) });
+		}
 
 		function admit(intent: MutationIntent, settle: () => void): void {
 			if (admitted >= capacity) {
+				queueState('overflow');
 				subscriber.next({ type: 'MUTATION_REJECTED', message: `Mutation queue is full (capacity ${capacity}). Please try again.` });
 				settle();
 				return;
@@ -100,22 +129,34 @@ export function todoEffects$(
 			// consumer. The completion latch prevents STARTED overtaking QUEUED.
 			const ready = new Subject<never>();
 			mutations.next({ intent, operation, ready$: ready.asObservable(), settle });
+			accepted(operation);
+			queueState('admitted');
 			if (!subscriber.closed) subscriber.next({ type: 'OPERATION_QUEUED', operation });
 			ready.complete();
 		}
 
-		const writes$ = mutations.pipe(concatMap(task => concat(task.ready$, operation$(task.intent, task.operation, service)).pipe(
-			tap(action => {
+		function runWrite(task: MutationTask): Observable<Action> {
+			function startWrite(): Observable<Action> {
+				activeWrites = 1;
+				queueState('started');
+				return subscriber.closed ? of<Action>() : operation$(task.intent, task.operation, service, options.trace, operationContext(task.operation));
+			}
+			function settleWrite(action: Action): void {
 				if (action.type === 'OPERATION_STARTED') return;
 				admitted--;
+				activeWrites = 0;
+				queueState('settled');
 				task.settle();
-			}),
-		)));
+			}
+			return concat(task.ready$, defer(startWrite)).pipe(tap(settleWrite));
+		}
+		const writes$ = mutations.pipe(concatMap(runWrite));
 		const reads$ = intents.pipe(filter(isLoad), switchMap(intent => {
 			const previous = activeRead;
 			const operation = describeOperation(intent, String(++nextId));
 			activeRead = operation;
-			const current$ = operation$(intent, operation, service).pipe(tap(action => {
+			accepted(operation);
+			const current$ = operation$(intent, operation, service, options.trace, operationContext(operation)).pipe(tap(action => {
 				if (action.type !== 'OPERATION_STARTED') activeRead = undefined;
 			}));
 			// switchMap has already unsubscribed the previous request. Settlement
@@ -148,5 +189,13 @@ export function todoEffects$(
 				filter((intent): intent is TodoIntent => intent !== null),
 			).subscribe(ingress);
 		}
+		// Registered after policy ownership so this snapshot follows request
+		// teardown and queue release, including synchronous completion/disposal.
+		subscriber.add(function releaseQueue() {
+			admitted = 0;
+			activeWrites = 0;
+			activeRead = undefined;
+			queueState('disposed');
+		});
 	});
 }

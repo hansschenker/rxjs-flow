@@ -8,7 +8,7 @@ Updated: 2026-09-20. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**. F
 **Original audited source baseline:** `cbc91eefbccdeaf17221d06c75bdd237fe5e5499` on the source repository's `main`.  
 **Inspected destination baseline for this revision:** `c9197b68591e390a0a3add4667e5dd23717d6b6e` on `rxjs-flow/main`.
 
-**Implementation status, 2026-09-20:** M00 is accepted and closed by merged PR #2 at the destination baseline above. M01 is accepted/merged in PR #5 at `188f21f`. M05a is accepted/merged in PR #6 at `eeb8d29`. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`. M05b is [accepted/merged in PR #10](m05b/acceptance.md) at `1cfbaeca0cede3a08c90631e16cf6bdf2fa750c8`. M05c is [accepted/merged in PR #11](m05c/acceptance.md) at `d5500da407611e7856e9e67481a08e15e530aece`. Its [local Todo checkpoint](m05c/local-development.md) uses a configured Durable Object collection with attached SQLite storage, bounded admission, atomic state/metadata persistence and restart reconstruction. The built configuration leaves Todo access disabled; an explicit local Wrangler command is available. M05d is [accepted/merged in PR #12](m05d/acceptance.md) at `540faec7086bb58223c5f475db91710ac0e7389b`, completing parent M05. Its legacy [live checkpoint](m05d/local-development.md) remains available. M06 is [accepted/merged in PR #13](m06/acceptance.md) at `36d644f529d5660506d6f2aa90e90af562d01440`. The owner confirmed its [two-tab checkpoint](m06/local-development.md) and explicitly authorized M07 from that verified merge. M07 reference-app completion is [implemented; acceptance review/merge pending](m07/acceptance.md), with a [local application guide](m07/local-development.md). M08–M09 remain pending. The retained Node application and independent test stores remain in memory. The ChatGPT Project reference copy remains separately unverified.
+**Implementation status, 2026-09-20:** M00 is accepted and closed by merged PR #2 at the destination baseline above. M01 is accepted/merged in PR #5 at `188f21f`. M05a is accepted/merged in PR #6 at `eeb8d29`. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`. M05b is [accepted/merged in PR #10](m05b/acceptance.md) at `1cfbaeca0cede3a08c90631e16cf6bdf2fa750c8`. M05c is [accepted/merged in PR #11](m05c/acceptance.md) at `d5500da407611e7856e9e67481a08e15e530aece`. Its [local Todo checkpoint](m05c/local-development.md) uses a configured Durable Object collection with attached SQLite storage, bounded admission, atomic state/metadata persistence and restart reconstruction. The built configuration leaves Todo access disabled; an explicit local Wrangler command is available. M05d is [accepted/merged in PR #12](m05d/acceptance.md) at `540faec7086bb58223c5f475db91710ac0e7389b`, completing parent M05. Its legacy [live checkpoint](m05d/local-development.md) remains available. M06 is [accepted/merged in PR #13](m06/acceptance.md) at `36d644f529d5660506d6f2aa90e90af562d01440`. The owner confirmed its [two-tab checkpoint](m06/local-development.md) and explicitly authorized M07 from that verified merge. M07 reference-app completion is [accepted and merged in PR #14](m07/acceptance.md) at `92f25680072da22d45e815ac411abd3651d002a5`, with a [local application guide](m07/local-development.md). The owner confirmed the application and explicitly authorized M08 from that verified merge. [M08 temporal tracing](m08/acceptance.md) is implemented and locally verified with 1,018 tests; acceptance review/merge is pending. M09 remains pending. The retained Node application and independent test stores remain in memory. The ChatGPT Project reference copy remains separately unverified.
 
 This is a continuation of the existing application, not a fresh scaffold, repository rename, history reset or import from `rxjs-fullstack`. It explicitly amends r1's permanent Node HTTP and in-memory-only target assumptions. Preserve domain behavior and tested contracts while moving the platform boundary through reviewable steps. No runtime replacement occurs in this documentation change.
 
@@ -102,8 +102,8 @@ Node retirement is an explicit later decision: retain the baseline until corresp
 | M05c | Durable shared Todo authority | M05b | Accepted/merged; [PR #11 at `d5500da`](m05c/acceptance.md) |
 | M05d | Owned SSE and bounded authority-to-client delivery | M05b, M05c | Accepted/merged; [PR #12 at `540faec`](m05d/acceptance.md) |
 | M06 | Typed live synchronization and recovery | M03, M05 | Accepted/merged; [PR #13 at `36d644f`](m06/acceptance.md) |
-| M07 | Complete reference Todo app and forms | M04, M06 | Implemented; [acceptance review/merge pending](m07/acceptance.md) |
-| M08 | Temporal traces and adversarial integration evidence | M07 | Pending |
+| M07 | Complete reference Todo app and forms | M04, M06 | Accepted/merged; [PR #14 at `92f2568`](m07/acceptance.md) |
+| M08 | Temporal traces and adversarial integration evidence | M07 | Implemented; [acceptance review/merge pending](m08/acceptance.md) |
 | M09 | Documented API/builds, release readiness and completion review | M08 | Pending |
 
 **Recommended serial order:** revision review → M01 → M05a → M02 → M03 → M04 → M05b → M05c → M05d → M06 → M07 → M08 → M09.
@@ -376,8 +376,9 @@ Implementation on `m07/reference-app` passed 968 tests (803 Node/DOM and 165
 workerd) and the same complete native-browser scenario in development and built
 local Worker modes. The [acceptance record](m07/acceptance.md) and
 [runnable guide](m07/local-development.md) record all six tasks, form/filter
-behavior, failure/reconstruction and actual unmount/remount evidence. Acceptance
-review/merge is pending; M08 does not start automatically.
+behavior, failure/reconstruction and actual unmount/remount evidence. M07 is
+accepted and merged in PR #14 at `92f25680072da22d45e815ac411abd3651d002a5`.
+The owner then explicitly authorized M08 from that verified merge.
 
 **Purpose:** prove the whole model through user-visible behavior rather than disconnected utilities.
 
@@ -396,6 +397,17 @@ review/merge is pending; M08 does not start automatically.
 **Visible checkpoint:** the complete runnable reference application with documented limits and recovery behavior.
 
 ## M08 — Make time, causality, and cleanup inspectable
+
+**Implementation checkpoint, 2026-09-20:** explicitly authorized from M07
+[PR #14](https://github.com/hansschenker/rxjs-flow/pull/14), merged at
+`92f25680072da22d45e815ac411abd3651d002a5`. The pristine starting tree passed
+968 tests (803 Node/DOM and 165 workerd) before implementation edits.
+Implementation `1e6369c9bc0e17fc99da4f512cfa98df65b10191` on
+`m08/temporal-traces` passed 1,018 tests (847 Node/DOM and 171 workerd), final
+native-browser development/built request parity, actual trace export and resource
+checks. See the [acceptance record](m08/acceptance.md), [actual readable traces](m08/temporal-traces.md)
+and [local guide](m08/local-development.md). Acceptance review/merge is pending;
+M09 remains pending.
 
 **Purpose:** verify overlap, cancellation, failures, authority recovery and repeated mounting across the selected boundaries.
 
@@ -462,7 +474,7 @@ Keep documentation, dependency/toolchain changes, platform adapters, storage aut
 
 After a roadmap amendment is merged/accepted, refresh the ChatGPT Project reference copy with this same filename and revision. Until that refresh is confirmed, report it as pending rather than claiming automatic Project synchronization. GitHub branch content is not proof that main or the Project copy has changed.
 
-**Current implementation:** M07, explicitly authorized from the verified M06
-merge. M00–M06 and all four M05 substeps remain accepted/merged. Complete and
-review M07 before starting M08 with its own authorization; M08–M09 do not start
+**Current implementation:** M08, explicitly authorized from the verified M07
+merge. M00–M07 and all four M05 substeps remain accepted/merged. Complete and
+review M08 before starting M09 with its own authorization; M09 does not start
 automatically.

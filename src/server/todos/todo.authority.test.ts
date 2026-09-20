@@ -1,6 +1,7 @@
 import { Observable, Subject, Subscriber, defer, firstValueFrom, of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import type { Todo } from '../../shared/types';
+import { createTrace } from '../../shared/trace';
 import {
 	TODO_AUTHORITY_LIMITS, createTodoAuthority, decodeTodoSnapshot, todoStorageFailure,
 	type TodoAuthorityOptions, type TodoAuthorityResult, type TodoAuthorityStorage, type TodoSnapshot,
@@ -676,5 +677,25 @@ describe('owned live Todo authority registrations', () => {
 
 	it.each([0, -1, 1.5, 33, Infinity])('rejects invalid subscriber capacity %s at construction', capacity => {
 		expect(() => authority(storageModel(), { maxActiveSubscribers: capacity })).toThrow(RangeError);
+	});
+});
+
+
+describe('M08 diagnostic observers preserve authority ownership', () => {
+	it('reserves FIFO admission before a trace observer submits another operation', () => {
+		const model = storageModel();
+		let core!: ReturnType<typeof createTodoAuthority>;
+		let submitted = false;
+		const trace = createTrace({ runtimeId: 'authority', sink(record) {
+			if (record.event === 'authority.admit' && !submitted) {
+				submitted = true;
+				core.execute$(create('Second'), 'second').subscribe();
+			}
+		} });
+		core = authority(model, { trace }).core;
+		core.execute$(create('First'), 'first').subscribe();
+		expect((model.get() as TodoSnapshot).todos.map(todo => todo.title)).toEqual(['First', 'Second']);
+		expect(core.resourceCounts()).toEqual({ active: 0, queued: 0, pending: 0, subscribers: 0 });
+		core.dispose();
 	});
 });

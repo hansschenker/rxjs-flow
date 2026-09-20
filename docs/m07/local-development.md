@@ -1,7 +1,7 @@
 # M07 — Run the complete reference Todo application
 
 Revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
-Status: implemented and locally verified; acceptance review/merge pending.
+Status: accepted and merged in PR #14 at `92f25680072da22d45e815ac411abd3651d002a5`.
 
 The reference application combines local filtering, draft validation, pending
 operation feedback and live synchronization. Two pages share the saved Todo
@@ -10,16 +10,17 @@ the current collection without requiring Refresh.
 
 ## Start development mode
 
-Use Node **22.22.1**. While the milestone PR is under review:
+Use Node **22.22.1** with the merged application:
 
 ```bash
 git fetch origin
-git switch m07/reference-app
+git switch main
+git pull --ff-only
 npm ci
 npm run dev:worker
 ```
 
-After merge, use updated `main` instead. Open **http://localhost:5174** in two
+Open **http://localhost:5174** in two
 browser tabs. This starts the browser page, Hono API and local Durable Object
 runtime together; no separate Node backend or Cloudflare login is needed.
 

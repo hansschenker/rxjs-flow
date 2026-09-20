@@ -12,6 +12,8 @@ export interface TodoService {
 	remove$: (id: string) => Observable<void>;
 	/** The host owns one subscription; omitting it selects explicit finite compatibility mode. */
 	live$?: (recover$: Observable<unknown>) => Observable<LiveConnectionEvent<TodoLiveSnapshot>>;
+	/** Inert per-operation capability; optional and local, without changing the wire. */
+	withOperation?: (operationId: string) => TodoService;
 }
 
 export interface TodoServiceOptions extends ClientOptions {
@@ -29,7 +31,11 @@ const serviceFor = (api: ReturnType<typeof createClient<typeof routes>>): TodoSe
 
 /** Construction is inert; each subscription uses this instance's transport. */
 export function createTodoService(options: TodoServiceOptions = {}): TodoService {
-	return { ...serviceFor(createClient(routes, options)), live$: createLive };
+	return { ...serviceFor(createClient(routes, options)), live$: createLive, withOperation };
+
+	function withOperation(operationId: string): TodoService {
+		return createTodoService({ ...options, operationId });
+	}
 
 	function createLive(recover$: Observable<unknown>): Observable<LiveConnectionEvent<TodoLiveSnapshot>> {
 		return defer(function ownTodoProtocol() {
@@ -61,4 +67,6 @@ export function createTodoService(options: TodoServiceOptions = {}): TodoService
 // Compatibility exports describe the default client without touching global fetch.
 export const api = createClient(routes);
 export const { getAll$, create$, update$, remove$ } = serviceFor(api);
-export const live$ = createTodoService().live$!;
+const defaultLiveService = createTodoService();
+export const live$ = defaultLiveService.live$!;
+export const withOperation = defaultLiveService.withOperation!;

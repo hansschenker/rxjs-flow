@@ -12,10 +12,13 @@ import {
 	type ResponseBody,
 } from '../shared/routes';
 
-export type FetchTransport = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+/** Trusted local diagnostics; these identifiers are never HTTP headers or bodies. */
+export interface RequestTraceContext { readonly operationId: string; }
+export type FetchTransport = (input: RequestInfo | URL, init?: RequestInit, trace?: RequestTraceContext) => Promise<Response>;
 
 export interface ClientOptions {
 	readonly fetch?: FetchTransport;
+	readonly operationId?: string;
 }
 
 // Resolve the host capability only when a subscription actually executes a request.
@@ -136,7 +139,11 @@ const requestCore$ = (
 			init.headers = { 'Content-Type': 'application/json' };
 			init.body = JSON.stringify(body);
 		}
-		const response = await (options.fetch ?? defaultFetch)(apiPath(route.path, params, query), init);
+		const transport = options.fetch ?? defaultFetch;
+		const url = apiPath(route.path, params, query);
+		const response = await (options.operationId === undefined
+			? transport(url, init)
+			: transport(url, init, { operationId: options.operationId }));
 		status = response.status;
 		if (subscriber.closed) {
 			// An injected transport may ignore abort and still deliver headers later.

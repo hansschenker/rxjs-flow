@@ -7,6 +7,7 @@ import { applyRoute, flattenRoutes, get, type Route, type RouteDefinition } from
 import { json } from '../server/core/response';
 import type { AppContext, Effect, HttpRequest, HttpResponse, Middleware } from '../server/core/types';
 import { prepareSseResponse } from './sse-response';
+import { allocateTraceId, emitTrace, traceObservable, type Trace } from '../shared/trace';
 
 export interface HonoAppOptions {
 	services?: Record<string, unknown>;
@@ -16,6 +17,9 @@ export interface HonoAppOptions {
 	includeHealthRoutes?: boolean;
 	deadlineMs?: number;
 	scheduler?: SchedulerLike;
+	/** Local diagnostics only. The host may correlate its own request capability. */
+	trace?: Trace;
+	operationId?: string;
 }
 
 /** Keep the baseline's slash normalization; only this adapter owns /api. */
@@ -137,12 +141,14 @@ export function createHonoApp(definitions: RouteDefinition[], options: HonoAppOp
 
 	function respond(hono: Context, selected?: Route): Promise<Response> {
 		const incoming = hono.req.raw;
+		const traceContext = { scopeId: allocateTraceId(options.trace, 'request'), sourceId: 'http.request', operationId: options.operationId };
+		emitTrace(options.trace, { ...traceContext, event: 'source.received', metadata: { kind: incoming.method } });
 		const operation = createRequestOperation<PreparedResponse>({
 			signal: incoming.signal,
 			deadlineMs: options.deadlineMs,
 			scheduler: options.scheduler,
 			execute(signal) {
-				return defer(() => {
+				return traceObservable(defer(() => {
 					const path = normalizedPath(incoming);
 					try {
 						// Consume the decoded value: production optimizers may discard an
@@ -177,14 +183,20 @@ export function createHonoApp(definitions: RouteDefinition[], options: HonoAppOp
 						}),
 						map(descriptor => {
 							if (!descriptor.stream) return { response: finiteResponse(descriptor) };
-							const prepared = prepareSseResponse(descriptor, incoming.signal);
+							const connectionId = options.trace ? allocateTraceId(options.trace, 'connection') : undefined;
+							const prepared = prepareSseResponse(descriptor, incoming.signal, options.trace, {
+								scopeId: `${traceContext.scopeId}/live`, sourceId: 'http.live', connectionId,
+							});
 							return { response: prepared.response, start: prepared.live.start };
 						}),
 					);
-				});
+				}), options.trace, traceContext);
 			},
 		});
-		const result = firstValueFrom(operation.result$).then(outcome => outcomeResponse(outcome, incoming));
+		const result = firstValueFrom(operation.result$).then(outcome => {
+			emitTrace(options.trace, { ...traceContext, event: 'scope.dispose', metadata: { status: outcome.kind, outcome: outcome.kind === 'failure' ? String(outcome.status) : 'response' } });
+			return outcomeResponse(outcome, incoming);
+		});
 		operation.start();
 		return result;
 	}

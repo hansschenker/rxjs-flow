@@ -83,6 +83,8 @@ export function bindKeyedList<T, K>(
 	keyOf: (value: T) => K,
 	create: (value: T, child: Scope) => KeyedRow<T>,
 	onError: (error: unknown) => void = reportBindingError,
+	/** Observes a successful commit without subscribing to the source again. */
+	onCommit?: (items: readonly T[]) => void,
 ): Subscription {
 	const lifetime = new Subscription();
 	scope.add(lifetime);
@@ -153,6 +155,10 @@ export function bindKeyedList<T, K>(
 	function commit(items: readonly T[]): Observable<never> {
 		return defer(() => {
 			reconcile(items);
+			if (!owner.closed) {
+				// Diagnostics cannot turn a committed view into a render failure.
+				try { onCommit?.(items); } catch { /* Observation is best effort. */ }
+			}
 			return EMPTY;
 		});
 	}

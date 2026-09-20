@@ -16,6 +16,7 @@ import { createDurableTodoRepository } from './todo-repository';
 import { createDurableTodoLive, createDurableTodoSnapshots } from './todo-live';
 import type { TodoLiveSnapshot } from '../shared/todo-live';
 import type { TodoCollection } from './todo-collection';
+import type { Trace } from '../shared/trace';
 export { TodoCollection } from './todo-collection';
 
 interface FoundationBindings {
@@ -70,6 +71,9 @@ export function createFoundationApp(operation: FoundationOperation = foundation$
 }
 
 export interface WorkerAppOptions {
+	/** Optional trusted local diagnostics; no public header or RPC propagation. */
+	trace?: Trace;
+	operationId?: string;
 	/** Explicitly injected capability; construction never creates a collection. */
 	todoStore?: TodoStore;
 	todoRepository?: TodoRepository;
@@ -85,7 +89,7 @@ export function createWorkerApp(options: WorkerAppOptions = {}) {
 			runtime: 'workerd', message: options.foundationLabel ?? 'rxjs-flow foundation',
 		} satisfies FoundationResult })),
 		...createTodoRoutes(),
-	], { services: {
+	], { trace: options.trace, operationId: options.operationId, services: {
 		...(options.todoStore ? { todoStore: options.todoStore } : {}),
 		...(options.todoRepository ? { todoRepository: options.todoRepository } : {}),
 		...(options.todoLive$ ? { todoLive$: options.todoLive$ } : {}),

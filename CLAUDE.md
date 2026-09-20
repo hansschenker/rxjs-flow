@@ -24,11 +24,14 @@ explicitly authorized from that merge and is now
 `36d644f529d5660506d6f2aa90e90af562d01440`.
 [Two Todo pages](docs/m06/local-development.md) receive committed snapshots
 without Refresh, with one owned connection per app and bounded reconnect.
-M07 reference-app completion is implemented and locally verified;
-acceptance review/merge is pending;
+M07 reference-app completion is accepted and merged in PR #14 at
+`92f25680072da22d45e815ac411abd3651d002a5`;
 see [M07 acceptance](docs/m07/acceptance.md) and the
 [complete local reference-app guide](docs/m07/local-development.md).
-M08–M09 remain pending. Use a dedicated branch and PR; do not start a milestone,
+The owner explicitly authorized M08 from that verified merge; its
+[temporal-trace implementation](docs/m08/acceptance.md) is locally verified,
+with acceptance review/merge pending. See the [actual readable traces](docs/m08/temporal-traces.md).
+M09 remains pending. Use a dedicated branch and PR; do not start a milestone,
 merge, publish, deploy, create remote resources or change `netxpert.ch` without
 appropriate explicit authorization. `rxjs-stack` and `rxjs-fullstack` are historical/
 separate repositories, not implementation targets.
@@ -45,8 +48,8 @@ settle pending status; snapshots alone replace collection content. Keep Node
 as the baseline during the tested transition. Hono does not replace our renderer.
 Do not use mutable Worker-global state as authority or pass Hono context into reducers.
 
-M07 starts from the verified M06 merge after the owner's explicit authorization.
-M08 requires M07 acceptance and its own authorization, as specified in the roadmap. No permanent Node-only constraint or
+M08 starts from the verified M07 merge after the owner's explicit authorization.
+M09 requires M08 acceptance and its own authorization, as specified in the roadmap. No permanent Node-only constraint or
 instruction to reopen M00 is in force. Do not merge the intentionally failing
 `m00/characterize-baseline` probes.
 

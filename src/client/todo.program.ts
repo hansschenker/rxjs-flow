@@ -9,12 +9,16 @@ import type { TodoService } from './todo.service';
 import { bindTodoView, findTodoElements } from './todo.view';
 import { createScope } from './runtime/scope';
 import { domEvent$ } from './runtime/sources';
+import { allocateTraceId, emitTrace, traceObservable, type Trace } from '../shared/trace';
 
 export type { TodoService } from './todo.service';
 
 export interface TodoAppOptions {
 	readonly mutationCapacity?: number;
 	readonly reportError?: (error: unknown) => void;
+	/** Opt-in synchronous metadata observer; no work is activated by construction. */
+	readonly trace?: Trace;
+	readonly traceScope?: string;
 }
 
 function reportRuntimeError(error: unknown): void {
@@ -23,8 +27,9 @@ function reportRuntimeError(error: unknown): void {
 
 /** Inert construction. The host owns one effect subscription and one model. */
 export function createTodoProgram(service: TodoService = defaultService, options: TodoAppOptions = {}) {
-	const app = createScope();
-	const model = createTodoModel({ collectionSource: service.live$ ? 'live' : 'http' });
+	const traceScope = options.traceScope ?? allocateTraceId(options.trace, 'todo.app');
+	const app = createScope({ trace: options.trace, id: traceScope });
+	const model = createTodoModel({ collectionSource: service.live$ ? 'live' : 'http', trace: options.trace, traceScope });
 	const recovery = new Subject<void>();
 	// Reject input first; release sources, view/rows, effects, then state.
 	const sources = app.child();
@@ -46,11 +51,22 @@ export function createTodoProgram(service: TodoService = defaultService, options
 
 	function refresh(): void {
 		if (app.closed || !started) return;
-		if (service.live$) recovery.next();
+		if (service.live$) {
+			emitTrace(options.trace, { event: 'source.received', scopeId: traceScope, sourceId: 'todo.recovery',
+				metadata: { kind: 'RECONNECT_REQUESTED' } });
+			if (!app.closed) recovery.next();
+		}
 		else accept({ type: 'LOAD_REQUESTED' });
 	}
 
 	function acceptLive(event: LiveConnectionEvent<TodoLiveSnapshot>): void {
+		emitTrace(options.trace, { event: 'connection.change', scopeId: traceScope, sourceId: 'todo.live-owner',
+			connectionId: String(event.connectionId),
+			...(event.type === 'snapshot' ? { collectionId: event.value.collectionId,
+				stateGeneration: event.value.stateGeneration, revision: event.value.revision } : {}),
+			metadata: { kind: event.type, ...('attempt' in event ? { attempt: event.attempt } : {}),
+				...(event.type === 'reconnecting' ? { delayMs: event.delayMs } : {}) },
+		});
 		switch (event.type) {
 			case 'connecting':
 				accept({ type: 'LIVE_CONNECTING', connectionId: event.connectionId, attempt: event.attempt });
@@ -68,15 +84,19 @@ export function createTodoProgram(service: TodoService = defaultService, options
 		}
 	}
 
+	function renderCommitted(): void {
+		emitTrace(options.trace, { event: 'render.commit', scopeId: traceScope, sourceId: 'todo.view', ...model.traceDetails });
+	}
+
 	function start(root: ParentNode): void {
 		if (app.closed || started) return;
 		const elements = findTodoElements(root);
 		const { form, input, refresh: refreshButton, filters, errorDismiss } = elements;
 		started = true;
-		bindTodoView(view, elements, model.viewModel$, accept, failRuntime);
+		bindTodoView(view, elements, model.viewModel$, accept, failRuntime, options.trace ? renderCommitted : undefined);
 
 		// The host is the single owner of execution; traces read model transitions.
-		effects.subscribe(todoEffects$(model.transitions$, service, options), {
+		effects.subscribe(todoEffects$(model.transitions$, service, { ...options, traceScope }), {
 			next: accept,
 			error: failRuntime,
 		});
@@ -86,7 +106,8 @@ export function createTodoProgram(service: TodoService = defaultService, options
 		if (service.live$) {
 			// State and rendering are attached before a synchronous initial snapshot.
 			// This root keeps the one connection alive independently of UI consumers.
-			effects.subscribe(defer(() => service.live$!(recovery.asObservable())), {
+			effects.subscribe(traceObservable(defer(() => service.live$!(recovery.asObservable())), options.trace,
+				{ scopeId: traceScope, sourceId: 'todo.live-owner' }), {
 				next: acceptLive, error: failRuntime,
 			});
 		}

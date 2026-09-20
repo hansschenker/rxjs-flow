@@ -1,4 +1,5 @@
 import { Subscriber, type Observable } from 'rxjs';
+import { allocateTraceId, emitTrace, traceObservable, type Trace, type TraceContext, type TraceEvent, type TraceMetadata } from '../shared/trace';
 
 export const LIVE_STREAM_LIMITS = Object.freeze({
 	maxFrameBytes: 128 * 1_024,
@@ -15,6 +16,8 @@ export interface OwnedByteStreamOptions<T> {
 	maxPendingBytes?: number;
 	maxFrameBytes?: number;
 	onFault?: (error: unknown) => void;
+	trace?: Trace;
+	traceContext?: TraceContext;
 }
 
 export interface OwnedByteStream {
@@ -51,6 +54,28 @@ export function createOwnedByteStream<T>(source$: Observable<T>, options: OwnedB
 	let listening = false;
 	let pendingBytes = 0;
 	const pending: Uint8Array[] = [];
+	const traceContext = options.traceContext ?? {
+		scopeId: allocateTraceId(options.trace, 'live-response'), sourceId: 'http.live',
+	};
+	function resourceCounts() {
+		return { active: source && !source.closed ? 1 : 0, listener: listening ? 1 : 0,
+			pendingEvents: pending.length, pendingBytes };
+	}
+	function record(event: TraceEvent, metadata?: TraceMetadata): void {
+		if (!options.trace) return;
+		try { emitTrace(options.trace, { ...traceContext, event, metadata }); }
+		catch { /* Diagnostic context getters cannot interfere with body cleanup. */ }
+	}
+	function resources(reason: string): void {
+		const counts = resourceCounts();
+		record('resource.state', {
+			reason, active: counts.active, listeners: counts.listener,
+			pendingEvents: counts.pendingEvents, pendingBytes: counts.pendingBytes,
+		});
+	}
+	function connection(status: string): void {
+		record('connection.change', { status });
+	}
 
 	function report(error: unknown): void {
 		try { if (options.onFault) options.onFault(error); else console.error(error); } catch { /* Reporting cannot retain owned work. */ }
@@ -71,11 +96,14 @@ export function createOwnedByteStream<T>(source$: Observable<T>, options: OwnedB
 		pending.length = 0;
 		pendingBytes = 0;
 		demand = false;
+		resources('release');
+		record('scope.dispose');
 	}
 	function fail(reason: unknown): void {
 		if (closed) return;
 		closed = true;
 		release();
+		connection('error');
 		controller.error(reason instanceof Error ? reason : new Error('Live stream interrupted'));
 	}
 	function onAbort(): void { fail(new Error('Live response canceled')); }
@@ -86,10 +114,13 @@ export function createOwnedByteStream<T>(source$: Observable<T>, options: OwnedB
 			const frame = pending.shift()!;
 			pendingBytes -= frame.byteLength;
 			try { controller.enqueue(frame); } catch (error) { fail(error); return; }
+			resources('delivered');
+			if (closed) return; // A diagnostic observer can dispose the body reentrantly.
 		}
 		if (complete && !pending.length) {
 			closed = true;
 			release();
+			connection('complete');
 			controller.close();
 		}
 	}
@@ -109,6 +140,7 @@ export function createOwnedByteStream<T>(source$: Observable<T>, options: OwnedB
 			}
 			pending.push(frame);
 			pendingBytes += frame.byteLength;
+			resources('buffered');
 			drain();
 		} catch (error) { fail(error); }
 	}
@@ -116,6 +148,7 @@ export function createOwnedByteStream<T>(source$: Observable<T>, options: OwnedB
 		if (closed) return;
 		complete = true;
 		releaseSource();
+		resources('source-complete');
 		drain();
 	}
 	const body = new ReadableStream<Uint8Array>({
@@ -125,6 +158,7 @@ export function createOwnedByteStream<T>(source$: Observable<T>, options: OwnedB
 			if (closed) return;
 			closed = true;
 			release();
+			connection('cancel');
 		},
 	}, { highWaterMark: 0 });
 
@@ -140,12 +174,13 @@ export function createOwnedByteStream<T>(source$: Observable<T>, options: OwnedB
 			}
 			// The subscriber exists before synchronous next/complete/error/abort.
 			source = new Subscriber<T>({ next, error: fail, complete: finish });
-			source$.subscribe(source);
+			connection('open');
+			resources('start');
+			if (!closed) traceObservable(source$, options.trace, traceContext).subscribe(source);
 		} catch (error) { if (closed) report(error); else fail(error); }
 	}
 	return {
 		body, start, dispose: fail,
-		resourceCounts: () => ({ active: source && !source.closed ? 1 : 0, listener: listening ? 1 : 0,
-			pendingEvents: pending.length, pendingBytes }),
+		resourceCounts,
 	};
 }

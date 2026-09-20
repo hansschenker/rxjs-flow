@@ -4,7 +4,7 @@ Design revision: 2026-09-17; implementation checkpoint updated 2026-09-20. Targe
 
 Applies to the ChatGPT Project **`rxjs-flow`** and development repository **`hansschenker/rxjs-flow`**. Read with the [canonical roadmap](roadmap-gpt-6-astra-2026-09-15.md) and [Cloudflare/Hono runtime decision](runtime-cloudflare-hono.md). The historical source `rxjs-stack` and separate `rxjs-fullstack` repositories are not development targets.
 
-**Status:** target behavior, with implementation evidence recorded per milestone. M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e`; M01 is accepted/merged in PR #5. M05a is accepted/merged in PR #6. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`. M05b is [accepted/merged in PR #10](m05b/acceptance.md) at `1cfbaec`. M05c is [accepted/merged in PR #11](m05c/acceptance.md) at `d5500da`. M05d is [accepted/merged in PR #12](m05d/acceptance.md) at `540faec`; parent M05 is complete. M06 is [accepted/merged in PR #13](m06/acceptance.md) at `36d644f`. M07 reference-app completion is [implemented and locally verified; acceptance review/merge pending](m07/acceptance.md). M05b adapts the same finite server Effect and route definitions to Hono, with owned request execution and separately tested retained Node compatibility. M05c adds a configured collection authority with attached SQLite storage, atomic state/metadata commit and reconstruction. M05d adds race-free authority registration and response-owned bounded delivery. M06 adds the versioned public live protocol, authoritative Todo application snapshots and one bounded reconnect owner. M07 completes reference-app/form behavior; M08–M09 and deployment remain pending. The [r1 contract](archive/dataflow-architecture-r1-2026-09-15.md) and M00 evidence are preserved.
+**Status:** target behavior, with implementation evidence recorded per milestone. M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e`; M01 is accepted/merged in PR #5. M05a is accepted/merged in PR #6. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`. M05b is [accepted/merged in PR #10](m05b/acceptance.md) at `1cfbaec`. M05c is [accepted/merged in PR #11](m05c/acceptance.md) at `d5500da`. M05d is [accepted/merged in PR #12](m05d/acceptance.md) at `540faec`; parent M05 is complete. M06 is [accepted/merged in PR #13](m06/acceptance.md) at `36d644f`. M07 reference-app completion is [accepted/merged in PR #14](m07/acceptance.md) at `92f2568`. M05b adapts the same finite server Effect and route definitions to Hono, with owned request execution and separately tested retained Node compatibility. M05c adds a configured collection authority with attached SQLite storage, atomic state/metadata commit and reconstruction. M05d adds race-free authority registration and response-owned bounded delivery. M06 adds the versioned public live protocol, authoritative Todo application snapshots and one bounded reconnect owner. M07 completes reference-app/form behavior. The owner explicitly authorized M08 from its verified merge; [temporal tracing](m08/acceptance.md) is implemented and locally verified; acceptance review/merge is pending. M09 and deployment remain pending. The [r1 contract](archive/dataflow-architecture-r1-2026-09-15.md) and M00 evidence are preserved.
 
 r2 retains the reactive core, rendering and transport-correctness requirements while replacing the permanent Node-server assumption with an explicit Hono/Workers boundary and a minimal durable shared-state authority. Platform facts and primary references are separated from these project requirements in the runtime decision.
 
@@ -331,7 +331,34 @@ explicit resets start fresh in-memory generations and revisions. That separate
 reset policy is not evidence of durable recovery. See [M06 acceptance](m06/acceptance.md)
 and the [two-tab checkpoint](m06/local-development.md) for executable evidence.
 
-## 10. Scope boundary and acceptance
+## 10. Observational temporal traces
+
+M08 adds optional constructor-injected observations at the existing source,
+model, effect, render, authority, transport and disposal boundaries. Construction
+is inert. The existing owner still subscribes once; adding a trace reader does
+not execute another effect or open another live connection. Named pure reducers
+and selectors do not receive logging or platform capabilities.
+
+Each trace runtime supplies an explicit identity, monotonically increasing local
+sequence and injected clock. Records include owned scope/source identities and
+operation, connection or committed collection/generation/revision identities
+where available. Equal timestamps do not define notification order. Independent
+browser, Worker and authority clocks do not establish a global total order.
+
+The metadata vocabulary excludes payloads, credentials, headers, URLs and full
+errors. A bounded recorder retains recent immutable records and reports dropped
+history. Sink/clock errors are diagnostic failures, not stream errors. Tracing
+is a synchronous host capability: deliberately mutating application state or
+blocking inside a supplied sink is outside its observational contract.
+
+Complete local integration can join owners through an explicitly trusted
+in-process diagnostic context. That test seam does not introduce a production
+HTTP header, public RPC tracing protocol or remote-instance identity. Native
+browser HTTP/SSE observations are recorded separately. Resource release is
+verified directly, not inferred from a cancel/finalize record alone. See
+[M08 acceptance](m08/acceptance.md) and [readable traces](m08/temporal-traces.md).
+
+## 11. Scope boundary and acceptance
 
 The goal is an RxJS-first application/metaframework foundation, not a replacement for Angular, Next or Nest in this phase. RxJS 7, TypeScript, existing custom JSX and HTTP/SSE remain the baseline choices.
 

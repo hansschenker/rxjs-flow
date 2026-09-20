@@ -1,0 +1,2628 @@
+{
+  "milestone": "M08",
+  "description": "Actual recorded metadata; whole local integration capture and selected native-browser records. Runtime-local sequence/time values are preserved. No global ordering or cross-arrangement operation identity is asserted.",
+  "sources": {
+    "workerd": {
+      "command_label": "server-trace-artifact-final",
+      "command": [
+        "npm",
+        "run",
+        "test:worker",
+        "--",
+        "src/worker/todo-trace.integration.test.ts",
+        "--reporter=default",
+        "--reporter=./scripts/m08-trace-reporter.mjs"
+      ],
+      "log_file": "server-trace-artifact-final.log",
+      "log_sha256": "a8b8fe738514d2f5524ebf660dd26d3b09f3243f6dd36065ecfcb7d12251189c",
+      "capture_marker": "M08_TRACE_CAPTURE"
+    },
+    "browser": {
+      "command_label": "browser-built-final",
+      "file": "browser-trace-built-final.json",
+      "sha256": "4914e05c56394ffd67d994272baace837d2a8746fcd4ef20b2cffe92b78d788c",
+      "total_records": 455,
+      "selection": "Runtime traced-A-document-1, sequence ranges 21–44, 56–82, 92–96 and 204–233; omitted records remain in the source digest."
+    }
+  },
+  "workerd": {
+    "description": "Local workerd: constructed client/Hono/authority core with real SQLite; fixed independent clocks; no remote routing assertion.",
+    "requests": 3,
+    "mutations": 2,
+    "completeOperation": [
+      {
+        "runtimeId": "client",
+        "sequence": 1,
+        "time": 100,
+        "event": "state.transition",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "metadata": {
+          "reason": "initial"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 2,
+        "time": 100,
+        "event": "source.received",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "connectionId": "1",
+        "metadata": {
+          "kind": "LIVE_CONNECTING"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 3,
+        "time": 100,
+        "event": "state.transition",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "connectionId": "1",
+        "metadata": {
+          "kind": "LIVE_CONNECTING",
+          "count": 0,
+          "pending": 0,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 1,
+        "time": 20,
+        "event": "source.received",
+        "scopeId": "request:1",
+        "sourceId": "http.request",
+        "metadata": {
+          "kind": "GET"
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 2,
+        "time": 20,
+        "event": "effect.subscribe",
+        "scopeId": "request:1",
+        "sourceId": "http.request"
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 3,
+        "time": 20,
+        "event": "effect.next",
+        "scopeId": "request:1",
+        "sourceId": "http.request"
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 4,
+        "time": 20,
+        "event": "effect.complete",
+        "scopeId": "request:1",
+        "sourceId": "http.request"
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 5,
+        "time": 20,
+        "event": "scope.dispose",
+        "scopeId": "request:1",
+        "sourceId": "http.request",
+        "metadata": {
+          "status": "success",
+          "outcome": "response"
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 6,
+        "time": 20,
+        "event": "connection.change",
+        "scopeId": "request:1/live",
+        "sourceId": "http.live",
+        "connectionId": "connection:2",
+        "metadata": {
+          "status": "open"
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 7,
+        "time": 20,
+        "event": "resource.state",
+        "scopeId": "request:1/live",
+        "sourceId": "http.live",
+        "connectionId": "connection:2",
+        "metadata": {
+          "reason": "start",
+          "active": 1,
+          "listeners": 1,
+          "pendingEvents": 0,
+          "pendingBytes": 0
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 8,
+        "time": 20,
+        "event": "effect.subscribe",
+        "scopeId": "request:1/live",
+        "sourceId": "http.live",
+        "connectionId": "connection:2"
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 1,
+        "time": 7,
+        "event": "authority.admit",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "collectionId": "local-trace",
+        "metadata": {
+          "kind": "watch"
+        }
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 2,
+        "time": 7,
+        "event": "resource.state",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "collectionId": "local-trace",
+        "metadata": {
+          "reason": "admit",
+          "active": 1,
+          "queued": 0,
+          "pending": 1,
+          "subscribers": 1
+        }
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 3,
+        "time": 7,
+        "event": "authority.start",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "collectionId": "local-trace",
+        "connectionId": "registration:2"
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 4,
+        "time": 7,
+        "event": "resource.state",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "collectionId": "local-trace",
+        "metadata": {
+          "reason": "start",
+          "active": 1,
+          "queued": 0,
+          "pending": 1,
+          "subscribers": 1
+        }
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 5,
+        "time": 7,
+        "event": "authority.commit",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "collectionId": "local-trace",
+        "stateGeneration": "persisted-generation",
+        "revision": 0,
+        "metadata": {
+          "kind": "snapshot"
+        }
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 6,
+        "time": 7,
+        "event": "authority.publish",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "collectionId": "local-trace",
+        "stateGeneration": "persisted-generation",
+        "connectionId": "registration:2",
+        "revision": 0,
+        "metadata": {
+          "kind": "initial"
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 9,
+        "time": 20,
+        "event": "effect.next",
+        "scopeId": "request:1/live",
+        "sourceId": "http.live",
+        "connectionId": "connection:2"
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 10,
+        "time": 20,
+        "event": "resource.state",
+        "scopeId": "request:1/live",
+        "sourceId": "http.live",
+        "connectionId": "connection:2",
+        "metadata": {
+          "reason": "buffered",
+          "active": 1,
+          "listeners": 1,
+          "pendingEvents": 1,
+          "pendingBytes": 142
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 11,
+        "time": 20,
+        "event": "resource.state",
+        "scopeId": "request:1/live",
+        "sourceId": "http.live",
+        "connectionId": "connection:2",
+        "metadata": {
+          "reason": "delivered",
+          "active": 1,
+          "listeners": 1,
+          "pendingEvents": 0,
+          "pendingBytes": 0
+        }
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 7,
+        "time": 7,
+        "event": "resource.state",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "collectionId": "local-trace",
+        "metadata": {
+          "reason": "settled",
+          "active": 0,
+          "queued": 0,
+          "pending": 0,
+          "subscribers": 1
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 4,
+        "time": 100,
+        "event": "source.received",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "connectionId": "1",
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 5,
+        "time": 100,
+        "event": "state.transition",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "collectionId": "local-trace",
+        "stateGeneration": "persisted-generation",
+        "connectionId": "1",
+        "revision": 0,
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT",
+          "count": 0,
+          "pending": 0,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 6,
+        "time": 100,
+        "event": "source.received",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "metadata": {
+          "kind": "DRAFT_CHANGED"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 7,
+        "time": 100,
+        "event": "state.transition",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "collectionId": "local-trace",
+        "stateGeneration": "persisted-generation",
+        "revision": 0,
+        "metadata": {
+          "kind": "DRAFT_CHANGED",
+          "count": 0,
+          "pending": 0,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 8,
+        "time": 100,
+        "event": "source.received",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "metadata": {
+          "kind": "CREATE_REQUESTED"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 9,
+        "time": 100,
+        "event": "state.transition",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "collectionId": "local-trace",
+        "stateGeneration": "persisted-generation",
+        "revision": 0,
+        "metadata": {
+          "kind": "CREATE_REQUESTED",
+          "count": 0,
+          "pending": 0,
+          "changed": false
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 10,
+        "time": 100,
+        "event": "intent.accepted",
+        "scopeId": "app",
+        "sourceId": "todo.create",
+        "operationId": "client:app:1",
+        "metadata": {
+          "kind": "create"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 11,
+        "time": 100,
+        "event": "resource.state",
+        "scopeId": "app",
+        "sourceId": "todo.mutation-queue",
+        "metadata": {
+          "reason": "admitted",
+          "count": 1,
+          "active": 0,
+          "queued": 1,
+          "capacity": 32
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 12,
+        "time": 100,
+        "event": "source.received",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "operationId": "client:app:1",
+        "metadata": {
+          "kind": "OPERATION_QUEUED"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 13,
+        "time": 100,
+        "event": "resource.state",
+        "scopeId": "app",
+        "sourceId": "todo.mutation-queue",
+        "metadata": {
+          "reason": "started",
+          "count": 1,
+          "active": 1,
+          "queued": 0,
+          "capacity": 32
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 14,
+        "time": 100,
+        "event": "source.received",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "operationId": "client:app:1",
+        "metadata": {
+          "kind": "OPERATION_STARTED"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 15,
+        "time": 100,
+        "event": "effect.subscribe",
+        "scopeId": "app",
+        "sourceId": "todo.create",
+        "operationId": "client:app:1",
+        "metadata": {
+          "kind": "create"
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 12,
+        "time": 20,
+        "event": "source.received",
+        "scopeId": "request:3",
+        "sourceId": "http.request",
+        "operationId": "client:app:1",
+        "metadata": {
+          "kind": "POST"
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 13,
+        "time": 20,
+        "event": "effect.subscribe",
+        "scopeId": "request:3",
+        "sourceId": "http.request",
+        "operationId": "client:app:1"
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 16,
+        "time": 100,
+        "event": "state.transition",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "operationId": "client:app:1",
+        "collectionId": "local-trace",
+        "stateGeneration": "persisted-generation",
+        "revision": 0,
+        "metadata": {
+          "kind": "OPERATION_QUEUED",
+          "count": 0,
+          "pending": 1,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 17,
+        "time": 100,
+        "event": "state.transition",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "operationId": "client:app:1",
+        "collectionId": "local-trace",
+        "stateGeneration": "persisted-generation",
+        "revision": 0,
+        "metadata": {
+          "kind": "OPERATION_STARTED",
+          "count": 0,
+          "pending": 1,
+          "changed": false
+        }
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 8,
+        "time": 7,
+        "event": "authority.admit",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "operationId": "client:app:1",
+        "collectionId": "local-trace",
+        "metadata": {
+          "kind": "create"
+        }
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 9,
+        "time": 7,
+        "event": "resource.state",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "operationId": "client:app:1",
+        "collectionId": "local-trace",
+        "metadata": {
+          "reason": "admit",
+          "active": 1,
+          "queued": 0,
+          "pending": 1,
+          "subscribers": 1
+        }
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 10,
+        "time": 7,
+        "event": "authority.start",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "operationId": "client:app:1",
+        "collectionId": "local-trace"
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 11,
+        "time": 7,
+        "event": "resource.state",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "operationId": "client:app:1",
+        "collectionId": "local-trace",
+        "metadata": {
+          "reason": "start",
+          "active": 1,
+          "queued": 0,
+          "pending": 1,
+          "subscribers": 1
+        }
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 12,
+        "time": 7,
+        "event": "authority.commit",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "operationId": "client:app:1",
+        "collectionId": "local-trace",
+        "stateGeneration": "persisted-generation",
+        "revision": 1,
+        "metadata": {
+          "kind": "create"
+        }
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 13,
+        "time": 7,
+        "event": "authority.publish",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "operationId": "client:app:1",
+        "collectionId": "local-trace",
+        "stateGeneration": "persisted-generation",
+        "connectionId": "registration:2",
+        "revision": 1,
+        "metadata": {
+          "kind": "mutation"
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 14,
+        "time": 20,
+        "event": "effect.next",
+        "scopeId": "request:1/live",
+        "sourceId": "http.live",
+        "connectionId": "connection:2"
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 15,
+        "time": 20,
+        "event": "resource.state",
+        "scopeId": "request:1/live",
+        "sourceId": "http.live",
+        "connectionId": "connection:2",
+        "metadata": {
+          "reason": "buffered",
+          "active": 1,
+          "listeners": 1,
+          "pendingEvents": 1,
+          "pendingBytes": 242
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 16,
+        "time": 20,
+        "event": "resource.state",
+        "scopeId": "request:1/live",
+        "sourceId": "http.live",
+        "connectionId": "connection:2",
+        "metadata": {
+          "reason": "delivered",
+          "active": 1,
+          "listeners": 1,
+          "pendingEvents": 0,
+          "pendingBytes": 0
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 17,
+        "time": 20,
+        "event": "effect.next",
+        "scopeId": "request:3",
+        "sourceId": "http.request",
+        "operationId": "client:app:1"
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 18,
+        "time": 20,
+        "event": "effect.complete",
+        "scopeId": "request:3",
+        "sourceId": "http.request",
+        "operationId": "client:app:1"
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 14,
+        "time": 7,
+        "event": "resource.state",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "operationId": "client:app:1",
+        "collectionId": "local-trace",
+        "metadata": {
+          "reason": "settled",
+          "active": 0,
+          "queued": 0,
+          "pending": 0,
+          "subscribers": 1
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 19,
+        "time": 20,
+        "event": "scope.dispose",
+        "scopeId": "request:3",
+        "sourceId": "http.request",
+        "operationId": "client:app:1",
+        "metadata": {
+          "status": "success",
+          "outcome": "response"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 18,
+        "time": 100,
+        "event": "source.received",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "connectionId": "1",
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 19,
+        "time": 100,
+        "event": "state.transition",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "collectionId": "local-trace",
+        "stateGeneration": "persisted-generation",
+        "connectionId": "1",
+        "revision": 1,
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT",
+          "count": 1,
+          "pending": 1,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 20,
+        "time": 100,
+        "event": "effect.next",
+        "scopeId": "app",
+        "sourceId": "todo.create",
+        "operationId": "client:app:1",
+        "metadata": {
+          "kind": "create"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 21,
+        "time": 100,
+        "event": "resource.state",
+        "scopeId": "app",
+        "sourceId": "todo.mutation-queue",
+        "metadata": {
+          "reason": "settled",
+          "count": 0,
+          "active": 0,
+          "queued": 0,
+          "capacity": 32
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 22,
+        "time": 100,
+        "event": "source.received",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "operationId": "client:app:1",
+        "metadata": {
+          "kind": "CREATE_SUCCEEDED"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 23,
+        "time": 100,
+        "event": "state.transition",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "operationId": "client:app:1",
+        "collectionId": "local-trace",
+        "stateGeneration": "persisted-generation",
+        "revision": 1,
+        "metadata": {
+          "kind": "CREATE_SUCCEEDED",
+          "count": 1,
+          "pending": 0,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 24,
+        "time": 100,
+        "event": "effect.complete",
+        "scopeId": "app",
+        "sourceId": "todo.create",
+        "operationId": "client:app:1",
+        "metadata": {
+          "kind": "create"
+        }
+      }
+    ],
+    "cancelledReply": [
+      {
+        "runtimeId": "client",
+        "sequence": 25,
+        "time": 100,
+        "event": "source.received",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "metadata": {
+          "kind": "DRAFT_CHANGED"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 26,
+        "time": 100,
+        "event": "state.transition",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "collectionId": "local-trace",
+        "stateGeneration": "persisted-generation",
+        "revision": 1,
+        "metadata": {
+          "kind": "DRAFT_CHANGED",
+          "count": 1,
+          "pending": 0,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 27,
+        "time": 100,
+        "event": "source.received",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "metadata": {
+          "kind": "CREATE_REQUESTED"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 28,
+        "time": 100,
+        "event": "state.transition",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "collectionId": "local-trace",
+        "stateGeneration": "persisted-generation",
+        "revision": 1,
+        "metadata": {
+          "kind": "CREATE_REQUESTED",
+          "count": 1,
+          "pending": 0,
+          "changed": false
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 29,
+        "time": 100,
+        "event": "intent.accepted",
+        "scopeId": "app",
+        "sourceId": "todo.create",
+        "operationId": "client:app:2",
+        "metadata": {
+          "kind": "create"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 30,
+        "time": 100,
+        "event": "resource.state",
+        "scopeId": "app",
+        "sourceId": "todo.mutation-queue",
+        "metadata": {
+          "reason": "admitted",
+          "count": 1,
+          "active": 0,
+          "queued": 1,
+          "capacity": 32
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 31,
+        "time": 100,
+        "event": "source.received",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "operationId": "client:app:2",
+        "metadata": {
+          "kind": "OPERATION_QUEUED"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 32,
+        "time": 100,
+        "event": "resource.state",
+        "scopeId": "app",
+        "sourceId": "todo.mutation-queue",
+        "metadata": {
+          "reason": "started",
+          "count": 1,
+          "active": 1,
+          "queued": 0,
+          "capacity": 32
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 33,
+        "time": 100,
+        "event": "source.received",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "operationId": "client:app:2",
+        "metadata": {
+          "kind": "OPERATION_STARTED"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 34,
+        "time": 100,
+        "event": "effect.subscribe",
+        "scopeId": "app",
+        "sourceId": "todo.create",
+        "operationId": "client:app:2",
+        "metadata": {
+          "kind": "create"
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 20,
+        "time": 20,
+        "event": "source.received",
+        "scopeId": "request:4",
+        "sourceId": "http.request",
+        "operationId": "client:app:2",
+        "metadata": {
+          "kind": "POST"
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 21,
+        "time": 20,
+        "event": "effect.subscribe",
+        "scopeId": "request:4",
+        "sourceId": "http.request",
+        "operationId": "client:app:2"
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 35,
+        "time": 100,
+        "event": "state.transition",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "operationId": "client:app:2",
+        "collectionId": "local-trace",
+        "stateGeneration": "persisted-generation",
+        "revision": 1,
+        "metadata": {
+          "kind": "OPERATION_QUEUED",
+          "count": 1,
+          "pending": 1,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 36,
+        "time": 100,
+        "event": "state.transition",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "operationId": "client:app:2",
+        "collectionId": "local-trace",
+        "stateGeneration": "persisted-generation",
+        "revision": 1,
+        "metadata": {
+          "kind": "OPERATION_STARTED",
+          "count": 1,
+          "pending": 1,
+          "changed": false
+        }
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 15,
+        "time": 7,
+        "event": "authority.admit",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "operationId": "client:app:2",
+        "collectionId": "local-trace",
+        "metadata": {
+          "kind": "create"
+        }
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 16,
+        "time": 7,
+        "event": "resource.state",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "operationId": "client:app:2",
+        "collectionId": "local-trace",
+        "metadata": {
+          "reason": "admit",
+          "active": 1,
+          "queued": 0,
+          "pending": 1,
+          "subscribers": 1
+        }
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 17,
+        "time": 7,
+        "event": "authority.start",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "operationId": "client:app:2",
+        "collectionId": "local-trace"
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 18,
+        "time": 7,
+        "event": "resource.state",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "operationId": "client:app:2",
+        "collectionId": "local-trace",
+        "metadata": {
+          "reason": "start",
+          "active": 1,
+          "queued": 0,
+          "pending": 1,
+          "subscribers": 1
+        }
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 19,
+        "time": 7,
+        "event": "authority.commit",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "operationId": "client:app:2",
+        "collectionId": "local-trace",
+        "stateGeneration": "persisted-generation",
+        "revision": 2,
+        "metadata": {
+          "kind": "create"
+        }
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 20,
+        "time": 7,
+        "event": "authority.publish",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "operationId": "client:app:2",
+        "collectionId": "local-trace",
+        "stateGeneration": "persisted-generation",
+        "connectionId": "registration:2",
+        "revision": 2,
+        "metadata": {
+          "kind": "mutation"
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 22,
+        "time": 20,
+        "event": "effect.next",
+        "scopeId": "request:1/live",
+        "sourceId": "http.live",
+        "connectionId": "connection:2"
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 23,
+        "time": 20,
+        "event": "resource.state",
+        "scopeId": "request:1/live",
+        "sourceId": "http.live",
+        "connectionId": "connection:2",
+        "metadata": {
+          "reason": "buffered",
+          "active": 1,
+          "listeners": 1,
+          "pendingEvents": 1,
+          "pendingBytes": 343
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 24,
+        "time": 20,
+        "event": "resource.state",
+        "scopeId": "request:1/live",
+        "sourceId": "http.live",
+        "connectionId": "connection:2",
+        "metadata": {
+          "reason": "delivered",
+          "active": 1,
+          "listeners": 1,
+          "pendingEvents": 0,
+          "pendingBytes": 0
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 25,
+        "time": 20,
+        "event": "effect.next",
+        "scopeId": "request:4",
+        "sourceId": "http.request",
+        "operationId": "client:app:2"
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 26,
+        "time": 20,
+        "event": "effect.complete",
+        "scopeId": "request:4",
+        "sourceId": "http.request",
+        "operationId": "client:app:2"
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 21,
+        "time": 7,
+        "event": "resource.state",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "operationId": "client:app:2",
+        "collectionId": "local-trace",
+        "metadata": {
+          "reason": "settled",
+          "active": 0,
+          "queued": 0,
+          "pending": 0,
+          "subscribers": 1
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 27,
+        "time": 20,
+        "event": "scope.dispose",
+        "scopeId": "request:4",
+        "sourceId": "http.request",
+        "operationId": "client:app:2",
+        "metadata": {
+          "status": "success",
+          "outcome": "response"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 37,
+        "time": 100,
+        "event": "source.received",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "connectionId": "1",
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 38,
+        "time": 100,
+        "event": "state.transition",
+        "scopeId": "app/model",
+        "sourceId": "todo.ingress",
+        "collectionId": "local-trace",
+        "stateGeneration": "persisted-generation",
+        "connectionId": "1",
+        "revision": 2,
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT",
+          "count": 2,
+          "pending": 1,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 39,
+        "time": 100,
+        "event": "effect.cancel",
+        "scopeId": "app",
+        "sourceId": "todo.create",
+        "operationId": "client:app:2",
+        "metadata": {
+          "kind": "create"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 40,
+        "time": 100,
+        "event": "resource.state",
+        "scopeId": "app",
+        "sourceId": "todo.mutation-queue",
+        "metadata": {
+          "reason": "disposed",
+          "count": 0,
+          "active": 0,
+          "queued": 0,
+          "capacity": 32
+        }
+      },
+      {
+        "runtimeId": "authority-first",
+        "sequence": 22,
+        "time": 7,
+        "event": "resource.state",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "collectionId": "local-trace",
+        "metadata": {
+          "reason": "unsubscribe",
+          "active": 0,
+          "queued": 0,
+          "pending": 0,
+          "subscribers": 0
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 28,
+        "time": 20,
+        "event": "effect.cancel",
+        "scopeId": "request:1/live",
+        "sourceId": "http.live",
+        "connectionId": "connection:2"
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 29,
+        "time": 20,
+        "event": "resource.state",
+        "scopeId": "request:1/live",
+        "sourceId": "http.live",
+        "connectionId": "connection:2",
+        "metadata": {
+          "reason": "release",
+          "active": 0,
+          "listeners": 0,
+          "pendingEvents": 0,
+          "pendingBytes": 0
+        }
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 30,
+        "time": 20,
+        "event": "scope.dispose",
+        "scopeId": "request:1/live",
+        "sourceId": "http.live",
+        "connectionId": "connection:2"
+      },
+      {
+        "runtimeId": "worker",
+        "sequence": 31,
+        "time": 20,
+        "event": "connection.change",
+        "scopeId": "request:1/live",
+        "sourceId": "http.live",
+        "connectionId": "connection:2",
+        "metadata": {
+          "status": "cancel"
+        }
+      },
+      {
+        "runtimeId": "client",
+        "sequence": 41,
+        "time": 100,
+        "event": "scope.dispose",
+        "scopeId": "app/model/state",
+        "sourceId": "scope"
+      }
+    ],
+    "recovered": [
+      {
+        "runtimeId": "authority-replacement",
+        "sequence": 1,
+        "time": 2,
+        "event": "authority.admit",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "collectionId": "local-trace",
+        "metadata": {
+          "kind": "watch"
+        }
+      },
+      {
+        "runtimeId": "authority-replacement",
+        "sequence": 2,
+        "time": 2,
+        "event": "resource.state",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "collectionId": "local-trace",
+        "metadata": {
+          "reason": "admit",
+          "active": 1,
+          "queued": 0,
+          "pending": 1,
+          "subscribers": 1
+        }
+      },
+      {
+        "runtimeId": "authority-replacement",
+        "sequence": 3,
+        "time": 2,
+        "event": "authority.start",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "collectionId": "local-trace",
+        "connectionId": "registration:2"
+      },
+      {
+        "runtimeId": "authority-replacement",
+        "sequence": 4,
+        "time": 2,
+        "event": "resource.state",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "collectionId": "local-trace",
+        "metadata": {
+          "reason": "start",
+          "active": 1,
+          "queued": 0,
+          "pending": 1,
+          "subscribers": 1
+        }
+      },
+      {
+        "runtimeId": "authority-replacement",
+        "sequence": 5,
+        "time": 2,
+        "event": "authority.recovered",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "collectionId": "local-trace",
+        "stateGeneration": "persisted-generation",
+        "revision": 2
+      },
+      {
+        "runtimeId": "authority-replacement",
+        "sequence": 6,
+        "time": 2,
+        "event": "authority.publish",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "collectionId": "local-trace",
+        "stateGeneration": "persisted-generation",
+        "connectionId": "registration:2",
+        "revision": 2,
+        "metadata": {
+          "kind": "initial"
+        }
+      },
+      {
+        "runtimeId": "authority-replacement",
+        "sequence": 7,
+        "time": 2,
+        "event": "resource.state",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "collectionId": "local-trace",
+        "metadata": {
+          "reason": "unsubscribe",
+          "active": 1,
+          "queued": 0,
+          "pending": 1,
+          "subscribers": 0
+        }
+      },
+      {
+        "runtimeId": "authority-replacement",
+        "sequence": 8,
+        "time": 2,
+        "event": "resource.state",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "collectionId": "local-trace",
+        "metadata": {
+          "reason": "settled",
+          "active": 0,
+          "queued": 0,
+          "pending": 0,
+          "subscribers": 0
+        }
+      },
+      {
+        "runtimeId": "authority-replacement",
+        "sequence": 9,
+        "time": 2,
+        "event": "resource.state",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "collectionId": "local-trace",
+        "metadata": {
+          "reason": "dispose",
+          "active": 0,
+          "queued": 0,
+          "pending": 0,
+          "subscribers": 0
+        }
+      },
+      {
+        "runtimeId": "authority-replacement",
+        "sequence": 10,
+        "time": 2,
+        "event": "scope.dispose",
+        "scopeId": "authority:1",
+        "sourceId": "todo.authority",
+        "collectionId": "local-trace"
+      }
+    ],
+    "finalAuthorityResources": {
+      "active": 0,
+      "queued": 0,
+      "pending": 0,
+      "subscribers": 0
+    }
+  },
+  "native_browser": {
+    "runtime_id": "traced-A-document-1",
+    "clock": "performance.now(), milliseconds in that browser document",
+    "completed_operation_id": "traced-A-document-1:checkpoint-mount-1:1",
+    "canceled_operation_id": "traced-A-document-1:checkpoint-mount-1:2",
+    "collection_id": "local-reference",
+    "state_generation": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+    "records": [
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 21,
+        "time": 310.5,
+        "event": "state.transition",
+        "scopeId": "checkpoint-mount-1/model",
+        "sourceId": "todo.ingress",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "revision": 8,
+        "metadata": {
+          "kind": "DRAFT_CHANGED",
+          "count": 0,
+          "pending": 0,
+          "changed": false
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 22,
+        "time": 310.6000000005588,
+        "event": "source.received",
+        "scopeId": "checkpoint-mount-1/model",
+        "sourceId": "todo.ingress",
+        "metadata": {
+          "kind": "CREATE_REQUESTED"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 23,
+        "time": 310.6000000005588,
+        "event": "state.transition",
+        "scopeId": "checkpoint-mount-1/model",
+        "sourceId": "todo.ingress",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "revision": 8,
+        "metadata": {
+          "kind": "CREATE_REQUESTED",
+          "count": 0,
+          "pending": 0,
+          "changed": false
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 24,
+        "time": 310.70000000018626,
+        "event": "intent.accepted",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.create",
+        "operationId": "traced-A-document-1:checkpoint-mount-1:1",
+        "metadata": {
+          "kind": "create"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 25,
+        "time": 310.80000000074506,
+        "event": "resource.state",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.mutation-queue",
+        "metadata": {
+          "reason": "admitted",
+          "count": 1,
+          "active": 0,
+          "queued": 1,
+          "capacity": 32
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 26,
+        "time": 310.80000000074506,
+        "event": "source.received",
+        "scopeId": "checkpoint-mount-1/model",
+        "sourceId": "todo.ingress",
+        "operationId": "traced-A-document-1:checkpoint-mount-1:1",
+        "metadata": {
+          "kind": "OPERATION_QUEUED"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 27,
+        "time": 310.80000000074506,
+        "event": "resource.state",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.mutation-queue",
+        "metadata": {
+          "reason": "started",
+          "count": 1,
+          "active": 1,
+          "queued": 0,
+          "capacity": 32
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 28,
+        "time": 310.80000000074506,
+        "event": "source.received",
+        "scopeId": "checkpoint-mount-1/model",
+        "sourceId": "todo.ingress",
+        "operationId": "traced-A-document-1:checkpoint-mount-1:1",
+        "metadata": {
+          "kind": "OPERATION_STARTED"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 29,
+        "time": 310.80000000074506,
+        "event": "effect.subscribe",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.create",
+        "operationId": "traced-A-document-1:checkpoint-mount-1:1",
+        "metadata": {
+          "kind": "create"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 30,
+        "time": 311.70000000018626,
+        "event": "state.transition",
+        "scopeId": "checkpoint-mount-1/model",
+        "sourceId": "todo.ingress",
+        "operationId": "traced-A-document-1:checkpoint-mount-1:1",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "revision": 8,
+        "metadata": {
+          "kind": "OPERATION_QUEUED",
+          "count": 0,
+          "pending": 1,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 31,
+        "time": 311.80000000074506,
+        "event": "render.commit",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.view",
+        "operationId": "traced-A-document-1:checkpoint-mount-1:1",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "revision": 8,
+        "metadata": {
+          "kind": "OPERATION_QUEUED",
+          "count": 0,
+          "pending": 1,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 32,
+        "time": 311.80000000074506,
+        "event": "state.transition",
+        "scopeId": "checkpoint-mount-1/model",
+        "sourceId": "todo.ingress",
+        "operationId": "traced-A-document-1:checkpoint-mount-1:1",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "revision": 8,
+        "metadata": {
+          "kind": "OPERATION_STARTED",
+          "count": 0,
+          "pending": 1,
+          "changed": false
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 33,
+        "time": 327.90000000037253,
+        "event": "effect.next",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.live-owner"
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 34,
+        "time": 327.90000000037253,
+        "event": "connection.change",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.live-owner",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "1",
+        "revision": 9,
+        "metadata": {
+          "kind": "snapshot"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 35,
+        "time": 327.90000000037253,
+        "event": "source.received",
+        "scopeId": "checkpoint-mount-1/model",
+        "sourceId": "todo.ingress",
+        "connectionId": "1",
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 36,
+        "time": 327.90000000037253,
+        "event": "state.transition",
+        "scopeId": "checkpoint-mount-1/model",
+        "sourceId": "todo.ingress",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "1",
+        "revision": 9,
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT",
+          "count": 1,
+          "pending": 1,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 37,
+        "time": 328.1000000005588,
+        "event": "scope.dispose",
+        "scopeId": "checkpoint-mount-1/2/2/1",
+        "sourceId": "scope"
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 38,
+        "time": 328.80000000074506,
+        "event": "render.commit",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.view",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "1",
+        "revision": 9,
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT",
+          "count": 1,
+          "pending": 1,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 39,
+        "time": 332.80000000074506,
+        "event": "effect.next",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.create",
+        "operationId": "traced-A-document-1:checkpoint-mount-1:1",
+        "metadata": {
+          "kind": "create"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 40,
+        "time": 332.90000000037253,
+        "event": "resource.state",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.mutation-queue",
+        "metadata": {
+          "reason": "settled",
+          "count": 0,
+          "active": 0,
+          "queued": 0,
+          "capacity": 32
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 41,
+        "time": 333,
+        "event": "source.received",
+        "scopeId": "checkpoint-mount-1/model",
+        "sourceId": "todo.ingress",
+        "operationId": "traced-A-document-1:checkpoint-mount-1:1",
+        "metadata": {
+          "kind": "CREATE_SUCCEEDED"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 42,
+        "time": 333,
+        "event": "state.transition",
+        "scopeId": "checkpoint-mount-1/model",
+        "sourceId": "todo.ingress",
+        "operationId": "traced-A-document-1:checkpoint-mount-1:1",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "revision": 9,
+        "metadata": {
+          "kind": "CREATE_SUCCEEDED",
+          "count": 1,
+          "pending": 0,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 43,
+        "time": 333.40000000037253,
+        "event": "render.commit",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.view",
+        "operationId": "traced-A-document-1:checkpoint-mount-1:1",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "revision": 9,
+        "metadata": {
+          "kind": "CREATE_SUCCEEDED",
+          "count": 1,
+          "pending": 0,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 44,
+        "time": 333.5,
+        "event": "effect.complete",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.create",
+        "operationId": "traced-A-document-1:checkpoint-mount-1:1",
+        "metadata": {
+          "kind": "create"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 56,
+        "time": 428.80000000074506,
+        "event": "state.transition",
+        "scopeId": "checkpoint-mount-1/model",
+        "sourceId": "todo.ingress",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "revision": 10,
+        "metadata": {
+          "kind": "DRAFT_CHANGED",
+          "count": 1,
+          "pending": 0,
+          "changed": false
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 57,
+        "time": 428.80000000074506,
+        "event": "source.received",
+        "scopeId": "checkpoint-mount-1/model",
+        "sourceId": "todo.ingress",
+        "metadata": {
+          "kind": "CREATE_REQUESTED"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 58,
+        "time": 428.90000000037253,
+        "event": "state.transition",
+        "scopeId": "checkpoint-mount-1/model",
+        "sourceId": "todo.ingress",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "revision": 10,
+        "metadata": {
+          "kind": "CREATE_REQUESTED",
+          "count": 1,
+          "pending": 0,
+          "changed": false
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 59,
+        "time": 428.90000000037253,
+        "event": "intent.accepted",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.create",
+        "operationId": "traced-A-document-1:checkpoint-mount-1:2",
+        "metadata": {
+          "kind": "create"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 60,
+        "time": 428.90000000037253,
+        "event": "resource.state",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.mutation-queue",
+        "metadata": {
+          "reason": "admitted",
+          "count": 1,
+          "active": 0,
+          "queued": 1,
+          "capacity": 32
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 61,
+        "time": 428.90000000037253,
+        "event": "source.received",
+        "scopeId": "checkpoint-mount-1/model",
+        "sourceId": "todo.ingress",
+        "operationId": "traced-A-document-1:checkpoint-mount-1:2",
+        "metadata": {
+          "kind": "OPERATION_QUEUED"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 62,
+        "time": 429,
+        "event": "resource.state",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.mutation-queue",
+        "metadata": {
+          "reason": "started",
+          "count": 1,
+          "active": 1,
+          "queued": 0,
+          "capacity": 32
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 63,
+        "time": 429,
+        "event": "source.received",
+        "scopeId": "checkpoint-mount-1/model",
+        "sourceId": "todo.ingress",
+        "operationId": "traced-A-document-1:checkpoint-mount-1:2",
+        "metadata": {
+          "kind": "OPERATION_STARTED"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 64,
+        "time": 429,
+        "event": "effect.subscribe",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.create",
+        "operationId": "traced-A-document-1:checkpoint-mount-1:2",
+        "metadata": {
+          "kind": "create"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 65,
+        "time": 429.80000000074506,
+        "event": "state.transition",
+        "scopeId": "checkpoint-mount-1/model",
+        "sourceId": "todo.ingress",
+        "operationId": "traced-A-document-1:checkpoint-mount-1:2",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "revision": 10,
+        "metadata": {
+          "kind": "OPERATION_QUEUED",
+          "count": 1,
+          "pending": 1,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 66,
+        "time": 430,
+        "event": "render.commit",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.view",
+        "operationId": "traced-A-document-1:checkpoint-mount-1:2",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "revision": 10,
+        "metadata": {
+          "kind": "OPERATION_QUEUED",
+          "count": 1,
+          "pending": 1,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 67,
+        "time": 430,
+        "event": "state.transition",
+        "scopeId": "checkpoint-mount-1/model",
+        "sourceId": "todo.ingress",
+        "operationId": "traced-A-document-1:checkpoint-mount-1:2",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "revision": 10,
+        "metadata": {
+          "kind": "OPERATION_STARTED",
+          "count": 1,
+          "pending": 1,
+          "changed": false
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 68,
+        "time": 443.1000000005588,
+        "event": "effect.next",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.live-owner"
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 69,
+        "time": 443.1000000005588,
+        "event": "connection.change",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.live-owner",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "1",
+        "revision": 11,
+        "metadata": {
+          "kind": "snapshot"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 70,
+        "time": 443.20000000018626,
+        "event": "source.received",
+        "scopeId": "checkpoint-mount-1/model",
+        "sourceId": "todo.ingress",
+        "connectionId": "1",
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 71,
+        "time": 443.20000000018626,
+        "event": "state.transition",
+        "scopeId": "checkpoint-mount-1/model",
+        "sourceId": "todo.ingress",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "1",
+        "revision": 11,
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT",
+          "count": 2,
+          "pending": 1,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 72,
+        "time": 443.5,
+        "event": "render.commit",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.view",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "1",
+        "revision": 11,
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT",
+          "count": 2,
+          "pending": 1,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 73,
+        "time": 470.1000000005588,
+        "event": "scope.dispose",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "scope"
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 74,
+        "time": 470.1000000005588,
+        "event": "scope.dispose",
+        "scopeId": "checkpoint-mount-1/1",
+        "sourceId": "scope"
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 75,
+        "time": 470.20000000018626,
+        "event": "scope.dispose",
+        "scopeId": "checkpoint-mount-1/2",
+        "sourceId": "scope"
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 76,
+        "time": 470.20000000018626,
+        "event": "scope.dispose",
+        "scopeId": "checkpoint-mount-1/2/1",
+        "sourceId": "scope"
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 77,
+        "time": 470.20000000018626,
+        "event": "scope.dispose",
+        "scopeId": "checkpoint-mount-1/2/2",
+        "sourceId": "scope"
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 78,
+        "time": 470.30000000074506,
+        "event": "scope.dispose",
+        "scopeId": "checkpoint-mount-1/3",
+        "sourceId": "scope"
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 79,
+        "time": 470.5,
+        "event": "effect.cancel",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.create",
+        "operationId": "traced-A-document-1:checkpoint-mount-1:2",
+        "metadata": {
+          "kind": "create"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 80,
+        "time": 470.6000000005588,
+        "event": "resource.state",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.mutation-queue",
+        "metadata": {
+          "reason": "disposed",
+          "count": 0,
+          "active": 0,
+          "queued": 0,
+          "capacity": 32
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 81,
+        "time": 470.6000000005588,
+        "event": "effect.cancel",
+        "scopeId": "checkpoint-mount-1",
+        "sourceId": "todo.live-owner"
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 82,
+        "time": 470.6000000005588,
+        "event": "scope.dispose",
+        "scopeId": "checkpoint-mount-1/model/state",
+        "sourceId": "scope"
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 92,
+        "time": 522.5,
+        "event": "connection.change",
+        "scopeId": "checkpoint-mount-2",
+        "sourceId": "todo.live-owner",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "1",
+        "revision": 11,
+        "metadata": {
+          "kind": "snapshot"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 93,
+        "time": 522.5,
+        "event": "source.received",
+        "scopeId": "checkpoint-mount-2/model",
+        "sourceId": "todo.ingress",
+        "connectionId": "1",
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 94,
+        "time": 522.5,
+        "event": "state.transition",
+        "scopeId": "checkpoint-mount-2/model",
+        "sourceId": "todo.ingress",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "1",
+        "revision": 11,
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT",
+          "count": 2,
+          "pending": 0,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 95,
+        "time": 522.7000000001863,
+        "event": "scope.dispose",
+        "scopeId": "checkpoint-mount-2/2/1/1",
+        "sourceId": "scope"
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 96,
+        "time": 523.2000000001863,
+        "event": "render.commit",
+        "scopeId": "checkpoint-mount-2",
+        "sourceId": "todo.view",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "1",
+        "revision": 11,
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT",
+          "count": 2,
+          "pending": 0,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 204,
+        "time": 944.6000000005588,
+        "event": "connection.change",
+        "scopeId": "checkpoint-mount-6",
+        "sourceId": "todo.live-owner",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "1",
+        "revision": 14,
+        "metadata": {
+          "kind": "snapshot"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 205,
+        "time": 944.6000000005588,
+        "event": "source.received",
+        "scopeId": "checkpoint-mount-6/model",
+        "sourceId": "todo.ingress",
+        "connectionId": "1",
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 206,
+        "time": 944.6000000005588,
+        "event": "state.transition",
+        "scopeId": "checkpoint-mount-6/model",
+        "sourceId": "todo.ingress",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "1",
+        "revision": 14,
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT",
+          "count": 1,
+          "pending": 0,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 207,
+        "time": 944.6000000005588,
+        "event": "scope.dispose",
+        "scopeId": "checkpoint-mount-6/2/2/1",
+        "sourceId": "scope"
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 208,
+        "time": 944.9000000003725,
+        "event": "render.commit",
+        "scopeId": "checkpoint-mount-6",
+        "sourceId": "todo.view",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "1",
+        "revision": 14,
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT",
+          "count": 1,
+          "pending": 0,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 209,
+        "time": 1006.6000000005588,
+        "event": "effect.next",
+        "scopeId": "checkpoint-mount-6",
+        "sourceId": "todo.live-owner"
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 210,
+        "time": 1006.6000000005588,
+        "event": "connection.change",
+        "scopeId": "checkpoint-mount-6",
+        "sourceId": "todo.live-owner",
+        "connectionId": "1",
+        "metadata": {
+          "kind": "reconnecting",
+          "attempt": 2,
+          "delayMs": 1000
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 211,
+        "time": 1006.6000000005588,
+        "event": "source.received",
+        "scopeId": "checkpoint-mount-6/model",
+        "sourceId": "todo.ingress",
+        "connectionId": "1",
+        "metadata": {
+          "kind": "LIVE_INTERRUPTED"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 212,
+        "time": 1006.6000000005588,
+        "event": "state.transition",
+        "scopeId": "checkpoint-mount-6/model",
+        "sourceId": "todo.ingress",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "1",
+        "revision": 14,
+        "metadata": {
+          "kind": "LIVE_INTERRUPTED",
+          "count": 1,
+          "pending": 0,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 213,
+        "time": 1006.8000000007451,
+        "event": "render.commit",
+        "scopeId": "checkpoint-mount-6",
+        "sourceId": "todo.view",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "1",
+        "revision": 14,
+        "metadata": {
+          "kind": "LIVE_INTERRUPTED",
+          "count": 1,
+          "pending": 0,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 214,
+        "time": 2008.5,
+        "event": "effect.next",
+        "scopeId": "checkpoint-mount-6",
+        "sourceId": "todo.live-owner"
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 215,
+        "time": 2008.5,
+        "event": "connection.change",
+        "scopeId": "checkpoint-mount-6",
+        "sourceId": "todo.live-owner",
+        "connectionId": "2",
+        "metadata": {
+          "kind": "connecting",
+          "attempt": 2
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 216,
+        "time": 2008.5,
+        "event": "source.received",
+        "scopeId": "checkpoint-mount-6/model",
+        "sourceId": "todo.ingress",
+        "connectionId": "2",
+        "metadata": {
+          "kind": "LIVE_CONNECTING"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 217,
+        "time": 2008.5,
+        "event": "state.transition",
+        "scopeId": "checkpoint-mount-6/model",
+        "sourceId": "todo.ingress",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "2",
+        "revision": 14,
+        "metadata": {
+          "kind": "LIVE_CONNECTING",
+          "count": 1,
+          "pending": 0,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 218,
+        "time": 2008.7000000001863,
+        "event": "render.commit",
+        "scopeId": "checkpoint-mount-6",
+        "sourceId": "todo.view",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "2",
+        "revision": 14,
+        "metadata": {
+          "kind": "LIVE_CONNECTING",
+          "count": 1,
+          "pending": 0,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 219,
+        "time": 2010.2000000001863,
+        "event": "effect.next",
+        "scopeId": "checkpoint-mount-6",
+        "sourceId": "todo.live-owner"
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 220,
+        "time": 2010.2000000001863,
+        "event": "connection.change",
+        "scopeId": "checkpoint-mount-6",
+        "sourceId": "todo.live-owner",
+        "connectionId": "2",
+        "metadata": {
+          "kind": "reconnecting",
+          "attempt": 3,
+          "delayMs": 2000
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 221,
+        "time": 2010.2000000001863,
+        "event": "source.received",
+        "scopeId": "checkpoint-mount-6/model",
+        "sourceId": "todo.ingress",
+        "connectionId": "2",
+        "metadata": {
+          "kind": "LIVE_INTERRUPTED"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 222,
+        "time": 2010.2000000001863,
+        "event": "state.transition",
+        "scopeId": "checkpoint-mount-6/model",
+        "sourceId": "todo.ingress",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "2",
+        "revision": 14,
+        "metadata": {
+          "kind": "LIVE_INTERRUPTED",
+          "count": 1,
+          "pending": 0,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 223,
+        "time": 2010.300000000745,
+        "event": "render.commit",
+        "scopeId": "checkpoint-mount-6",
+        "sourceId": "todo.view",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "2",
+        "revision": 14,
+        "metadata": {
+          "kind": "LIVE_INTERRUPTED",
+          "count": 1,
+          "pending": 0,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 224,
+        "time": 4010.5,
+        "event": "effect.next",
+        "scopeId": "checkpoint-mount-6",
+        "sourceId": "todo.live-owner"
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 225,
+        "time": 4010.600000000559,
+        "event": "connection.change",
+        "scopeId": "checkpoint-mount-6",
+        "sourceId": "todo.live-owner",
+        "connectionId": "3",
+        "metadata": {
+          "kind": "connecting",
+          "attempt": 3
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 226,
+        "time": 4010.600000000559,
+        "event": "source.received",
+        "scopeId": "checkpoint-mount-6/model",
+        "sourceId": "todo.ingress",
+        "connectionId": "3",
+        "metadata": {
+          "kind": "LIVE_CONNECTING"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 227,
+        "time": 4010.600000000559,
+        "event": "state.transition",
+        "scopeId": "checkpoint-mount-6/model",
+        "sourceId": "todo.ingress",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "3",
+        "revision": 14,
+        "metadata": {
+          "kind": "LIVE_CONNECTING",
+          "count": 1,
+          "pending": 0,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 228,
+        "time": 4010.800000000745,
+        "event": "render.commit",
+        "scopeId": "checkpoint-mount-6",
+        "sourceId": "todo.view",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "3",
+        "revision": 14,
+        "metadata": {
+          "kind": "LIVE_CONNECTING",
+          "count": 1,
+          "pending": 0,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 229,
+        "time": 4034.600000000559,
+        "event": "effect.next",
+        "scopeId": "checkpoint-mount-6",
+        "sourceId": "todo.live-owner"
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 230,
+        "time": 4034.600000000559,
+        "event": "connection.change",
+        "scopeId": "checkpoint-mount-6",
+        "sourceId": "todo.live-owner",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "3",
+        "revision": 14,
+        "metadata": {
+          "kind": "snapshot"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 231,
+        "time": 4034.600000000559,
+        "event": "source.received",
+        "scopeId": "checkpoint-mount-6/model",
+        "sourceId": "todo.ingress",
+        "connectionId": "3",
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT"
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 232,
+        "time": 4034.600000000559,
+        "event": "state.transition",
+        "scopeId": "checkpoint-mount-6/model",
+        "sourceId": "todo.ingress",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "3",
+        "revision": 14,
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT",
+          "count": 1,
+          "pending": 0,
+          "changed": true
+        }
+      },
+      {
+        "runtimeId": "traced-A-document-1",
+        "sequence": 233,
+        "time": 4034.9000000003725,
+        "event": "render.commit",
+        "scopeId": "checkpoint-mount-6",
+        "sourceId": "todo.view",
+        "collectionId": "local-reference",
+        "stateGeneration": "cc39ffcd-290f-47e1-a86f-7502539d4fba",
+        "connectionId": "3",
+        "revision": 14,
+        "metadata": {
+          "kind": "LIVE_SNAPSHOT",
+          "count": 1,
+          "pending": 0,
+          "changed": true
+        }
+      }
+    ],
+    "direct_checks": {
+      "traceRequestParity": true,
+      "steadyNativeSseRequests": 2,
+      "steadyNativeSseRequestsPerMountedOwner": 1,
+      "releasedNativeListeners": 160,
+      "finalCurrentDocumentApiRequests": 0,
+      "uncaughtBrowserErrors": 0,
+      "builtRecoveryWithoutNavigation": true
+    }
+  }
+}

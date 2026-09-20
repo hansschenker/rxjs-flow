@@ -28,13 +28,17 @@ Wrangler command. M05d is [accepted/merged in PR #12](m05d/acceptance.md) at
 synchronization and recovery is [accepted/merged in PR #13](m06/acceptance.md)
 at `36d644f529d5660506d6f2aa90e90af562d01440`. The owner confirmed the
 [two-tab checkpoint](m06/local-development.md) and explicitly authorized M07.
-M07 reference-app completion is [implemented; acceptance review/merge pending](m07/acceptance.md); its
+M07 reference-app completion is [accepted/merged in PR #14](m07/acceptance.md)
+at `92f25680072da22d45e815ac411abd3651d002a5`; its
 [local guide](m07/local-development.md) covers the complete application.
-M08–M09 remain pending.
+The owner explicitly authorized M08 from that verified merge. Its
+[acceptance record](m08/acceptance.md), [readable traces](m08/temporal-traces.md)
+and [local guide](m08/local-development.md) record 1,018 passing tests and final
+local browser/resource evidence. Acceptance review/merge is pending; M09 remains pending.
 
 Recommended order: M01 → M05a → M02 → M03 → M04 → M05b → M05c → M05d → M06 → M07
-→ M08 → M09. All four M05 substeps and M06 are accepted. M07 was explicitly
-authorized from the verified M06 merge. M08 requires its own authorization.
+→ M08 → M09. All four M05 substeps and M07 are accepted. M08 was explicitly
+authorized from the verified M07 merge. M09 requires its own authorization.
 
 The [unmodified r1 roadmap](archive/roadmap-rxjs-flow-migration-r1-2026-09-15.md)
 and other [archived records](archive/) preserve provenance. They are not competing
