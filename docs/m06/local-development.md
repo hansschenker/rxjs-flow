@@ -9,16 +9,16 @@ last accepted collection visible while reconnecting to the current saved state.
 
 ## Run the local application
 
-Use Node **22.22.1**. While this milestone PR is under review:
+M06 is merged in PR #13. Use Node **22.22.1** and updated `main`:
 
 ```bash
-git fetch origin
-git switch m06/live-state
+git switch main
+git pull --ff-only
 npm ci
 npm run dev:worker
 ```
 
-After merge, use updated `main` instead. Open **http://localhost:5174** in two
+For current reference-app work, follow the [M07 guide](../m07/local-development.md). Open **http://localhost:5174** in two
 browser tabs. One command serves the existing custom-JSX page, Hono API and local
 Durable Object with attached SQLite storage. No separate Node backend or
 Cloudflare login is needed.
@@ -156,6 +156,6 @@ it does not substitute for it. Exact final regression results are recorded in th
 acceptance report and command ledger.
 
 The [M06 acceptance report](acceptance.md) maps every roadmap task and acceptance
-clause, documents ordering/recovery policy and records the executed gates. M07–M09
-remain separate milestones. These local checks do not deploy a service or change
+clause, documents ordering/recovery policy and records the executed gates. M07
+was subsequently authorized; M08–M09 remain separate milestones. These local checks do not deploy a service or change
 `netxpert.ch`.

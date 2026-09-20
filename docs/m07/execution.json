@@ -1,0 +1,1466 @@
+{
+  "milestone": "M07",
+  "roadmap_revision": "rxjs-flow migration r2 — Cloudflare/Hono",
+  "repository": "hansschenker/rxjs-flow",
+  "branch": "m07/reference-app",
+  "starting_commit": "36d644f529d5660506d6f2aa90e90af562d01440",
+  "starting_tree": "2a4f0493dd0238c9430a7c34728daed34d676317",
+  "starting_commit_evidence": "The coordinating agent verified M06 PR #13 merged and current main matched this SHA before creating the dedicated branch. The owner confirmed the two-page checkpoint and explicitly authorized M07.",
+  "implementation_commit": "23a8a1814309023c1e0c3112e462e9ad1105f003",
+  "implementation_tree": "47f7ebd9fbbcefc62e00fa06f963bc4959a81b7e",
+  "inspection_record": {
+    "capture": "GitHub API, Git and local rg/cat/sed/source reads were performed outside the validation runner; this grouped record does not invent timestamps or command exit codes.",
+    "operations": [
+      "Verify repository identity, clean branch/worktree, origin/main and merged PR #13.",
+      "Read AGENTS.md, canonical r2 M07, architecture/runtime decisions and earlier acceptance evidence.",
+      "Inspect existing application ownership, forms/effects/state/view, client entry and built asset arrangement.",
+      "Create m07/reference-app from verified main; wait for both pristine baseline suites before implementation edits.",
+      "Review form draft identity, mutation uncertainty, native controls and independently owned browser lifecycle.",
+      "Review exact dependency/configuration diff, final source/tests and document links before publication."
+    ]
+  },
+  "execution_capture": {
+    "runner": "/workspace/scratch/69635aad2014/m07-run.py",
+    "invocation": "python /workspace/scratch/69635aad2014/m07-run.py LABEL /workspace/scratch/69635aad2014/rxjs-flow-recovery COMMAND [ARGUMENTS...]",
+    "command_format": "Exact argv arrays supplied to subprocess.run; no shell interpretation is implied.",
+    "path_prefix": "/workspace/scratch/69635aad2014/m00-node22/node_modules/node-linux-x64/bin",
+    "timestamps": "UTC values recorded immediately before/after each subprocess; concurrent records may overlap.",
+    "log_capture": "stdout followed by stderr, not a globally ordered interleaving. The checked-in ledger retains exact arguments, timestamps, exits, test totals, relevant failure excerpts and raw-log SHA-256 digests.",
+    "filesystem": "Execution occurred in the agent workspace, not on the owner’s Dell/WSL/Windows computer."
+  },
+  "toolchain": {
+    "node": "22.22.1",
+    "npm": "11.9.0",
+    "rxjs": "7.8.2",
+    "typescript": "6.0.3",
+    "hono": "4.13.8",
+    "vite": "8.0.12",
+    "vitest": "4.1.6",
+    "wrangler": "4.133.0",
+    "cloudflare_vite_plugin": "1.54.11",
+    "cloudflare_vitest_plugin": "1.1.11",
+    "workerd": "1.20260916.1",
+    "source": "Pinned M06 dependency/toolchain baseline retained. final-unchanged-dependencies verifies package.json, package-lock.json and Worker configuration unchanged; local npm dependencies were reused, not reinstalled. Clean npm ci remains a separate CI gate.",
+    "optional_browser": {
+      "playwright": "1.62.1",
+      "chromium": "153.0.8010.0",
+      "installed_in_repository": false
+    },
+    "dependency_install": "Existing local installation reused; no fresh local npm ci is claimed. Clean installation is a separate exact-head CI gate."
+  },
+  "baseline": {
+    "evidence_kind": "Fresh pristine starting-tree runs; implementation agents waited for both green suites before editing.",
+    "node_dom": {
+      "label": "baseline-node-dom",
+      "files": 46,
+      "tests": 766,
+      "exit_code": 0
+    },
+    "workerd": {
+      "label": "baseline-workerd",
+      "files": 8,
+      "tests": 165,
+      "exit_code": 0
+    },
+    "total": 931
+  },
+  "commands": [
+    {
+      "label": "baseline-node-dom",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-20T02:25:58.845872+00:00",
+      "finished": "2026-09-20T02:26:05.725276+00:00",
+      "exit_code": 0,
+      "log_file": "baseline-node-dom.log",
+      "log_bytes": 8818,
+      "log_sha256": "0df2cd7fa36f9f01f1a55d08819fa93eca19cb657d7fc5ad2b2eec8d31927b13",
+      "result_lines": [
+        "Test Files  46 passed (46)",
+        "Tests  766 passed (766)"
+      ]
+    },
+    {
+      "label": "baseline-workerd",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker"
+      ],
+      "started": "2026-09-20T02:25:58.845884+00:00",
+      "finished": "2026-09-20T02:26:10.332791+00:00",
+      "exit_code": 0,
+      "log_file": "baseline-workerd.log",
+      "log_bytes": 14092,
+      "log_sha256": "63541786af94dc21c9c0355f7c7eeaa2452f27275fa5d724bb084481af7bef56",
+      "result_lines": [
+        "Test Files  8 passed (8)",
+        "Tests  165 passed (165)"
+      ]
+    },
+    {
+      "label": "forms-regression",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/todo.forms.test.ts"
+      ],
+      "started": "2026-09-20T02:28:32.460977+00:00",
+      "finished": "2026-09-20T02:28:33.693810+00:00",
+      "exit_code": 1,
+      "log_file": "forms-regression.log",
+      "log_bytes": 2577,
+      "log_sha256": "d01f8879478624dde13136723ba347c0501862cfd852825e7207e90c0d054e11",
+      "result_lines": [
+        "Test Files  1 failed (1)",
+        "Tests  2 failed (2)"
+      ],
+      "failure_excerpt": " FAIL  |dom| src/client/todo.forms.test.ts > accepted draft identity > preserves a newer edit even when its text returns to the submitted value\nAssertionError: expected '' to be 'First task' // Object.is equality\n FAIL  |dom| src/client/todo.forms.test.ts > accepted draft identity > preserves a newer whitespace edit even when the normalized title is unchanged\nAssertionError: expected '' to be ' First task ' // Object.is equality"
+    },
+    {
+      "label": "root-client-first",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/main.test.ts",
+        "src/client/app.test.ts",
+        "src/client/live-app.test.ts",
+        "src/client/effect-app.test.ts",
+        "src/client/dom-app.test.ts"
+      ],
+      "started": "2026-09-20T02:30:31.198652+00:00",
+      "finished": "2026-09-20T02:30:33.049859+00:00",
+      "exit_code": 0,
+      "log_file": "root-client-first.log",
+      "log_bytes": 1731,
+      "log_sha256": "eeebc4a046e68bb495197bcfcf6bfd3d313c255afb77f3adbbccb4b5e58fe0b5",
+      "result_lines": [
+        "Test Files  5 passed (5)",
+        "Tests  54 passed (54)"
+      ]
+    },
+    {
+      "label": "host-build-exports",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "build:worker"
+      ],
+      "started": "2026-09-20T02:30:31.201863+00:00",
+      "finished": "2026-09-20T02:30:33.067301+00:00",
+      "exit_code": 0,
+      "log_file": "host-build-exports.log",
+      "log_bytes": 2062,
+      "log_sha256": "c8d3e97863feec6e19d9da21e89c7cd14586780d49cb3181c89a4b0d37e8d2e8",
+      "result_lines": []
+    },
+    {
+      "label": "host-build-entry",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "build:worker"
+      ],
+      "started": "2026-09-20T02:31:10.305922+00:00",
+      "finished": "2026-09-20T02:31:11.708867+00:00",
+      "exit_code": 0,
+      "log_file": "host-build-entry.log",
+      "log_bytes": 2304,
+      "log_sha256": "a3cc4b16bf5b556e68488d2ec4e794ee13a675e660426f8f73d81218ef6ba0a5",
+      "result_lines": []
+    },
+    {
+      "label": "host-build-manifest",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "build:worker"
+      ],
+      "started": "2026-09-20T02:32:02.971902+00:00",
+      "finished": "2026-09-20T02:32:04.351417+00:00",
+      "exit_code": 0,
+      "log_file": "host-build-manifest.log",
+      "log_bytes": 2387,
+      "log_sha256": "b396863ec8871dd49a81b407650710ca835f809e5073139bb04627116192663d",
+      "result_lines": []
+    },
+    {
+      "label": "view-focused",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/todo.view.test.ts",
+        "src/client/dom-app.test.ts",
+        "src/client/components/todo-item.test.ts"
+      ],
+      "started": "2026-09-20T02:32:04.820345+00:00",
+      "finished": "2026-09-20T02:32:06.530555+00:00",
+      "exit_code": 0,
+      "log_file": "view-focused.log",
+      "log_bytes": 1345,
+      "log_sha256": "ab6290be955c4f71ead9d94a76a20d2841aae1d374b38583393306525d2ce6b1",
+      "result_lines": [
+        "Test Files  3 passed (3)",
+        "Tests  28 passed (28)"
+      ]
+    },
+    {
+      "label": "forms-focused",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/todo.forms.test.ts",
+        "src/client/todo.state.test.ts",
+        "src/client/todo.intents.test.ts",
+        "src/client/todo.selectors.test.ts",
+        "src/client/todo.model.test.ts",
+        "src/client/todo.effects.test.ts",
+        "src/client/todo.live-state.test.ts"
+      ],
+      "started": "2026-09-20T02:32:09.586106+00:00",
+      "finished": "2026-09-20T02:32:11.242625+00:00",
+      "exit_code": 0,
+      "log_file": "forms-focused.log",
+      "log_bytes": 2174,
+      "log_sha256": "4bb3362405ee5a9c3b1390ac8dda07c5b00846d378cb774e617f2a1be5d99f52",
+      "result_lines": [
+        "Test Files  7 passed (7)",
+        "Tests  190 passed (190)"
+      ]
+    },
+    {
+      "label": "review-radio-group-repro",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "--input-type=module",
+        "-e",
+        "import { JSDOM } from \"jsdom\"; const document = new JSDOM(`<section><input name=\"todo-filter\" type=\"radio\" value=\"all\" checked><input name=\"todo-filter\" type=\"radio\" value=\"active\"></section><section><input name=\"todo-filter\" type=\"radio\" value=\"all\" checked><input name=\"todo-filter\" type=\"radio\" value=\"completed\"></section>`).window.document; const [a, b] = document.querySelectorAll(\"section\"); a.querySelector(`[value=\"active\"]`).checked = true; b.querySelector(`[value=\"completed\"]`).checked = true; console.log(JSON.stringify({aChecked: [...a.querySelectorAll(\"input\")].filter(input => input.checked).map(input => input.value), bChecked: [...b.querySelectorAll(\"input\")].filter(input => input.checked).map(input => input.value)})); if (a.querySelector(\"input:checked\")) throw new Error(\"Expected to reproduce the cross-root group defect\");"
+      ],
+      "started": "2026-09-20T02:32:29.727112+00:00",
+      "finished": "2026-09-20T02:32:30.398259+00:00",
+      "exit_code": 0,
+      "log_file": "review-radio-group-repro.log",
+      "log_bytes": 215,
+      "log_sha256": "9143b35bf185e2ee978f902edec96e73ccc41fa5f4001b96e08b628b38e64bd5",
+      "result_lines": []
+    },
+    {
+      "label": "root-typecheck-first",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started": "2026-09-20T02:32:50.631233+00:00",
+      "finished": "2026-09-20T02:33:11.886381+00:00",
+      "exit_code": 0,
+      "log_file": "root-typecheck-first.log",
+      "log_bytes": 3937,
+      "log_sha256": "69882d3f3171cf01f53e1723f83f461ee7c20dad31da34b0bb56ae4a9f2d26ac",
+      "result_lines": []
+    },
+    {
+      "label": "view-isolation",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/todo.view.test.ts",
+        "src/client/dom-app.test.ts",
+        "src/client/components/todo-item.test.ts"
+      ],
+      "started": "2026-09-20T02:33:28.425554+00:00",
+      "finished": "2026-09-20T02:33:30.031158+00:00",
+      "exit_code": 1,
+      "log_file": "view-isolation.log",
+      "log_bytes": 2372,
+      "log_sha256": "aad880c5029b6684aba2cd6fb94c85a54392535438a6e26cc70b6c31252c92d7",
+      "result_lines": [
+        "Test Files  1 failed | 2 passed (3)",
+        "Tests  1 failed | 28 passed (29)"
+      ],
+      "failure_excerpt": " FAIL  |dom| src/client/todo.view.test.ts > M07 form and filter feedback in the stable Todo view > keeps native radio selection isolated between two copies of the real application shell\nTypeError: The URL must be of scheme file"
+    },
+    {
+      "label": "forms-final-focused",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/todo.forms.test.ts",
+        "src/client/todo.state.test.ts",
+        "src/client/todo.intents.test.ts",
+        "src/client/todo.selectors.test.ts",
+        "src/client/todo.model.test.ts",
+        "src/client/todo.effects.test.ts",
+        "src/client/todo.live-state.test.ts"
+      ],
+      "started": "2026-09-20T02:33:29.948629+00:00",
+      "finished": "2026-09-20T02:33:31.839529+00:00",
+      "exit_code": 0,
+      "log_file": "forms-final-focused.log",
+      "log_bytes": 2174,
+      "log_sha256": "02a808e32a7e2018c4a4aeb308574d28cb58828fb933b00d101971368ad8d502",
+      "result_lines": [
+        "Test Files  7 passed (7)",
+        "Tests  199 passed (199)"
+      ]
+    },
+    {
+      "label": "forms-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck:tests:dom"
+      ],
+      "started": "2026-09-20T02:33:31.292457+00:00",
+      "finished": "2026-09-20T02:33:31.517252+00:00",
+      "exit_code": 1,
+      "log_file": "forms-types.log",
+      "log_bytes": 618,
+      "log_sha256": "bf9b8d97169b9a09e9c0b21fa8bbc37b4ef4cc7b4c0de7ac048fc753cf702fbd",
+      "result_lines": [],
+      "failure_excerpt": ""
+    },
+    {
+      "label": "view-green",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/todo.view.test.ts",
+        "src/client/dom-app.test.ts",
+        "src/client/components/todo-item.test.ts"
+      ],
+      "started": "2026-09-20T02:33:47.266101+00:00",
+      "finished": "2026-09-20T02:33:49.062548+00:00",
+      "exit_code": 1,
+      "log_file": "view-green.log",
+      "log_bytes": 2297,
+      "log_sha256": "f639f95bc05d3bb946acbfb91fb4116c38fb95739b6e461bca4176f854334ac6",
+      "result_lines": [
+        "Test Files  1 failed | 2 passed (3)",
+        "Tests  1 failed | 28 passed (29)"
+      ],
+      "failure_excerpt": " FAIL  |dom| src/client/todo.view.test.ts > M07 form and filter feedback in the stable Todo view > keeps native radio selection isolated between two copies of the real application shell\nError: Todo app requires #todo-list, #error-msg, #add-form and #title-input."
+    },
+    {
+      "label": "forms-dom-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "tsconfig.test.json"
+      ],
+      "started": "2026-09-20T02:33:47.481349+00:00",
+      "finished": "2026-09-20T02:33:51.371968+00:00",
+      "exit_code": 0,
+      "log_file": "forms-dom-typecheck.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_lines": []
+    },
+    {
+      "label": "final-node-dom",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-20T02:34:22.373770+00:00",
+      "finished": "2026-09-20T02:34:28.548343+00:00",
+      "exit_code": 1,
+      "log_file": "final-node-dom.log",
+      "log_bytes": 9946,
+      "log_sha256": "93732d22c6e8701d58d34220517e7272948a1d3839cc371248d3aa33c12b7c96",
+      "result_lines": [
+        "Test Files  1 failed | 46 passed (47)",
+        "Tests  1 failed | 802 passed (803)"
+      ],
+      "failure_excerpt": " FAIL  |dom| src/client/todo.view.test.ts > M07 form and filter feedback in the stable Todo view > keeps native radio selection isolated between two copies of the real application shell\nError: Todo app requires #todo-list, #error-msg, #add-form and #title-input."
+    },
+    {
+      "label": "view-native-isolation-green",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/client/todo.view.test.ts",
+        "src/client/dom-app.test.ts",
+        "src/client/components/todo-item.test.ts"
+      ],
+      "started": "2026-09-20T02:34:38.802175+00:00",
+      "finished": "2026-09-20T02:34:40.307302+00:00",
+      "exit_code": 0,
+      "log_file": "view-native-isolation-green.log",
+      "log_bytes": 1345,
+      "log_sha256": "05370cc55a952174ca85b24cf539841b4eb8113204eaa71871330751e63a18af",
+      "result_lines": [
+        "Test Files  3 passed (3)",
+        "Tests  29 passed (29)"
+      ]
+    },
+    {
+      "label": "final-workerd",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "test:worker"
+      ],
+      "started": "2026-09-20T02:35:07.694246+00:00",
+      "finished": "2026-09-20T02:35:16.888900+00:00",
+      "exit_code": 0,
+      "log_file": "final-workerd.log",
+      "log_bytes": 14090,
+      "log_sha256": "8ae268f692e28a4df0814a8712d512268ddc6a17768da75755b3ab3d496290e6",
+      "result_lines": [
+        "Test Files  8 passed (8)",
+        "Tests  165 passed (165)"
+      ]
+    },
+    {
+      "label": "final-build",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "build:worker"
+      ],
+      "started": "2026-09-20T02:35:07.700718+00:00",
+      "finished": "2026-09-20T02:35:09.234527+00:00",
+      "exit_code": 0,
+      "log_file": "final-build.log",
+      "log_bytes": 2387,
+      "log_sha256": "2e63a3cd81e274c88ad6ed490155deb8266b9d0f6ada49384ef5fa09132dc9a1",
+      "result_lines": []
+    },
+    {
+      "label": "final-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started": "2026-09-20T02:35:07.700718+00:00",
+      "finished": "2026-09-20T02:35:27.725390+00:00",
+      "exit_code": 0,
+      "log_file": "final-typecheck.log",
+      "log_bytes": 3937,
+      "log_sha256": "69882d3f3171cf01f53e1723f83f461ee7c20dad31da34b0bb56ae4a9f2d26ac",
+      "result_lines": []
+    },
+    {
+      "label": "final-node-dom-2",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-20T02:35:30.606347+00:00",
+      "finished": "2026-09-20T02:35:37.026234+00:00",
+      "exit_code": 0,
+      "log_file": "final-node-dom-2.log",
+      "log_bytes": 8994,
+      "log_sha256": "2df9cdca5b2a7b926892613d307d800fafdaebb0bbf809de9bc3133c894dd6d3",
+      "result_lines": [
+        "Test Files  47 passed (47)",
+        "Tests  803 passed (803)"
+      ]
+    },
+    {
+      "label": "final-smoke-preview",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "smoke:worker"
+      ],
+      "started": "2026-09-20T02:36:07.365292+00:00",
+      "finished": "2026-09-20T02:36:09.271640+00:00",
+      "exit_code": 0,
+      "log_file": "final-smoke-preview.log",
+      "log_bytes": 1687,
+      "log_sha256": "123891dca6457ff1032f0c03db5978237e017dc66ab4e233af36b1efe2a70710",
+      "result_lines": []
+    },
+    {
+      "label": "final-generated-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "cf:typecheck"
+      ],
+      "started": "2026-09-20T02:36:07.599303+00:00",
+      "finished": "2026-09-20T02:36:17.464290+00:00",
+      "exit_code": 0,
+      "log_file": "final-generated-types.log",
+      "log_bytes": 1036,
+      "log_sha256": "ed6e6bcb40af59160d72e1b2044bc77b7ec4a058893be8b09964009ac80de44d",
+      "result_lines": []
+    },
+    {
+      "label": "final-smoke-dev",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "npm",
+        "run",
+        "smoke:worker",
+        "--",
+        "--dev"
+      ],
+      "started": "2026-09-20T02:36:16.635332+00:00",
+      "finished": "2026-09-20T02:36:19.806844+00:00",
+      "exit_code": 0,
+      "log_file": "final-smoke-dev.log",
+      "log_bytes": 1744,
+      "log_sha256": "28c41a8e15ac7b46530fdc9025310e743c9494fb3848159a11a6efab837176f8",
+      "result_lines": []
+    },
+    {
+      "label": "browser-built-first",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "env",
+        "PLAYWRIGHT_MODULE_PATH=/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+        "CHROMIUM_EXECUTABLE_PATH=/workspace/scratch/69635aad2014/m05d-browser-fallback/chromium",
+        "M07_CHROMIUM_ARGS=[\"--no-sandbox\",\"--disable-dev-shm-usage\",\"--single-process\",\"--no-zygote\",\"--use-gl=angle\",\"--use-angle=swiftshader\",\"--enable-unsafe-swiftshader\"]",
+        "M07_SCREENSHOT=/workspace/scratch/69635aad2014/m07-evidence/reference-built.png",
+        "node",
+        "scripts/m07-browser-checkpoint.mjs"
+      ],
+      "started": "2026-09-20T02:36:18.918779+00:00",
+      "finished": "2026-09-20T02:36:28.904044+00:00",
+      "exit_code": 1,
+      "log_file": "browser-built-first.log",
+      "log_bytes": 10607,
+      "log_sha256": "92d3ef52932510ce8b30ef6cceea6d30615f0e4746daa78a458f5047f54e5154",
+      "result_lines": [],
+      "failure_excerpt": "  \"error\": \"AssertionError [ERR_ASSERTION]: Remount opens exactly one fresh connection\\n\\n7 !== 6\\n\\n    at remount (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/scripts/m07-browser-checkpoint.mjs:230:12)\\n    at async checkpoint (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/scripts/m07-browser-checkpoint.mjs:407:5)\\n    at async runWorkerSmoke (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/scripts/smoke-worker.mjs:328:9)\\n    at async file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/scripts/m07-browser-checkpoint.mjs:49:1\",\n  \"error\": \"AssertionError [ERR_ASSERTION]: Remount opens exactly one fresh connection\\n\\n7 !== 6\\n\",\n  \"previewOutput\": \"(node:17) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\\n(Use `node --trace-warnings ...` to show where the warning was created)\\n\\u001b[33m▲ \\u001b[43;33m[\\u001b[43;30mWARNING\\u001b[43;33m]\\u001b[0m \\u001b[1mProxy environment variables detected. We'll use your proxy for fetch requests.\\u001b[0m\\n\\n\\n(node:25) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\\n(Use `node --trace-warnings ...` to show where the warning was created)\\n\\n ⛅️ wrangler 4.133.0\\n────────────────────\\nYour Worker has access to the following bindings:\\nBinding                                              Resource                  Mode\\nenv.TODO_COLLECTIONS (TodoCollection)                Durable Object            local\\nenv.FOUNDATION_LABEL (\\\"rxjs-flow foundation\\\")        Environment Variable      local\\nenv.TODO_ACCESS_POLICY (\\\"(hidden)\\\")                  Environment Variable      local\\nenv.TODO_COLLECTION_ID (\\\"local-reference\\\")           Environment Variable      local\\n\\n⎔ Starting local server...\\nWrangler detected this dev session is running in an AI agent.\\nThe Local Explorer API is available at http://127.0.0.1:34533/cdn-cgi/local/explorer/api\\nUseful routes:\\n  GET http://127.0.0.1:34533/cdn-cgi/local/explorer/api/local/workers - local Workers and bindings\\n  GET http://127.0.0.1:34533/cdn-cgi/local/explorer/api/storage/kv/namespaces - KV namespaces\\n  GET http://127.0.0.1:34533/cdn-cgi/local/explorer/api/d1/database - D1 databases\\n  GET http://127.0.0.1:34533/cdn-cgi/local/explorer/api/r2/buckets - R2 buckets\\n  GET http://127.0.0.1:34533/cdn-cgi/local/explorer/api/workers/durable_objects/namespaces - Durable Object namespaces\\n  GET http://127.0.0.1:34533/cdn-cgi/local/explorer/api/workflows - Workflows\\n  POST http://127.0.0.1:34533/cdn-cgi/local/explorer/api/local/observability/query - run a read-only SQL query (SELECT/WITH only) over captured request traces and console logs. Tables: spans, logs (read attributes via json(attributes)). Example:\\n    curl -X POST http://127.0.0.1:34533/cdn-cgi/local/explorer/api/local/observability/query -H 'Content-Type: application/json' -d '{\\\"sql\\\":\\\"SELECT service, name, outcome, duration_ms FROM spans WHERE parent_id IS NULL LIMIT 20\\\"}'\\n  POST http://127.0.0.1:34533/cdn-cgi/local/explorer/api/local/observability/clear - clear all captured traces and logs\\nIf the routes above don't cover what you need, fetch the full OpenAPI schema (large - use only as a last resort):\\n  GET http://127.0.0.1:34533/cdn-cgi/local/explorer/api - OpenAPI schema\\n[wrangler:info] Ready on http://127.0.0.1:34533\\n[wrangler:info] GET / 200 OK (132ms)\\n[wrangler:info] GET / 200 OK (3ms)\\n[wrangler:info] GET /assets/browser-B-dAfOjq.js 200 OK (2ms)\\n[wrangler:info] GET /api/foundation 200 OK (11ms)\\n[wrangler:info] GET /api 404 Not Found (3ms)\\n[wrangler:info] GET /api/missing 404 Not Found (3ms)\\n[wrangler:info] GET /api/api/todos 404 Not Found (3ms)\\n[wrangler:info] GET /api/todos 200 OK (16ms)\\n[wrangler:info] POST /api/todos 201 Created (7ms)\\n[wrangler:info] PUT /api/todos/bae78ce7-ac70-4e11-9ed7-7b6fc2716a69 200 OK (7ms)\\n[wrangler:info] GET /api/todos 200 OK (5ms)\\n[wrangler:info] POST /api/todos 400 Bad Request (3ms)\\n[wrangler:info] POST /api/todos 422 Unprocessable Entity (3ms)\\n[wrangler:info] PUT /api/todos/%ZZ 400 Bad Request (4ms)\\n[wrangler:info] GET /api/todos 200 OK (4ms)\\n[wrangler:info] DELETE /api/todos/bae78ce7-ac70-4e11-9ed7-7b6fc2716a69 204 No Content (4ms)\\n[wrangler:info] DELETE /api/todos/bae78ce7-ac70-4e11-9ed7-7b6fc2716a69 404 Not Found (4ms)\\n[wrangler:info] GET /unknown-page 200 OK (3ms) `Sec-Fetch-Mode: navigate` header present - using `not_found_handling` behavior\\n[wrangler:info] GET / 200 OK (5ms)\\n[wrangler:info] GET /assets/todo.schema-Cpc7foeR.js 200 OK (4ms)\\n[wrangler:info] GET /assets/browser-B-dAfOjq.js 200 OK (18ms)\\n[wrangler:info] GET /assets/modulepreload-polyfill-CSRv37U6.js 200 OK (19ms)\\n[wrangler:info] GET /assets/browser-DUTBtaI8.css 200 OK (19ms)\\n[wrangler:info] GET /api/todos/live 200 OK (8ms)\\n[wrangler:info] GET / 200 OK (4ms)\\n[wrangler:info] GET /assets/todo.schema-Cpc7foeR.js 304 Not Modified (8ms)\\n[wrangler:info] GET /assets/modulepreload-polyfill-CSRv37U6.js 304 Not Modified (10ms)\\n[wrangler:info] GET /assets/browser-DUTBtaI8.css 304 Not Modified (10ms)\\n[wrangler:info] GET /assets/browser-B-dAfOjq.js 304 Not Modified (11ms)\\n[wrangler:info] GET /api/todos/live 200 OK (7ms)\\n[wrangler:info] POST /api/todos 201 Created (7ms)\\n[wrangler:info] POST /api/todos 201 Created (7ms)\\n[wrangler:info] PUT /api/todos/9f859227-4629-431f-a1fe-2126390f174f 200 OK (8ms)\\n[wrangler:info] DELETE /api/todos/076c51e2-e270-455f-bc8c-ea53d110fe2c 204 No Content (8ms)\\n[wrangler:info] POST /api/todos 201 Created (8ms)\\n[wrangler:info] PUT /api/todos/9f859227-4629-431f-a1fe-2126390f174f 200 OK (10ms)\\n[wrangler:info] POST /api/todos 201 Created (9ms)\\n[wrangler:info] POST /api/todos 422 Unprocessable Entity (7ms)\\n[wrangler:info] POST /api/todos 201 Created (9ms)\\n[wrangler:info] POST /api/todos 201 Created (10ms)\\n\\u001b[31m✘ \\u001b[41;31m[\\u001b[41;97mERROR\\u001b[41;31m]\\u001b[0m \\u001b[1mUncaught Error: Live response canceled Error\\u001b[0m\\n\\n      at onAbort (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/dist/rxjs_flow_foundation/index.js:8575:24)\\n\\n\\n\\u001b[31m✘ \\u001b[41;31m[\\u001b[41;97mERROR\\u001b[41;31m]\\u001b[0m \\u001b[1mUncaught Error: Live response canceled Error\\u001b[0m\\n\\n      at onAbort (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/dist/rxjs_flow_foundation/index.js:8575:24)\\n\\n\\n[wrangler:info] GET /api/todos/live 200 OK (5ms)\\n🪵  Logs were written to \\\"/root/.config/.wrangler/logs/wrangler-2026-09-20_02-36-19_928.log\\\"\\n(node:114) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\\n(Use `node --trace-warnings ...` to show where the warning was created)\\n\\u001b[33m▲ \\u001b[43;33m[\\u001b[43;30mWARNING\\u001b[43;33m]\\u001b[0m \\u001b[1mProxy environment variables detected. We'll use your proxy for fetch requests.\\u001b[0m\\n\\n\\n(node:122) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\\n(Use `node --trace-warnings ...` to sho"
+    },
+    {
+      "label": "final-durable-restart",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "scripts/m05c-checkpoint.mjs",
+        "--preview"
+      ],
+      "started": "2026-09-20T02:36:27.254364+00:00",
+      "finished": "2026-09-20T02:36:30.217488+00:00",
+      "exit_code": 0,
+      "log_file": "final-durable-restart.log",
+      "log_bytes": 1882,
+      "log_sha256": "60ee72f2ec03ef80db5b87648dab3f5b5ee35fdfb1797d936768951afa29ad80",
+      "result_lines": []
+    },
+    {
+      "label": "final-legacy-live-dev",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "scripts/m05d-checkpoint.mjs"
+      ],
+      "started": "2026-09-20T02:36:35.963474+00:00",
+      "finished": "2026-09-20T02:36:41.758039+00:00",
+      "exit_code": 0,
+      "log_file": "final-legacy-live-dev.log",
+      "log_bytes": 2309,
+      "log_sha256": "079f69d1be6ed2a4308229c754316a9bd86641978413cbe7bdfdbc5b3c506c12",
+      "result_lines": []
+    },
+    {
+      "label": "final-unchanged-dependencies",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "36d644f529d5660506d6f2aa90e90af562d01440",
+        "--",
+        "package.json",
+        "package-lock.json",
+        "wrangler.jsonc",
+        "worker-configuration.d.ts",
+        ".github/workflows/ci.yml"
+      ],
+      "started": "2026-09-20T02:36:38.624315+00:00",
+      "finished": "2026-09-20T02:36:38.627919+00:00",
+      "exit_code": 0,
+      "log_file": "final-unchanged-dependencies.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_lines": []
+    },
+    {
+      "label": "final-legacy-live-built",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "node",
+        "scripts/m05d-checkpoint.mjs",
+        "--preview"
+      ],
+      "started": "2026-09-20T02:36:50.299716+00:00",
+      "finished": "2026-09-20T02:36:53.206099+00:00",
+      "exit_code": 0,
+      "log_file": "final-legacy-live-built.log",
+      "log_bytes": 2332,
+      "log_sha256": "28de31e9559480a86a7b09534cf6db98f8d0f6c9c487b35b8e38d6021f397d9f",
+      "result_lines": []
+    },
+    {
+      "label": "browser-built-retry",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "env",
+        "PLAYWRIGHT_MODULE_PATH=/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+        "CHROMIUM_EXECUTABLE_PATH=/workspace/scratch/69635aad2014/m05d-browser-fallback/chromium",
+        "M07_CHROMIUM_ARGS=[\"--no-sandbox\",\"--disable-dev-shm-usage\",\"--single-process\",\"--no-zygote\",\"--use-gl=angle\",\"--use-angle=swiftshader\",\"--enable-unsafe-swiftshader\"]",
+        "M07_SCREENSHOT=/workspace/scratch/69635aad2014/m07-evidence/reference-built.png",
+        "node",
+        "scripts/m07-browser-checkpoint.mjs"
+      ],
+      "started": "2026-09-20T02:37:07.059317+00:00",
+      "finished": "2026-09-20T02:37:16.366376+00:00",
+      "exit_code": 0,
+      "log_file": "browser-built-retry.log",
+      "log_bytes": 6191,
+      "log_sha256": "0114c2cf9084ac07e082d203dc0914d99342830ed070d863e491a52f99bc8c3f",
+      "result_lines": []
+    },
+    {
+      "label": "browser-dev-first",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "env",
+        "PLAYWRIGHT_MODULE_PATH=/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+        "CHROMIUM_EXECUTABLE_PATH=/workspace/scratch/69635aad2014/m05d-browser-fallback/chromium",
+        "M07_CHROMIUM_ARGS=[\"--no-sandbox\",\"--disable-dev-shm-usage\",\"--single-process\",\"--no-zygote\",\"--use-gl=angle\",\"--use-angle=swiftshader\",\"--enable-unsafe-swiftshader\"]",
+        "M07_SCREENSHOT=/workspace/scratch/69635aad2014/m07-evidence/reference-dev.png",
+        "node",
+        "scripts/m07-browser-checkpoint.mjs",
+        "--dev"
+      ],
+      "started": "2026-09-20T02:38:09.254874+00:00",
+      "finished": "2026-09-20T02:38:28.149919+00:00",
+      "exit_code": 1,
+      "log_file": "browser-dev-first.log",
+      "log_bytes": 5632,
+      "log_sha256": "9ed535c682c0a0d4b5b79504395ab5812a8f09f0a528a2ad8e54e88e3e5338a5",
+      "result_lines": [],
+      "failure_excerpt": "  \"error\": \"AssertionError [ERR_ASSERTION]: Timed out: A disposed SSE requests closed\\n    at waitFor (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/scripts/m07-browser-checkpoint.mjs:32:12)\\n    at async dispose (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/scripts/m07-browser-checkpoint.mjs:255:5)\\n    at async checkpoint (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/scripts/m07-browser-checkpoint.mjs:423:5)\\n    at async runWorkerSmoke (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/scripts/smoke-worker.mjs:328:9)\\n    at async file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/scripts/m07-browser-checkpoint.mjs:49:1\",\n  \"error\": \"AssertionError [ERR_ASSERTION]: Timed out: A disposed SSE requests closed\","
+    },
+    {
+      "label": "browser-dev-census",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "env",
+        "PLAYWRIGHT_MODULE_PATH=/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+        "CHROMIUM_EXECUTABLE_PATH=/workspace/scratch/69635aad2014/m05d-browser-fallback/chromium",
+        "M07_CHROMIUM_ARGS=[\"--no-sandbox\",\"--disable-dev-shm-usage\",\"--single-process\",\"--no-zygote\",\"--use-gl=angle\",\"--use-angle=swiftshader\",\"--enable-unsafe-swiftshader\"]",
+        "M07_SCREENSHOT=/workspace/scratch/69635aad2014/m07-evidence/reference-dev.png",
+        "node",
+        "scripts/m07-browser-checkpoint.mjs",
+        "--dev"
+      ],
+      "started": "2026-09-20T02:39:19.178807+00:00",
+      "finished": "2026-09-20T02:39:38.041350+00:00",
+      "exit_code": 1,
+      "log_file": "browser-dev-census.log",
+      "log_bytes": 8703,
+      "log_sha256": "14da8ceb12c048b14e3f59b099c6414272e131580bc32e3d2555e382b87e2e29",
+      "result_lines": [],
+      "failure_excerpt": "  \"error\": \"AssertionError [ERR_ASSERTION]: Timed out: A disposed SSE requests closed\\n    at waitFor (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/scripts/m07-browser-checkpoint.mjs:32:12)\\n    at async dispose (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/scripts/m07-browser-checkpoint.mjs:264:5)\\n    at async checkpoint (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/scripts/m07-browser-checkpoint.mjs:432:5)\\n    at async runWorkerSmoke (file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/scripts/smoke-worker.mjs:328:9)\\n    at async file:///workspace/scratch/69635aad2014/rxjs-flow-recovery/scripts/m07-browser-checkpoint.mjs:49:1\",\n          \"error\": \"net::ERR_FAILED\"\n  \"error\": \"AssertionError [ERR_ASSERTION]: Timed out: A disposed SSE requests closed\","
+    },
+    {
+      "label": "browser-dev-final",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "env",
+        "PLAYWRIGHT_MODULE_PATH=/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+        "CHROMIUM_EXECUTABLE_PATH=/workspace/scratch/69635aad2014/m05d-browser-fallback/chromium",
+        "M07_CHROMIUM_ARGS=[\"--no-sandbox\",\"--disable-dev-shm-usage\",\"--single-process\",\"--no-zygote\",\"--use-gl=angle\",\"--use-angle=swiftshader\",\"--enable-unsafe-swiftshader\"]",
+        "M07_SCREENSHOT=/workspace/scratch/69635aad2014/m07-evidence/reference-dev.png",
+        "node",
+        "scripts/m07-browser-checkpoint.mjs",
+        "--dev"
+      ],
+      "started": "2026-09-20T02:40:48.181356+00:00",
+      "finished": "2026-09-20T02:40:58.693171+00:00",
+      "exit_code": 0,
+      "log_file": "browser-dev-final.log",
+      "log_bytes": 6808,
+      "log_sha256": "451b10dec6ff38e97abcf7b882e4fab20f5493fdcea672f959688d05136ad02a",
+      "result_lines": []
+    },
+    {
+      "label": "browser-built-final",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "env",
+        "PLAYWRIGHT_MODULE_PATH=/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+        "CHROMIUM_EXECUTABLE_PATH=/workspace/scratch/69635aad2014/m05d-browser-fallback/chromium",
+        "M07_CHROMIUM_ARGS=[\"--no-sandbox\",\"--disable-dev-shm-usage\",\"--single-process\",\"--no-zygote\",\"--use-gl=angle\",\"--use-angle=swiftshader\",\"--enable-unsafe-swiftshader\"]",
+        "M07_SCREENSHOT=/workspace/scratch/69635aad2014/m07-evidence/reference-built.png",
+        "node",
+        "scripts/m07-browser-checkpoint.mjs"
+      ],
+      "started": "2026-09-20T02:41:02.662827+00:00",
+      "finished": "2026-09-20T02:41:11.568682+00:00",
+      "exit_code": 0,
+      "log_file": "browser-built-final.log",
+      "log_bytes": 6373,
+      "log_sha256": "1353cd7c42e7fc5e7d205e5185f45e780c746ed1920f0077aebb03f0bdb54292",
+      "result_lines": []
+    },
+    {
+      "label": "final-diff-check",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "started": "2026-09-20T02:43:55.479430+00:00",
+      "finished": "2026-09-20T02:43:55.486077+00:00",
+      "exit_code": 0,
+      "log_file": "final-diff-check.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_lines": []
+    },
+    {
+      "label": "stage-implementation",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "git",
+        "add",
+        "index.html",
+        "scripts/smoke-worker.mjs",
+        "scripts/m07-browser-checkpoint.mjs",
+        "src/client/browser.ts",
+        "src/client/main.tsx",
+        "src/client/todo.css",
+        "src/client/todo.intents.ts",
+        "src/client/todo.live-state.test.ts",
+        "src/client/todo.selectors.test.ts",
+        "src/client/todo.selectors.ts",
+        "src/client/todo.state.test.ts",
+        "src/client/todo.state.ts",
+        "src/client/todo.view.test.ts",
+        "src/client/todo.view.tsx",
+        "src/client/todo.form.ts",
+        "src/client/todo.forms.test.ts",
+        "src/client/todo.program.ts",
+        "vite.worker.config.ts"
+      ],
+      "started": "2026-09-20T02:43:55.841970+00:00",
+      "finished": "2026-09-20T02:43:55.849367+00:00",
+      "exit_code": 0,
+      "log_file": "stage-implementation.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_lines": []
+    },
+    {
+      "label": "fetch-implementation",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "git",
+        "fetch",
+        "origin",
+        "m07/reference-app"
+      ],
+      "started": "2026-09-20T02:44:37.134279+00:00",
+      "finished": "2026-09-20T02:44:48.561981+00:00",
+      "exit_code": 0,
+      "log_file": "fetch-implementation.log",
+      "log_bytes": 167,
+      "log_sha256": "ab17d0051df74181b17383cbdf669d977858a7be364bddc994d68cee65602f54",
+      "result_lines": []
+    },
+    {
+      "label": "adopt-implementation",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "python",
+        "-c",
+        "import subprocess; g=lambda *a:subprocess.check_output([\"git\",*a],text=True).strip(); sha=\"23a8a1814309023c1e0c3112e462e9ad1105f003\"; assert g(\"rev-parse\",\"origin/m07/reference-app\")==sha; assert g(\"write-tree\")==g(\"rev-parse\",sha+\"^{tree}\"); subprocess.run([\"git\",\"reset\",\"--soft\",sha],check=True); print(\"Verified implementation tree and adopted remote commit without changing worktree\")"
+      ],
+      "started": "2026-09-20T02:44:47.423490+00:00",
+      "finished": "2026-09-20T02:44:47.447977+00:00",
+      "exit_code": 1,
+      "log_file": "adopt-implementation.log",
+      "log_bytes": 878,
+      "log_sha256": "7d7bfe7f4ff29576649341a9549f0b10396df88e64f816dd0159f84ea04b4e5d",
+      "result_lines": [],
+      "failure_excerpt": "subprocess.CalledProcessError: Command '['git', 'rev-parse', 'origin/m07/reference-app']' returned non-zero exit status 128."
+    },
+    {
+      "label": "adopt-implementation-after-fetch",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "python",
+        "-c",
+        "import subprocess; g=lambda *a:subprocess.check_output([\"git\",*a],text=True).strip(); sha=\"23a8a1814309023c1e0c3112e462e9ad1105f003\"; assert g(\"rev-parse\",\"origin/m07/reference-app\")==sha; assert g(\"write-tree\")==g(\"rev-parse\",sha+\"^{tree}\"); subprocess.run([\"git\",\"reset\",\"--soft\",sha],check=True); print(\"Verified implementation tree and adopted remote commit without changing worktree\")"
+      ],
+      "started": "2026-09-20T02:45:16.589162+00:00",
+      "finished": "2026-09-20T02:45:16.620119+00:00",
+      "exit_code": 0,
+      "log_file": "adopt-implementation-after-fetch.log",
+      "log_bytes": 81,
+      "log_sha256": "d10aa91bbcaa3e1fce8f29a5e146b648a6795f75e93be2fdfa4de05cacd8b29c",
+      "result_lines": []
+    },
+    {
+      "label": "final-document-check",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "python",
+        "/workspace/scratch/69635aad2014/m07-check-docs.py"
+      ],
+      "started": "2026-09-20T02:47:16.342889+00:00",
+      "finished": "2026-09-20T02:47:16.376209+00:00",
+      "exit_code": 0,
+      "log_file": "final-document-check.log",
+      "log_bytes": 332,
+      "log_sha256": "415d3002a9908ddd4930d130549cfc1bcdba4111162231c356b58a2896006eba",
+      "result_lines": []
+    },
+    {
+      "label": "final-doc-diff-check",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-recovery",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "started": "2026-09-20T02:47:16.719792+00:00",
+      "finished": "2026-09-20T02:47:16.724183+00:00",
+      "exit_code": 0,
+      "log_file": "final-doc-diff-check.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_lines": []
+    }
+  ],
+  "intermediate_failure_dispositions": [
+    {
+      "labels": [
+        "forms-regression"
+      ],
+      "kind": "expected regression before implementation",
+      "disposition": "Two new form tests reproduced premature text-only draft clearing; captured draft value/revision prevents ABA and whitespace-edited draft loss."
+    },
+    {
+      "labels": [
+        "forms-types"
+      ],
+      "kind": "command correction",
+      "disposition": "The requested npm script typecheck:tests:dom does not exist; reran the actual TypeScript project with node node_modules/typescript/bin/tsc -p tsconfig.test.json (forms-dom-typecheck), which passed."
+    },
+    {
+      "labels": [
+        "view-isolation"
+      ],
+      "kind": "test harness correction",
+      "disposition": "Vitest represented import.meta.url as an HTTP URL, unsuitable for readFileSync. The fixture reads the repository-relative index instead."
+    },
+    {
+      "labels": [
+        "view-green",
+        "final-node-dom"
+      ],
+      "kind": "test harness correction while isolation test was under review",
+      "disposition": "jsdom duplicate-ID lookups after attaching multiple shells selected wrong fixture nodes. Capture root-local elements while detached, then attach both roots. Independent native radio forms fix the actual cross-root group defect; subsequent view-native-isolation-green and full final-node-dom-2 pass."
+    },
+    {
+      "labels": [
+        "host-build-exports"
+      ],
+      "kind": "successful build with insufficient inspected artifact",
+      "disposition": "preserveEntrySignatures alone did not retain the browser entry exports. Add the explicit browser input, then inspect exported app/mount API. The browser checkpoint uses its manifest to import the cached public entry. Smoke checks select the actual /assets/browser-*.js chunk from generated HTML. Worker policy/bindings and dependencies remain unchanged."
+    },
+    {
+      "labels": [
+        "browser-built-first"
+      ],
+      "kind": "browser harness timing correction",
+      "disposition": "The scenario disposed the app during synchronous connecting before its one-shot network abort had been consumed; remount then consumed that pending interception and legitimately required an extra attempt. Wait for explicit Retry feedback before disposal to prove an actual pending retry and avoid carrying the interception across remount. No runtime fix was needed."
+    },
+    {
+      "labels": [
+        "browser-dev-first",
+        "browser-dev-census"
+      ],
+      "kind": "browser instrumentation lifetime correction",
+      "disposition": "Vite HMR reloaded the document during runtime restart. CDP retained old-document SSE request IDs without terminal Network events, so a global request set incorrectly attributed them to the remounted app. Scope active ownership by Page.frameNavigated loader ID and retain old IDs explicitly as document-replaced/no-terminal-event-observed evidence. Built mode separately requires no navigation and no retired IDs. Add actual native DOM listener counts before/after disposal."
+    },
+    {
+      "labels": [
+        "adopt-implementation"
+      ],
+      "kind": "sequencing correction before local mutation",
+      "disposition": "Guarded local adoption ran before the asynchronous fetch completed and failed because origin/m07/reference-app was not yet present. It stopped before mutation. Fetch completed, then adopt-implementation-after-fetch passed its tree checks and adopted the implementation commit safely."
+    }
+  ],
+  "final_verification": {
+    "status": "All final local regression, type, build, HTTP, durable/legacy and native browser gates passed; acceptance review/merge pending.",
+    "node_dom": {
+      "label": "final-node-dom-2",
+      "tests": 803,
+      "files": 47,
+      "exit_code": 0
+    },
+    "workerd": {
+      "label": "final-workerd",
+      "tests": 165,
+      "files": 8,
+      "exit_code": 0
+    },
+    "total_tests": 968,
+    "increase_over_pristine_baseline": 37,
+    "gates": {
+      "final-typecheck": 0,
+      "final-generated-types": 0,
+      "final-build": 0,
+      "final-smoke-dev": 0,
+      "final-smoke-preview": 0,
+      "final-durable-restart": 0,
+      "final-legacy-live-dev": 0,
+      "final-legacy-live-built": 0,
+      "final-unchanged-dependencies": 0,
+      "browser-dev-final": 0,
+      "browser-built-final": 0
+    },
+    "interpretation": "Focused tests supplement complete suites and are not counted twice. Browser/native transport checkpoints are separate evidence.",
+    "documentation_review": {
+      "documents": 11,
+      "missing_local_links": 0,
+      "git_diff_check": "passed"
+    }
+  },
+  "browser_checkpoints": {
+    "status": "Both final development and built scenarios passed.",
+    "script": "scripts/m07-browser-checkpoint.mjs",
+    "modes": {
+      "development": "--dev",
+      "built": "default"
+    },
+    "targets": "The same full application scenario through Vite/Cloudflare development and built assets served by local Wrangler, both with private temporary persistence.",
+    "instrumentation": "Two independent browser contexts; native EventSource and HTTP with passive DevTools observations, document-loader ownership census and native DOM listener inspection. Existing app and mount function are accessed through cached public ES-module exports.",
+    "controlled_conditions": [
+      "Hold a real accepted HTTP reply while the server commit and live snapshot progress to exercise continued draft editing.",
+      "Forward invalid mutation input to the real Hono route to obtain authoritative validation failure.",
+      "Abort exactly one native SSE replacement request, then wait for retry-timer feedback before disposing the app. Full offline emulation and real process shutdown are separate probes."
+    ],
+    "normal_ci_gate": false,
+    "toolchain": {
+      "playwright": "1.62.1",
+      "chromium": "153.0.8010.0",
+      "repository_dependency": false
+    },
+    "results": {
+      "browser-dev-final": {
+        "observations": {
+          "check": "complete reference application in two actual browser contexts",
+          "mode": "Vite Cloudflare development",
+          "browser": "153.0.8010.0",
+          "nativeEventSource": true,
+          "livePath": "/api/todos/live",
+          "domIntentThroughRealHonoAuthorityAndSnapshot": true,
+          "independentBrowserContexts": 2,
+          "invalidDraftStartsNoWrite": true,
+          "accessibleValidation": true,
+          "filtersStartNoRequestsOrConnections": true,
+          "filteredEmptyDistinctFromCollectionEmpty": true,
+          "targetedRowIdentityPreserved": true,
+          "inputFocusAndSelectionPreserved": true,
+          "newerDraftPreservedAfterAcceptedReply": true,
+          "newerSameTextEditPreservedAfterAcceptedReply": true,
+          "actualServerValidationStatus": 422,
+          "deliberateFailureRecovery": true,
+          "harnessOverrides": [
+            "hold actual committed HTTP 201 reply",
+            "forward invalid POST body to actual server for HTTP 422",
+            "abort one native reconnect request before disposing its pending retry"
+          ],
+          "offlineReconnectRecovery": true,
+          "unsolicitedServerInterruption": true,
+          "fullRuntimeRestart": true,
+          "persistedHistoryRetained": true,
+          "devHostReloads": [
+            true,
+            true
+          ],
+          "documentNavigations": {
+            "a": 2,
+            "b": 2
+          },
+          "builtRestartWithoutNavigation": false,
+          "extraConsumersRepeatNoEffects": true,
+          "disposeCompletesOwnedStreams": true,
+          "disposedDomControlsInert": true,
+          "actualNativeDomListenersRemoved": true,
+          "unmountCancelsPendingRetry": true,
+          "unmountCancelsFiniteRequestAndSse": true,
+          "remountReadsCurrentCommittedState": true,
+          "localCancellationIsNotRollback": true,
+          "noFiniteListReads": true,
+          "noDuplicateRows": true,
+          "mutationRequests": [
+            {
+              "client": "A",
+              "method": "POST",
+              "path": "/api/todos"
+            },
+            {
+              "client": "B",
+              "method": "POST",
+              "path": "/api/todos"
+            },
+            {
+              "client": "B",
+              "method": "PUT",
+              "path": "/api/todos/b5490d04-f61a-4249-8f51-040b017669ce"
+            },
+            {
+              "client": "B",
+              "method": "DELETE",
+              "path": "/api/todos/8fc780c3-c76f-4c44-bac4-a2a2cc25e950"
+            },
+            {
+              "client": "A",
+              "method": "POST",
+              "path": "/api/todos"
+            },
+            {
+              "client": "B",
+              "method": "PUT",
+              "path": "/api/todos/b5490d04-f61a-4249-8f51-040b017669ce"
+            },
+            {
+              "client": "A",
+              "method": "POST",
+              "path": "/api/todos"
+            },
+            {
+              "client": "A",
+              "method": "POST",
+              "path": "/api/todos"
+            },
+            {
+              "client": "A",
+              "method": "POST",
+              "path": "/api/todos"
+            },
+            {
+              "client": "B",
+              "method": "POST",
+              "path": "/api/todos"
+            },
+            {
+              "client": "B",
+              "method": "POST",
+              "path": "/api/todos"
+            },
+            {
+              "client": "B",
+              "method": "POST",
+              "path": "/api/todos"
+            },
+            {
+              "client": "A",
+              "method": "POST",
+              "path": "/api/todos"
+            }
+          ],
+          "mutationResponses": [
+            {
+              "client": "A",
+              "method": "POST",
+              "status": 201
+            },
+            {
+              "client": "B",
+              "method": "POST",
+              "status": 201
+            },
+            {
+              "client": "B",
+              "method": "PUT",
+              "status": 200
+            },
+            {
+              "client": "B",
+              "method": "DELETE",
+              "status": 204
+            },
+            {
+              "client": "B",
+              "method": "PUT",
+              "status": 200
+            },
+            {
+              "client": "A",
+              "method": "POST",
+              "status": 201
+            },
+            {
+              "client": "A",
+              "method": "POST",
+              "status": 201
+            },
+            {
+              "client": "A",
+              "method": "POST",
+              "status": 422
+            },
+            {
+              "client": "A",
+              "method": "POST",
+              "status": 201
+            },
+            {
+              "client": "B",
+              "method": "POST",
+              "status": 201
+            },
+            {
+              "client": "B",
+              "method": "POST",
+              "status": 201
+            },
+            {
+              "client": "B",
+              "method": "POST",
+              "status": 201
+            }
+          ],
+          "finalTodoCount": 8,
+          "streamRequests": {
+            "a": 9,
+            "b": 4
+          },
+          "snapshotCounts": {
+            "a": 15,
+            "b": 14
+          },
+          "uncaughtBrowserErrors": 0,
+          "releasedDomListeners": 36,
+          "finalCurrentDocumentRequests": 0,
+          "replacedDocumentRequestsWithoutTerminalEvent": {
+            "a": [
+              {
+                "requestId": "77.94",
+                "loaderId": "EBD9573520C08A69C5B2062D2A2398C1",
+                "disposition": "document replaced; no terminal CDP request event observed"
+              }
+            ],
+            "b": [
+              {
+                "requestId": "77.93",
+                "loaderId": "39B34C1AB9C6EF0F08550E99110AE90B",
+                "disposition": "document replaced; no terminal CDP request event observed"
+              }
+            ]
+          },
+          "finalMountedPagesClosed": true,
+          "finalBrowserContextsClosed": true
+        },
+        "counts": {
+          "dom_mutation_requests": 13,
+          "committed_operations": 12,
+          "genuine_server_rejections": 1,
+          "observed_successful_browser_http_replies": 11,
+          "observed_failed_browser_http_replies": 1,
+          "canceled_committed_http_reply": 1
+        },
+        "interpretation": "Twelve operations committed and one actual server validation rejection occurred. The final committed HTTP reply was held and canceled during unmount; that item remained on remount. Incidental request/snapshot counts are observations, not protocol promises."
+      },
+      "browser-built-final": {
+        "observations": {
+          "check": "complete reference application in two actual browser contexts",
+          "mode": "built assets with local Wrangler",
+          "browser": "153.0.8010.0",
+          "nativeEventSource": true,
+          "livePath": "/api/todos/live",
+          "domIntentThroughRealHonoAuthorityAndSnapshot": true,
+          "independentBrowserContexts": 2,
+          "invalidDraftStartsNoWrite": true,
+          "accessibleValidation": true,
+          "filtersStartNoRequestsOrConnections": true,
+          "filteredEmptyDistinctFromCollectionEmpty": true,
+          "targetedRowIdentityPreserved": true,
+          "inputFocusAndSelectionPreserved": true,
+          "newerDraftPreservedAfterAcceptedReply": true,
+          "newerSameTextEditPreservedAfterAcceptedReply": true,
+          "actualServerValidationStatus": 422,
+          "deliberateFailureRecovery": true,
+          "harnessOverrides": [
+            "hold actual committed HTTP 201 reply",
+            "forward invalid POST body to actual server for HTTP 422",
+            "abort one native reconnect request before disposing its pending retry"
+          ],
+          "offlineReconnectRecovery": true,
+          "unsolicitedServerInterruption": true,
+          "fullRuntimeRestart": true,
+          "persistedHistoryRetained": true,
+          "devHostReloads": [],
+          "documentNavigations": {
+            "a": 1,
+            "b": 1
+          },
+          "builtRestartWithoutNavigation": true,
+          "extraConsumersRepeatNoEffects": true,
+          "disposeCompletesOwnedStreams": true,
+          "disposedDomControlsInert": true,
+          "actualNativeDomListenersRemoved": true,
+          "unmountCancelsPendingRetry": true,
+          "unmountCancelsFiniteRequestAndSse": true,
+          "remountReadsCurrentCommittedState": true,
+          "localCancellationIsNotRollback": true,
+          "noFiniteListReads": true,
+          "noDuplicateRows": true,
+          "mutationRequests": [
+            {
+              "client": "A",
+              "method": "POST",
+              "path": "/api/todos"
+            },
+            {
+              "client": "B",
+              "method": "POST",
+              "path": "/api/todos"
+            },
+            {
+              "client": "B",
+              "method": "PUT",
+              "path": "/api/todos/d5d12e35-03d3-4b57-8a06-68c70f4883d5"
+            },
+            {
+              "client": "B",
+              "method": "DELETE",
+              "path": "/api/todos/928a66a7-5066-4a5b-9e58-31b0397ddc59"
+            },
+            {
+              "client": "A",
+              "method": "POST",
+              "path": "/api/todos"
+            },
+            {
+              "client": "B",
+              "method": "PUT",
+              "path": "/api/todos/d5d12e35-03d3-4b57-8a06-68c70f4883d5"
+            },
+            {
+              "client": "A",
+              "method": "POST",
+              "path": "/api/todos"
+            },
+            {
+              "client": "A",
+              "method": "POST",
+              "path": "/api/todos"
+            },
+            {
+              "client": "A",
+              "method": "POST",
+              "path": "/api/todos"
+            },
+            {
+              "client": "B",
+              "method": "POST",
+              "path": "/api/todos"
+            },
+            {
+              "client": "B",
+              "method": "POST",
+              "path": "/api/todos"
+            },
+            {
+              "client": "B",
+              "method": "POST",
+              "path": "/api/todos"
+            },
+            {
+              "client": "A",
+              "method": "POST",
+              "path": "/api/todos"
+            }
+          ],
+          "mutationResponses": [
+            {
+              "client": "A",
+              "method": "POST",
+              "status": 201
+            },
+            {
+              "client": "B",
+              "method": "POST",
+              "status": 201
+            },
+            {
+              "client": "B",
+              "method": "PUT",
+              "status": 200
+            },
+            {
+              "client": "B",
+              "method": "DELETE",
+              "status": 204
+            },
+            {
+              "client": "B",
+              "method": "PUT",
+              "status": 200
+            },
+            {
+              "client": "A",
+              "method": "POST",
+              "status": 201
+            },
+            {
+              "client": "A",
+              "method": "POST",
+              "status": 201
+            },
+            {
+              "client": "A",
+              "method": "POST",
+              "status": 422
+            },
+            {
+              "client": "A",
+              "method": "POST",
+              "status": 201
+            },
+            {
+              "client": "B",
+              "method": "POST",
+              "status": 201
+            },
+            {
+              "client": "B",
+              "method": "POST",
+              "status": 201
+            },
+            {
+              "client": "B",
+              "method": "POST",
+              "status": 201
+            }
+          ],
+          "finalTodoCount": 8,
+          "streamRequests": {
+            "a": 8,
+            "b": 3
+          },
+          "snapshotCounts": {
+            "a": 15,
+            "b": 14
+          },
+          "uncaughtBrowserErrors": 0,
+          "releasedDomListeners": 36,
+          "finalCurrentDocumentRequests": 0,
+          "replacedDocumentRequestsWithoutTerminalEvent": {
+            "a": [],
+            "b": []
+          },
+          "finalMountedPagesClosed": true,
+          "finalBrowserContextsClosed": true
+        },
+        "counts": {
+          "dom_mutation_requests": 13,
+          "committed_operations": 12,
+          "genuine_server_rejections": 1,
+          "observed_successful_browser_http_replies": 11,
+          "observed_failed_browser_http_replies": 1,
+          "canceled_committed_http_reply": 1
+        },
+        "interpretation": "Twelve operations committed and one actual server validation rejection occurred. The final committed HTTP reply was held and canceled during unmount; that item remained on remount. Incidental request/snapshot counts are observations, not protocol promises."
+      }
+    },
+    "ownership_limit": "Development HMR replaced each document. One old-document SSE request ID per page lacks a terminal CDP event and is retained explicitly in the results, not silently asserted closed or attributed to the new app. Built mode has no navigation after initial load, no retired IDs and a zero entire request census. Both modes end with all pages and browser contexts closed.",
+    "screenshot_review": {
+      "files": [
+        "reference-dev.png",
+        "reference-built.png"
+      ],
+      "same_sha256": "e1744676a40c2f9d88c3bb306b4b2bed98962706e809ae5f5e94e1e95f4979b1",
+      "reviewed_by": "Browser agent and coordinating agent independently inspected the final layout; no clipping/readability issue reported.",
+      "checked_into_repository": false
+    }
+  },
+  "policies": {
+    "application_host": "main.tsx delegates construction, mount and disposal to the Todo program; extra state/view consumers start no network effects.",
+    "collection_authority": "Accepted versioned live snapshots alone replace the collection; HTTP mutation results settle pending operation status and the relevant accepted form draft.",
+    "filter": "App-local all/active/completed state derives visible rows; filtering starts no HTTP request and changes no saved Todo data.",
+    "draft": "Capture value and revision at accepted create. Clear only the matching accepted draft; later typing, including changed-away-and-back text, remains.",
+    "validation": "Pure trimmed required-title validation; no new arbitrary maximum length. Server validation and existing authority capacities remain authoritative.",
+    "mutation_policy": "Keep input editable during create; Add communicates the existing busy admission policy. Accepted writes use the bounded FIFO queue.",
+    "recovery": "Visible correlated operation feedback; no automatic mutation replay. A lost reply can follow a committed write, and local cancellation is not rollback.",
+    "live_protocol": "M06 schema, logical history/revision and current-connection admission remain unchanged; legacy bare-array stream stays supported.",
+    "retry_delays_ms": [
+      1000,
+      2000,
+      4000,
+      8000
+    ],
+    "first_snapshot_deadline_ms": 10000,
+    "idle_partition_detection": "No heartbeat or fixed detection bound after the first snapshot; retry begins on reported transport failure or manual Reconnect.",
+    "node_memory": "Retained Node history is independent memory. Factory/reset establishes a new generation at revision 0; durable reconstruction instead retains saved history."
+  },
+  "publication": {
+    "status": "Implementation published; evidence/documentation commit and dedicated PR follow. Exact final review-head CI belongs in the PR description.",
+    "base_reverified_before_publication": "36d644f529d5660506d6f2aa90e90af562d01440",
+    "implementation_commit": "23a8a1814309023c1e0c3112e462e9ad1105f003",
+    "implementation_tree": "47f7ebd9fbbcefc62e00fa06f963bc4959a81b7e",
+    "actions": [
+      "Stage implementation only and calculate its Git tree.",
+      "GitHub create_tree in hansschenker/rxjs-flow returned 47f7ebd9fbbcefc62e00fa06f963bc4959a81b7e, matching the local implementation tree.",
+      "GitHub create_commit with parent 36d644f529d5660506d6f2aa90e90af562d01440 returned 23a8a1814309023c1e0c3112e462e9ad1105f003.",
+      "GitHub create_branch created m07/reference-app at the implementation commit.",
+      "Fetch the published branch. The first guarded adoption stopped before mutation because fetch was unfinished; adopt-implementation-after-fetch then matched the tested tree and safely adopted the commit.",
+      "The following evidence/documentation commit and PR record the exact review head and CI separately, without claiming a document contains its own future commit identity."
+    ],
+    "api_capture": "API operations are the coordinating agent’s verified publication account, not subprocess-runner commands; exact API timestamps were not captured here.",
+    "merge_performed": false,
+    "deployment_performed": false
+  },
+  "expected_diagnostics": "Intentional workerd cancellation/failure probes may print native runtime diagnostics already present in the pristine baseline; keep these distinct from test failures or uncaught browser application errors.",
+  "limitations": [
+    "Local workerd/browser evidence does not prove deployment or global Cloudflare routing behavior.",
+    "Deployable Todo access remains disabled; no production authentication or release policy is added.",
+    "Snapshot transport is bounded by existing application budgets; native socket/browser buffers are not included in those counts.",
+    "Optional browser tooling remains outside repository dependencies and normal CI.",
+    "M08 and M09 remain pending and require separate authorization.",
+    "Git commits do not automatically refresh the ChatGPT Project reference copy."
+  ],
+  "blockers": []
+}

@@ -25,7 +25,8 @@ describe('Todo initial state and intents', () => {
 	it('creates independent idle state, collection and pending arrays', () => {
 		const firstState = createInitialState();
 		const next = createInitialState();
-		expect(next).toEqual({ todos: [], draft: '', loadStatus: 'idle', pending: [], error: null, failure: null, connection: 'idle', live: null });
+		expect(next).toEqual({ todos: [], draft: '', draftRevision: 0, draftTouched: false, filter: 'all',
+			loadStatus: 'idle', pending: [], error: null, failure: null, failedOperation: null, connection: 'idle', live: null });
 		expect(next).not.toBe(firstState);
 		expect(next.todos).not.toBe(firstState.todos);
 		expect(next.pending).not.toBe(firstState.pending);
@@ -143,7 +144,9 @@ describe('operation admission and load outcomes', () => {
 
 describe('correlated mutation outcomes', () => {
 	it('appends an owned Todo and clears only the submitted draft', () => {
-		const state = start({ ...populated(), draft: '  Third  ' }, { id: 'c', kind: 'create', title: 'Third' });
+		const state = start({ ...populated(), draft: '  Third  ' }, {
+			id: 'c', kind: 'create', title: 'Third', submittedDraft: { value: '  Third  ', revision: 0 },
+		});
 		const incoming = { ...first, id: '3', title: 'Third' };
 		const next = reducer(state, { type: 'CREATE_SUCCEEDED', operationId: 'c', todo: incoming });
 		expect(next.todos).toEqual([...state.todos, incoming]);

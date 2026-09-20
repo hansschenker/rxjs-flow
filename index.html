@@ -13,12 +13,13 @@
         <p class="intro">One task at a time.</p>
       </header>
       <section class="todo-card" aria-label="Your tasks">
-        <form id="add-form">
+        <form id="add-form" novalidate>
           <label for="title-input">New task</label>
           <div class="add-controls">
-            <input id="title-input" type="text" placeholder="What needs doing?" autocomplete="off" required />
+            <input id="title-input" type="text" placeholder="What needs doing?" autocomplete="off" aria-describedby="title-hint" required />
             <button type="submit">Add</button>
           </div>
+          <p id="title-hint" class="field-hint" aria-live="polite">Give your task a name.</p>
         </form>
         <div class="list-toolbar">
           <p id="todo-summary" aria-live="polite"></p>
@@ -28,10 +29,21 @@
           <span class="connection-dot" aria-hidden="true"></span>
           <div><strong id="connection-label">Connecting…</strong><p id="connection-detail">Waiting for the saved list.</p></div>
         </div>
+        <form class="filter-form" aria-label="Task filters">
+          <fieldset class="todo-filters">
+            <legend>Show tasks</legend>
+            <label><input id="filter-all" type="radio" name="todo-filter" value="all" checked /><span>All</span></label>
+            <label><input id="filter-active" type="radio" name="todo-filter" value="active" /><span>Active</span></label>
+            <label><input id="filter-completed" type="radio" name="todo-filter" value="completed" /><span>Completed</span></label>
+          </fieldset>
+        </form>
         <div id="loading-state" role="status"></div>
         <ul id="todo-list" aria-label="Todo list"></ul>
         <div id="empty-state"></div>
+        <p id="filtered-empty-state" class="placeholder" role="status" hidden></p>
         <p id="error-msg" role="alert"></p>
+        <p id="error-recovery" hidden></p>
+        <button id="dismiss-error" type="button" hidden>Dismiss message</button>
         <footer><span class="status-dot" aria-hidden="true"></span><span id="pending-msg" role="status"></span></footer>
       </section>
     </main>

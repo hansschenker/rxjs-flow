@@ -1,11 +1,12 @@
 import { createRequestFailure, isRequestFailure } from '../shared/http-error';
 import { todoListSchema, todoSchema } from '../shared/todo.schema';
 import type { Transition } from './runtime/program';
-import type { Action, Operation, State } from './todo.state';
+import type { Action, Operation, State, SubmittedDraft } from './todo.state';
+import { validateTodoDraft } from './todo.form';
 
 export type TodoIntent =
 	| { readonly kind: 'load' }
-	| { readonly kind: 'create'; readonly title: string }
+	| { readonly kind: 'create'; readonly title: string; readonly submittedDraft?: SubmittedDraft }
 	| { readonly kind: 'update'; readonly todoId: string; readonly completed: boolean }
 	| { readonly kind: 'delete'; readonly todoId: string };
 
@@ -17,8 +18,13 @@ export function interpretTodoIntent({ message, state }: Transition<State, Action
 		case 'LOAD_REQUESTED':
 			return state.live ? null : { kind: 'load' };
 		case 'CREATE_REQUESTED': {
-			const title = message.title.trim();
-			return title ? { kind: 'create', title } : null;
+			const validation = validateTodoDraft(message.title);
+			if (validation.error) return null;
+			return {
+				kind: 'create', title: validation.title,
+				...(message.title === state.draft
+					? { submittedDraft: { value: state.draft, revision: state.draftRevision } } : {}),
+			};
 		}
 		case 'TOGGLE_REQUESTED':
 			return state.todos.some(todo => todo.id === message.id)
@@ -34,7 +40,10 @@ export function interpretTodoIntent({ message, state }: Transition<State, Action
 export function describeOperation(intent: TodoIntent, id: string): Operation {
 	switch (intent.kind) {
 		case 'load': return { id, kind: 'load' };
-		case 'create': return { id, kind: 'create', title: intent.title };
+		case 'create': return {
+			id, kind: 'create', title: intent.title,
+			...(intent.submittedDraft ? { submittedDraft: { ...intent.submittedDraft } } : {}),
+		};
 		case 'update': return { id, kind: 'update', todoId: intent.todoId };
 		case 'delete': return { id, kind: 'delete', todoId: intent.todoId };
 	}

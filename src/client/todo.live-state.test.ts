@@ -203,7 +203,9 @@ describe('live collection admission and remembered identity', () => {
 
 describe('HTTP settlement under live collection authority', () => {
 	it.each(['http-first', 'snapshot-first'] as const)('creates exactly one collection update with %s delivery', order => {
-		let state = queued({ ...ready(), draft: 'Second' }, { id: 'c', kind: 'create', title: 'Second' });
+		let state = queued({ ...ready(), draft: 'Second' }, {
+			id: 'c', kind: 'create', title: 'Second', submittedDraft: { value: 'Second', revision: 0 },
+		});
 		const before = state;
 		const success: Action = { type: 'CREATE_SUCCEEDED', operationId: 'c', todo: second };
 		const live: Action = { type: 'LIVE_SNAPSHOT', connectionId: 1, snapshot: snapshot(6, [first, second]) };

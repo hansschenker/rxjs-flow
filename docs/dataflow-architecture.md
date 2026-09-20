@@ -4,7 +4,7 @@ Design revision: 2026-09-17; implementation checkpoint updated 2026-09-20. Targe
 
 Applies to the ChatGPT Project **`rxjs-flow`** and development repository **`hansschenker/rxjs-flow`**. Read with the [canonical roadmap](roadmap-gpt-6-astra-2026-09-15.md) and [Cloudflare/Hono runtime decision](runtime-cloudflare-hono.md). The historical source `rxjs-stack` and separate `rxjs-fullstack` repositories are not development targets.
 
-**Status:** target behavior, with implementation evidence recorded per milestone. M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e`; M01 is accepted/merged in PR #5. M05a is accepted/merged in PR #6. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`. M05b is [accepted/merged in PR #10](m05b/acceptance.md) at `1cfbaec`. M05c is [accepted/merged in PR #11](m05c/acceptance.md) at `d5500da`. M05d is [accepted/merged in PR #12](m05d/acceptance.md) at `540faec`; parent M05 is complete. M06 implements typed live synchronization and recovery; [acceptance review/merge is pending](m06/acceptance.md). M05b adapts the same finite server Effect and route definitions to Hono, with owned request execution and separately tested retained Node compatibility. M05c adds a configured collection authority with attached SQLite storage, atomic state/metadata commit and reconstruction. M05d adds race-free authority registration and response-owned bounded delivery. M06 adds the versioned public live protocol, authoritative Todo application snapshots and one bounded reconnect owner. M07–M09 and deployment remain pending. The [r1 contract](archive/dataflow-architecture-r1-2026-09-15.md) and M00 evidence are preserved.
+**Status:** target behavior, with implementation evidence recorded per milestone. M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e`; M01 is accepted/merged in PR #5. M05a is accepted/merged in PR #6. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`. M05b is [accepted/merged in PR #10](m05b/acceptance.md) at `1cfbaec`. M05c is [accepted/merged in PR #11](m05c/acceptance.md) at `d5500da`. M05d is [accepted/merged in PR #12](m05d/acceptance.md) at `540faec`; parent M05 is complete. M06 is [accepted/merged in PR #13](m06/acceptance.md) at `36d644f`. M07 reference-app completion is [implemented and locally verified; acceptance review/merge pending](m07/acceptance.md). M05b adapts the same finite server Effect and route definitions to Hono, with owned request execution and separately tested retained Node compatibility. M05c adds a configured collection authority with attached SQLite storage, atomic state/metadata commit and reconstruction. M05d adds race-free authority registration and response-owned bounded delivery. M06 adds the versioned public live protocol, authoritative Todo application snapshots and one bounded reconnect owner. M07 completes reference-app/form behavior; M08–M09 and deployment remain pending. The [r1 contract](archive/dataflow-architecture-r1-2026-09-15.md) and M00 evidence are preserved.
 
 r2 retains the reactive core, rendering and transport-correctness requirements while replacing the permanent Node-server assumption with an explicit Hono/Workers boundary and a minimal durable shared-state authority. Platform facts and primary references are separated from these project requirements in the runtime decision.
 
@@ -80,6 +80,14 @@ The M03 checkpoint extracts pure Todo intent interpretation and one app-owned ef
 
 The M04 checkpoint moves rendering into `todo.view.tsx`; the app root connects its already-shared view-model stream to the view. A stable shell holds scope-owned scalar bindings and keyed rows, each with a child scope. Commits are synchronous and targeted, retained rows preserve node identity, focus and selection, and removal disposes their listeners/bindings. Rendering does not initiate network work. See [acceptance evidence](m04/acceptance.md) and the [minimal binding sample](m04/minimal-sample.md).
 
+M07 keeps that application and separates its feature program from the thin host
+entry. `todo.program.ts` owns model/view/effect/input assembly; `main.tsx` handles
+construction, mount and disposal, retaining the compatible `createTodoApp`
+export. `browser.ts` is the executable entry. Its module exports expose the
+existing application handle and mount function for owned embedding/lifecycle
+checks in development and built output; no global test controller is introduced.
+See [M07 acceptance](m07/acceptance.md) for current verification status.
+
 ## 3. Construction, activation, and disposal
 
 Creating a program describes its graph and dependencies. Starting/mounting it subscribes or connects that graph. Importing feature modules must not subscribe, touch the DOM, issue a request, open a connection or mutate application state. Inert route registration and platform entry exports are permitted: defining a route is not executing its operation.
@@ -118,6 +126,20 @@ Where an effect depends on state, use a coherent transition snapshot associated 
 
 Shared execution within one app is not distributed consistency. Client mutation queues do not serialize all clients. The authority must establish a tested read/validate/transition/commit boundary. Do not publish a proposed reduction as committed until state and ordering metadata have committed consistently. Persisted state is the recovery source; a Worker-global `shareReplay` or Subject is not a shared database.
 
+M07 keeps draft value, draft revision, validation visibility, local filter and
+pending/failed operation facts in the same model. A submitted draft is captured
+with its revision; success clears only that exact accepted capture. Typing away
+and back to identical text creates a newer draft and must survive the earlier
+reply. A missing capture cannot clear a draft by comparing text alone. The pure
+`validateTodoDraft` function trims and requires a nonblank title; server
+validation remains authoritative.
+
+All/Active/Completed filtering derives visible rows from the full remembered
+collection. Summary counts continue to describe the full collection, and a
+filter with no matches is distinct from a known empty collection. Each mounted
+app owns its filter and unsent draft. Filtering starts no network request and
+does not alter the authoritative snapshot.
+
 The [M05c checkpoint](m05c/acceptance.md) uses `TodoRepository` as the finite
 request capability. Named pure Todo transitions serve both the retained memory
 adapter and `createTodoAuthority`. A thin `TodoCollection` Durable Object entry
@@ -143,6 +165,11 @@ Expected operation failures become typed result values while the intent-processi
 Cancellation releases owned work and blocks obsolete results. It is not `complete`, not a successful result and not proof of remote rollback. Finalization runs for completion, error and unsubscription; traces need separate cause information to identify cancellation.
 
 A client request adapter checks HTTP status, handles contract-appropriate empty bodies, validates decoded values and preserves structured failures. Unsubscription must reach abortable underlying work where supported, including body consumption. Do not automatically retry a mutation that may already have committed.
+
+M07's operation feedback distinguishes a server rejection or known
+`not-committed` result from an uncertain outcome. A corrected intent can execute
+after failure; uncertain mutations require reviewing the resynchronized list
+before deliberate repetition. Dismissing a message changes UI feedback only.
 
 Guard the full HTTP boundary: matching, middleware, decoding and synchronous effect construction can fail before an operator's `catchError`. Finite-response cardinality, empty/never-settling handlers and settlement deadlines must be explicit and tested. The adapter translates the owned execution into the platform response interface without forcing Promise or Hono context semantics into the domain core.
 
@@ -176,6 +203,14 @@ Keep the existing `h()` node-construction primitive. Build a stable shell, bind 
 DOM handlers capture input and perform required immediate event handling, then emit an intent. They do not initiate nested HTTP subscriptions or directly mutate shared state. Named pure functions interpret domain intent.
 
 Update only required DOM state; preserve focus, selection, drafts and native input behavior. Repeating a render must not trigger writes. Rendering may expose commit-notification streams when useful, but pure view construction need not be artificially wrapped in streams for uniform syntax.
+
+The reference form uses a labelled required input, model-derived validation and
+explicit `aria-invalid`/description. Its deliberate `novalidate` keeps validation
+feedback in the same model. Add is disabled for invalid input or an accepted
+pending create; the text input stays editable. Filter radios belong to each
+app's own form so two mounted roots cannot share a native radio group. Busy
+rows keep their existing bounded mutation/focus policy; removal or filtering
+out a row releases its child scope.
 
 Hono is selected for HTTP, not as a replacement renderer. Hono JSX, SSR, hydration, islands and automatic dependency tracking remain out of scope. These client requirements are unchanged by the Worker target.
 

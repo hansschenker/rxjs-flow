@@ -32,10 +32,13 @@ the durable collection and restart evidence. M05d is accepted and merged in
 PR #12 at `540faec7086bb58223c5f475db91710ac0e7389b`; all four parent M05
 substeps are accepted. See `docs/m05d/acceptance.md` for bounded owned SSE and
 retained Node streaming. The owner authorized M06 from that verified merge.
-M06 implements the versioned live-state loop in the Todo application;
-acceptance review/merge is pending. See `docs/m06/acceptance.md` and
-`docs/m06/local-development.md`. M07–M09 remain pending; begin M07 only after
-M06 acceptance and its own authorization.
+M06 is accepted and merged in PR #13 at
+`36d644f529d5660506d6f2aa90e90af562d01440`; see `docs/m06/acceptance.md`.
+The owner confirmed the two-page checkpoint and explicitly authorized M07 from
+that verified merge. M07 reference-app completion is implemented and locally verified;
+acceptance review/merge is pending; see
+`docs/m07/acceptance.md` and `docs/m07/local-development.md`.
+M08–M09 remain pending and require their own authorization.
 Do not repeat the import or reopen M00 because the platform target changed.
 The separate `m00/characterize-baseline` branch contains intentionally failing
 probes; do not merge it. Map each failure to a verified fix or tested replacement.
