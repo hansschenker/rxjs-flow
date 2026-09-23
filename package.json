@@ -1,8 +1,7 @@
 {
   "name": "rxjs-flow",
   "version": "1.0.0",
-  "description": "RxJS 7 dataflow with TypeScript, custom JSX, a Node Todo baseline and Cloudflare Workers foundation",
-  "main": "index.js",
+  "description": "RxJS 7 dataflow reference application with TypeScript, custom JSX, Hono and durable Cloudflare Workers storage",
   "scripts": {
     "test": "vitest run",
     "dev:server": "tsx watch src/server/main.ts",
@@ -49,5 +48,6 @@
     "vite": "^8.0.12",
     "vitest": "^4.1.6",
     "wrangler": "4.133.0"
-  }
+  },
+  "private": true
 }

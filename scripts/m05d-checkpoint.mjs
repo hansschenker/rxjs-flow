@@ -26,8 +26,16 @@ async function within(promise, description) {
   }
 }
 
+function decodeLegacyTodos(data) {
+  const decoded = JSON.parse(data);
+  assert.ok(Array.isArray(decoded), 'Legacy todos event is an array');
+  return decoded;
+}
+
 /** One read at a time, a fixed frame buffer, and only the latest full snapshot. */
-export async function connectLive(base, signal, name) {
+export async function connectLive(base, signal, name, {
+  path = '/api/todos/stream', eventName = 'todos', decode = decodeLegacyTodos,
+} = {}) {
   const controller = new AbortController();
   const onAbort = () => controller.abort(signal.reason);
   signal.addEventListener('abort', onAbort, { once: true });
@@ -48,7 +56,7 @@ export async function connectLive(base, signal, name) {
     closed.resolve(value);
   }
   try {
-    const response = await within(fetch(new URL('/api/todos/stream', base), {
+    const response = await within(fetch(new URL(path, base), {
       headers: { Accept: 'text/event-stream' }, signal: controller.signal,
     }), `${name} response headers`);
     assert.equal(response.status, 200, `${name}: ${await (response.ok ? Promise.resolve('') : response.text())}`);
@@ -88,10 +96,8 @@ export async function connectLive(base, signal, name) {
           const event = lines.find(line => line.startsWith('event:'))?.slice(6).trim() ?? 'message';
           const data = lines.filter(line => line.startsWith('data:')).map(line => line.slice(5).replace(/^ /, '')).join('\n');
           if (!data) continue;
-          assert.equal(event, 'todos', `${name}: expected full Todo snapshot event`);
-          const decoded = JSON.parse(data);
-          assert.ok(Array.isArray(decoded), `${name}: legacy todos event is an array`);
-          latest = decoded;
+          assert.equal(event, eventName, `${name}: expected full Todo snapshot event`);
+          latest = decode(data);
           count++;
           if (pending?.predicate(latest)) {
             pending.resolve(latest);

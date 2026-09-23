@@ -157,7 +157,8 @@ export async function runWorkerSmoke({ development = false, restart = false, che
 
   async function checkTodoApi(base) {
     const path = '/api/todos';
-    const response = await localFetch(base, path);
+    // API access failures must remain JSON even for an HTML navigation.
+    const response = await localFetch(base, path, navigationHeaders);
     assert.match(response.headers.get('content-type') ?? '', /application\/json/);
     if (!enableAuthority) {
       assert.equal(response.status, 503, 'Built Worker requires an explicit collection access policy');
