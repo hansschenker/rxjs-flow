@@ -1,7 +1,8 @@
 # M08 — Inspect the reference application's temporal behavior
 
 Revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
-Status: implemented and locally verified; acceptance review/merge pending.
+Status: accepted and merged in [PR #15](https://github.com/hansschenker/rxjs-flow/pull/15)
+at `5362f0392b73c8cd7b8f8fb53e0857b257e55eb3`. Status closeout recorded 2026-09-23.
 
 The Todo page keeps its existing appearance and behavior. M08 adds optional
 bounded, redacted observations for explaining work and cleanup. Tracing is off
@@ -10,16 +11,17 @@ or expose a global debug controller.
 
 ## Run the application
 
-Use Node **22.22.1**. While the milestone PR is under review:
+Use Node **22.22.1** with the merged application:
 
 ```bash
 git fetch origin
-git switch m08/temporal-traces
+git switch main
+git pull --ff-only
 npm ci
 npm run dev:worker
 ```
 
-After merge, use updated `main` instead. Open **http://localhost:5174** in two
+Open **http://localhost:5174** in two
 tabs. Add, toggle and delete Todos; both tabs receive the same saved collection.
 Each keeps its own draft and filter. The [M07 guide](../m07/local-development.md)
 explains all controls, validation and recovery behavior. Local development needs
@@ -126,7 +128,8 @@ selected records and source digests.
 The [readable temporal traces](temporal-traces.md) show the captured operation,
 cancellation and authority recovery. The [acceptance report](acceptance.md) and
 [execution ledger](execution.json) distinguish actual local run results from
-reproduction instructions and pending review-head CI.
+reproduction instructions. M08's review-head CI is recorded in its merged PR;
+M09 verification is recorded separately in [M09 acceptance](../m09/acceptance.md).
 
 ## Evidence boundaries
 

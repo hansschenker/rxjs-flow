@@ -37,11 +37,15 @@ M06 is accepted and merged in PR #13 at
 M07 is accepted and merged in PR #14 at
 `92f25680072da22d45e815ac411abd3651d002a5`; see
 `docs/m07/acceptance.md` and `docs/m07/local-development.md`.
-The owner confirmed the reference application and explicitly authorized M08
-from that verified merge. M08 temporal tracing is implemented and locally verified;
-acceptance review/merge is pending. See `docs/m08/acceptance.md`,
+M08 temporal tracing is accepted and merged in PR #15 at
+`5362f0392b73c8cd7b8f8fb53e0857b257e55eb3`. See `docs/m08/acceptance.md`,
 `docs/m08/temporal-traces.md` and `docs/m08/local-development.md`.
-M09 remains pending and requires its own authorization.
+The owner explicitly authorized M09 from that verified merge. Completion review
+and documented delivery are implemented and locally verified on
+`m09/completion-delivery`; see
+`docs/m09/acceptance.md`, `docs/m09/application-and-api.md` and `docs/m09/delivery.md`.
+M09 acceptance review/merge remains pending. No later milestone or deployment
+starts automatically.
 Do not repeat the import or reopen M00 because the platform target changed.
 The separate `m00/characterize-baseline` branch contains intentionally failing
 probes; do not merge it. Map each failure to a verified fix or tested replacement.
@@ -70,9 +74,10 @@ versioned `/todos/live` protocol, one app-owned connection, bounded RxJS-owned
 reconnect and authoritative snapshot integration. The legacy `/todos/stream`
 bare-array wire remains supported. HTTP mutation replies settle pending operation
 status; accepted live snapshots alone replace collection content.
-The current Node HTTP application remains the migration baseline until equivalent
-behavior is verified.
-Keep its applicable lifecycle tests or explicitly document tested retirement.
+M09 retains Node HTTP as a tested local in-memory compatibility mode; Hono/Workers
+is the primary reference application and build target. Keep its applicable lifecycle,
+HTTP and SSE tests. This is not a second production infrastructure commitment.
+The runtime decision and delivery guide state the support boundary.
 Do not scaffold over the repository, adopt Hono JSX, or add another reactive engine.
 
 Events, state, derived values, rendering and effects have explicit owned dataflow.

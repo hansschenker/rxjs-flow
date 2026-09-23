@@ -1,7 +1,9 @@
 # M08 — Time, causality and cleanup evidence
 
 Date: 2026-09-20. Revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
-Status: implemented and locally verified; acceptance review/merge pending.
+Status: accepted and merged in [PR #15](https://github.com/hansschenker/rxjs-flow/pull/15)
+at `5362f0392b73c8cd7b8f8fb53e0857b257e55eb3`. Status closeout recorded 2026-09-23; the
+implementation results and execution ledger below remain the M08 evidence.
 Final result: **1,018 tests passed** (847 Node/DOM + 171 workerd),
 **50 more** than the pristine 968-test baseline.
 
@@ -257,7 +259,7 @@ the current collection, not an exactly-once event history.
 Optional browser tooling stays outside repository dependencies. Local dependencies
 reuse the pinned installation; exact review-head CI verifies a clean install
 separately. A repository commit does not automatically update the ChatGPT Project
-reference copy. M09 remains pending.
+reference copy. M09 was subsequently authorized; see its [acceptance record](../m09/acceptance.md).
 
 No implementation blocker remains. Initial TypeScript/test-fixture failures and
 the workerd console-export limitation are recorded with their corrections in
@@ -265,4 +267,5 @@ the execution ledger. A small host-side Vitest reporter exports actual trace
 metadata through the supported test result rather than fabricating captured
 output. All final local gates pass at the recorded implementation. The following
 documentation commit and PR record review-head identity and CI separately.
-Acceptance review/merge remains pending; M09 requires its own authorization.
+PR #15 is merged at the status-closeout SHA above. The owner subsequently
+explicitly authorized M09; its current results are recorded separately.

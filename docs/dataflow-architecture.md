@@ -1,54 +1,32 @@
 # Dataflow architecture contract
 
-Design revision: 2026-09-17; implementation checkpoint updated 2026-09-20. Target revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
+Design revision: 2026-09-17; implementation checkpoint updated 2026-09-23. Target revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
 
 Applies to the ChatGPT Project **`rxjs-flow`** and development repository **`hansschenker/rxjs-flow`**. Read with the [canonical roadmap](roadmap-gpt-6-astra-2026-09-15.md) and [Cloudflare/Hono runtime decision](runtime-cloudflare-hono.md). The historical source `rxjs-stack` and separate `rxjs-fullstack` repositories are not development targets.
 
-**Status:** target behavior, with implementation evidence recorded per milestone. M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e`; M01 is accepted/merged in PR #5. M05a is accepted/merged in PR #6. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`. M05b is [accepted/merged in PR #10](m05b/acceptance.md) at `1cfbaec`. M05c is [accepted/merged in PR #11](m05c/acceptance.md) at `d5500da`. M05d is [accepted/merged in PR #12](m05d/acceptance.md) at `540faec`; parent M05 is complete. M06 is [accepted/merged in PR #13](m06/acceptance.md) at `36d644f`. M07 reference-app completion is [accepted/merged in PR #14](m07/acceptance.md) at `92f2568`. M05b adapts the same finite server Effect and route definitions to Hono, with owned request execution and separately tested retained Node compatibility. M05c adds a configured collection authority with attached SQLite storage, atomic state/metadata commit and reconstruction. M05d adds race-free authority registration and response-owned bounded delivery. M06 adds the versioned public live protocol, authoritative Todo application snapshots and one bounded reconnect owner. M07 completes reference-app/form behavior. The owner explicitly authorized M08 from its verified merge; [temporal tracing](m08/acceptance.md) is implemented and locally verified; acceptance review/merge is pending. M09 and deployment remain pending. The [r1 contract](archive/dataflow-architecture-r1-2026-09-15.md) and M00 evidence are preserved.
+**Status:** implemented contracts, with evidence recorded per milestone. M00 is accepted/closed at `c9197b68591e390a0a3add4667e5dd23717d6b6e`; M01 is accepted/merged in PR #5. M05a is accepted/merged in PR #6. M02 is [accepted/merged in PR #7](m02/acceptance.md) at `7374557b6d264a9bfa572526a4f71233fc3aa24e`. M03 is [accepted/merged in PR #8](m03/acceptance.md) at `c64fda113b599ff9b0b21ae3e20aeff0c473a358`. M04 is [accepted/merged in PR #9](m04/acceptance.md) at `2b316a477600c91b3105c9e390949c29e90046d3`. M05b is [accepted/merged in PR #10](m05b/acceptance.md) at `1cfbaec`. M05c is [accepted/merged in PR #11](m05c/acceptance.md) at `d5500da`. M05d is [accepted/merged in PR #12](m05d/acceptance.md) at `540faec`; parent M05 is complete. M06 is [accepted/merged in PR #13](m06/acceptance.md) at `36d644f`. M07 reference-app completion is [accepted/merged in PR #14](m07/acceptance.md) at `92f2568`. M08 [temporal tracing](m08/acceptance.md) is accepted/merged in PR #15 at `5362f0392b73c8cd7b8f8fb53e0857b257e55eb3`. The owner authorized M09 completion review from that verified merge; M09 is implemented and locally verified, with acceptance review/merge pending; deployment remains separate. The [M09 application and API guide](m09/application-and-api.md) maps this contract to the proven source surface. The [r1 contract](archive/dataflow-architecture-r1-2026-09-15.md) and M00 evidence are preserved.
 
 r2 retains the reactive core, rendering and transport-correctness requirements while replacing the permanent Node-server assumption with an explicit Hono/Workers boundary and a minimal durable shared-state authority. Platform facts and primary references are separated from these project requirements in the runtime decision.
 
 ## 1. One model, explicit runtime boundaries
 
-```text
-Browser sources
-DOM events / startup / transport events
-                 |
-                 v
-          typed input messages
-                 |
-                 v
-       serialized state transitions <--------------------+
-                 |                                      |
-          shared current state                          |
-                 |                                      |
-         +-------+----------------+                     |
-         |                        |                     |
-  coherent viewModel       accepted intents /           |
-         |                 transition snapshots         |
-         v                        |                     |
-  owned DOM bindings        effect policies             |
-         |                        |                     |
-         v                        v                     |
-        DOM               HTTP / other adapters         |
-                                  |                     |
-                            result messages ------------+
-
-Server boundaries:
-Request -> Hono matching/middleware -> validated input + capabilities
-                                                |
-                                  owned RxJS operation
-                                                |
-                                  logical Todo authority
-                                                |
-                            pure transition + persisted commit
-                                                |
-                                      committed snapshot
-                                                |
-                             owned, bounded SSE response
-                                                |
-Browser: bytes -> decoder -> current-connection snapshot message
+```mermaid
+flowchart TD
+    Sources["DOM and transport sources"] --> State["Serialized messages and shared state"]
+    State --> View["Derived view and owned DOM bindings"]
+    State --> Effects["Accepted intents and effect policies"]
+    Effects --> Requests["Owned HTTP operations"]
+    Requests -->|"Result messages"| State
+    Requests --> Authority["Validated durable collection commits"]
+    Authority --> Live["Bounded committed snapshots"]
+    Live -->|"Current connection and validated identity"| Sources
 ```
+
+Hono matches the request and extracts validated input plus capabilities before
+the request-owned RxJS operation enters the logical Todo authority. Its atomic
+storage transition settles before a snapshot is published through a separately
+owned SSE response. The browser decodes transport values before accepting them
+into its state stream.
 
 Rendering is already an effect on the DOM. It is a separate sink from network/storage effects, not a prerequisite for them. Re-rendering never repeats a write. An effect result can change state and therefore the view without the view initiating the effect.
 
@@ -78,7 +56,7 @@ The core and browser code must not import Node raw request types, Hono context, 
 
 The M03 checkpoint extracts pure Todo intent interpretation and one app-owned effect graph. Reads use latest-read cancellation; accepted create/update/delete operations share a FIFO with a default capacity of 32 active plus waiting writes. Create exhaustion lasts through queued and active work. Expected failures return correlated facts, and unexpected graph/render faults reach the host's cleanup/reporting boundary. HTTP work is cold, uses response contracts and shared Zod schemas, preserves structured failures and aborts body consumption on disposal. The generic SSE adapter requires a decoder from `unknown`. M06 connects the app to a distinct versioned live route with one owned connection, explicit retry policy and accepted snapshots as the collection authority. The pure model can still explicitly select the finite HTTP mode used by retained fixtures; the actual mounted host selects live mode.
 
-The M04 checkpoint moves rendering into `todo.view.tsx`; the app root connects its already-shared view-model stream to the view. A stable shell holds scope-owned scalar bindings and keyed rows, each with a child scope. Commits are synchronous and targeted, retained rows preserve node identity, focus and selection, and removal disposes their listeners/bindings. Rendering does not initiate network work. See [acceptance evidence](m04/acceptance.md) and the [minimal binding sample](m04/minimal-sample.md).
+The M04 checkpoint moves rendering into `todo.view.tsx`; the app root connects view-model projections of its shared state to the view. A stable shell holds scope-owned scalar bindings and keyed rows, each with a child scope. Commits are synchronous and targeted, retained rows preserve node identity, focus and selection, and removal disposes their listeners/bindings. Rendering does not initiate network work. See [acceptance evidence](m04/acceptance.md) and the [minimal binding sample](m04/minimal-sample.md).
 
 M07 keeps that application and separates its feature program from the thin host
 entry. `todo.program.ts` owns model/view/effect/input assembly; `main.tsx` handles
@@ -117,6 +95,15 @@ Correctness must not depend on a guaranteed shutdown callback during abrupt host
 The browser model remains a pure reducer with `scan`. State is not a publicly mutable Subject. A Subject may bridge external input at the boundary; consumers receive read-only Observable access.
 
 Use explicit replay and connection policies. A mounted root holds the state connection for its lifetime, including periods with no view subscribers. Additional consumers must not repeat reductions or requests. Disposal releases graph ownership and replayed references.
+
+The implemented program uses one root-owned `scan` and a private
+`ReplaySubject(1)`, not a ref-counted `shareReplay` connection. It replaces the
+replay holder on disposal so retained public handles cannot replay disposed
+state. Transitions do not replay. Each view consumer may repeat a pure projection
+of the shared state; it does not repeat state reduction or effect execution.
+DOM adapters attach lazy listeners to independently hot EventTargets; finite
+HTTP and live connection descriptions start a separate execution per subscription.
+See the [source lifetime table](m09/application-and-api.md#activation-temperature-and-sharing).
 
 RxJS 7.8.2's `shareReplay` defaults `refCount` to false and does not reset on completion. These are operator semantics, not the application's desired lifetime. Test late subscription, child removal, app disposal and remount. Reference: [RxJS 7.8.2 shareReplay](https://github.com/ReactiveX/rxjs/blob/7.8.2/src/internal/operators/shareReplay.ts).
 
@@ -222,7 +209,7 @@ Preserve the existing application's domain and HTTP behavior while moving platfo
 
 Use Hono for matching, middleware integration and response construction. Extract validated input plus narrow capabilities before entering RxJS operation/domain code. Keep platform raw objects at the boundary and migrate shared types explicitly. Preserve route inference, validation, body bounds, headers, status/error behavior and authentication through a compatibility matrix. A Hono context is not the service API of the core.
 
-Each request owns its operation; each live response owns its subscription. Canceling one request or disconnecting one client must not stop other work. Retain Node startup/listen failure and shutdown/port-release requirements while that adapter remains supported. Its eventual retention or retirement needs an explicit tested decision, not an accidental deletion.
+Each request owns its operation; each live response owns its subscription. Canceling one request or disconnecting one client must not stop other work. M09 retains Node as a supported local compatibility mode for this revision, preserving its HTTP, SSE, startup/listen failure and shutdown/port-release tests. Its in-memory collection resets history on construction/reset and loses user data on process restart. Cloudflare Workers is the primary delivery target; Node is not a second deployment target or evidence of durable recovery. This decision does not promise indefinite duplicate feature development.
 
 The M05b checkpoint removes Node raw objects from `HttpRequest`, adds a request
 AbortSignal, and gives both HTTP adapters one explicit finite-operation owner.

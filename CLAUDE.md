@@ -28,10 +28,15 @@ M07 reference-app completion is accepted and merged in PR #14 at
 `92f25680072da22d45e815ac411abd3651d002a5`;
 see [M07 acceptance](docs/m07/acceptance.md) and the
 [complete local reference-app guide](docs/m07/local-development.md).
-The owner explicitly authorized M08 from that verified merge; its
-[temporal-trace implementation](docs/m08/acceptance.md) is locally verified,
-with acceptance review/merge pending. See the [actual readable traces](docs/m08/temporal-traces.md).
-M09 remains pending. Use a dedicated branch and PR; do not start a milestone,
+M08 temporal tracing is accepted and merged in PR #15 at
+`5362f0392b73c8cd7b8f8fb53e0857b257e55eb3`. See [M08 acceptance](docs/m08/acceptance.md)
+and the [actual readable traces](docs/m08/temporal-traces.md).
+The owner explicitly authorized M09: completion review and documented delivery.
+Implementation and final local verification are complete; acceptance review/merge
+remains pending. See its [acceptance record](docs/m09/acceptance.md),
+[application/API guide](docs/m09/application-and-api.md) and
+[delivery guide](docs/m09/delivery.md).
+Use a dedicated branch and PR; do not start a milestone,
 merge, publish, deploy, create remote resources or change `netxpert.ch` without
 appropriate explicit authorization. `rxjs-stack` and `rxjs-fullstack` are historical/
 separate repositories, not implementation targets.
@@ -44,13 +49,13 @@ SQLite persistence and reconstruction. M05d adds race-free authority registratio
 and bounded response-owned live delivery. M06 adds the versioned `/todos/live`
 protocol, authoritative application snapshots and one bounded RxJS reconnect
 owner. Legacy `/todos/stream` arrays remain unchanged. HTTP mutation replies
-settle pending status; snapshots alone replace collection content. Keep Node
-as the baseline during the tested transition. Hono does not replace our renderer.
+settle pending status; snapshots alone replace collection content. Node remains
+a tested local in-memory compatibility mode; Workers is the primary reference
+application/build. No duplicate production target is implied. Hono does not replace our renderer.
 Do not use mutable Worker-global state as authority or pass Hono context into reducers.
 
-M08 starts from the verified M07 merge after the owner's explicit authorization.
-M09 requires M08 acceptance and its own authorization, as specified in the roadmap. No permanent Node-only constraint or
-instruction to reopen M00 is in force. Do not merge the intentionally failing
+M09 starts from verified M08 merge `5362f03` after the owner's explicit authorization.
+No permanent Node-only constraint or instruction to reopen M00 is in force. Do not merge the intentionally failing
 `m00/characterize-baseline` probes.
 
 ## Existing Node baseline reference
@@ -70,14 +75,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-# Development (run concurrently in two terminals)
+# Primary local Workers application (port 5174)
+npm run dev:worker
+
+# Node compatibility mode (run concurrently in two terminals)
 npm run dev:server   # API server on port 3000 via tsx watch
 npm run dev:client   # Vite dev server on port 5173
 
 # Quality checks
-npm test             # Vitest run (all tests)
+npm test             # Node/DOM tests
+npm run test:worker  # Separate local workerd/SQLite suite
 npm run test:watch   # Vitest interactive watch mode
-npm run typecheck    # tsc --noEmit strict check
+npm run typecheck    # Generated types plus client/Worker/Node/test typechecks
+npm run cf:typecheck # Check generated Worker declarations
+npm run build:worker
+npm run smoke:worker
+node scripts/m09-delivery-checkpoint.mjs
 
 # Run a single test file
 npx vitest run src/server/core/router.test.ts
@@ -87,9 +100,10 @@ Vite proxies `/api/*` → `http://localhost:3000/*`, so the client and server ca
 
 ## Baseline architecture
 
-The current implementation is a TypeScript app with custom JSX and Node HTTP.
+The primary reference application uses TypeScript, custom JSX and Hono/Workers.
+The following contracts also support the retained Node HTTP compatibility mode.
 Its server `Effect` composes streams; pure domain functions need not return streams.
-The r2 platform migration must preserve or explicitly adapt these contracts.
+The r2 migration preserves shared contracts while adapting platform ownership.
 
 ### Core type contracts (`src/server/core/types.ts`)
 
@@ -288,7 +302,7 @@ const client = createHttpTestClient('http://localhost:3000');
 const res = await client.post('/todos', { title: 'Test' });
 ```
 
-Workers-runtime tests begin in M05a and complement these tests; Node tests alone
+Workers-runtime tests established in M05a complement these tests; Node tests alone
 are not Cloudflare acceptance. Record actual versions, commands and evidence, keep
 credentials out of Git, and do not claim Project reference-copy synchronization
 or deployed verification without performing it.

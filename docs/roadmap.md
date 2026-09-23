@@ -2,7 +2,7 @@
 
 The active planning document is
 [roadmap-gpt-6-astra-2026-09-15.md](roadmap-gpt-6-astra-2026-09-15.md),
-revision **rxjs-flow migration r2 — Cloudflare/Hono**, updated 2026-09-20.
+revision **rxjs-flow migration r2 — Cloudflare/Hono**, updated 2026-09-23.
 
 Read it with the [architecture contract](dataflow-architecture.md),
 [Cloudflare/Hono runtime decision](runtime-cloudflare-hono.md),
@@ -31,17 +31,25 @@ at `36d644f529d5660506d6f2aa90e90af562d01440`. The owner confirmed the
 M07 reference-app completion is [accepted/merged in PR #14](m07/acceptance.md)
 at `92f25680072da22d45e815ac411abd3651d002a5`; its
 [local guide](m07/local-development.md) covers the complete application.
-The owner explicitly authorized M08 from that verified merge. Its
-[acceptance record](m08/acceptance.md), [readable traces](m08/temporal-traces.md)
-and [local guide](m08/local-development.md) record 1,018 passing tests and final
-local browser/resource evidence. Acceptance review/merge is pending; M09 remains pending.
+M08 temporal tracing is [accepted/merged in PR #15](m08/acceptance.md) at
+`5362f0392b73c8cd7b8f8fb53e0857b257e55eb3`. Its [readable traces](m08/temporal-traces.md)
+and [local guide](m08/local-development.md) retain 1,018-test and browser/resource
+evidence. The owner explicitly authorized M09 from that verified merge.
+
+M09 completion review and documented delivery are implemented and locally
+verified with 1,018 tests plus built delivery and native-browser gates;
+acceptance review/merge is pending. See the [application/API guide](m09/application-and-api.md),
+[delivery guide](m09/delivery.md) and [acceptance record](m09/acceptance.md).
+Workers is the primary application/build; Node is retained as a tested local
+in-memory compatibility mode. No public deployment is claimed.
 
 Recommended order: M01 → M05a → M02 → M03 → M04 → M05b → M05c → M05d → M06 → M07
-→ M08 → M09. All four M05 substeps and M07 are accepted. M08 was explicitly
-authorized from the verified M07 merge. M09 requires its own authorization.
+→ M08 → M09. M00–M08, including all four M05 substeps, are accepted and merged.
+M09 is the final planned milestone and is explicitly authorized.
 
 The [unmodified r1 roadmap](archive/roadmap-rxjs-flow-migration-r1-2026-09-15.md)
 and other [archived records](archive/) preserve provenance. They are not competing
 active plans. Existing evidence remains valid for its recorded baseline; only the
-future Node-only target is superseded. The Project reference copy must be refreshed
-separately after the accepted revision; a GitHub commit does not update it automatically.
+future Node-only target is superseded. A [matching Project reference copy](m09/project-reference/README.md)
+is prepared; upload must be performed separately after acceptance. A GitHub
+commit does not update the Project automatically.
