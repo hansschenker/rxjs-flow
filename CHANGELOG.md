@@ -6,6 +6,37 @@ Changes to rxjs-flow are recorded here. Released entries below retain their orig
 
 ## [Unreleased]
 
+### M01–M08 dataflow migration (merged)
+
+- M01–M04: make app/component lifetimes explicit; add instance-owned state,
+  coherent transitions, bounded owned effect policies, validated/cancellable HTTP
+  and targeted custom-JSX rendering with stable keyed rows.
+- M05a–M05d: establish Hono/Workers builds and tests; preserve HTTP contracts;
+  add a bounded SQLite-backed collection authority and response-owned live delivery.
+- M06: use versioned committed snapshots, one live owner per app, explicit
+  stale/duplicate admission and bounded reconnect/resnapshot recovery.
+- M07: complete Todo forms, local filters, validation and draft revision handling;
+  verify real browser behavior, restart and unmount/remount cleanup.
+- M08: add optional bounded/redacted temporal observations; retain actual operation,
+  cancellation and recovery traces plus trace-disabled/enabled request parity.
+  PR #15 merged at `5362f0392b73c8cd7b8f8fb53e0857b257e55eb3`.
+- Preserve RxJS 7, source history and original release entries. The canonical
+  roadmap and each milestone acceptance record identify its exact evidence.
+
+### M09 completion review and documented delivery (in review)
+
+- Consolidate the implemented application graph, proven function-based APIs,
+  lifecycle/sharing policies, public asset/API contract and operational limits.
+- Make Hono/Workers the primary documented local application/build. Retain the
+  tested Node adapter as a local in-memory compatibility mode.
+- Add a built public `/api` delivery checkpoint covering client assets, real
+  CRUD/versioned SSE, restart resnapshot and routing/access failure boundaries.
+- Reconcile package metadata as a private application without a nonexistent npm
+  entry point. Keep version `1.0.0` and dependency versions unchanged.
+- Record fresh-checkout validation, prepare a matching Project roadmap copy and
+  document separately authorized Cloudflare delivery. No package publication,
+  release tag, Project upload or deployed service is implied.
+
 ### M00 migration recovery (merged as PR #1)
 
 - Join the imported application/documentation history with the destination initial commit.

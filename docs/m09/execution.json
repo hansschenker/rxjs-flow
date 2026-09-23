@@ -1,0 +1,1132 @@
+{
+  "milestone": "M09",
+  "roadmap_revision": "rxjs-flow migration r2 — Cloudflare/Hono",
+  "repository": "hansschenker/rxjs-flow",
+  "branch": "m09/completion-delivery",
+  "starting_commit": "5362f0392b73c8cd7b8f8fb53e0857b257e55eb3",
+  "starting_tree": "b2efaf3d9888126ee3dd29ae230575b4e86cbdbe",
+  "starting_commit_evidence": "The coordinating agent verified M08 PR #15 merged and current main matched this SHA before creating the dedicated branch. The owner explicitly authorized M09. Baseline identity, install and suites are recorded below.",
+  "implementation_commit": "cafebda2cc52b4b47a4889af08e69499d75a59bd",
+  "implementation_tree": "682099aababc56becab12160efe84233909c0cd6",
+  "inspection_record": {
+    "capture": "GitHub API, Git and local rg/cat/sed/source/document reads were performed outside the validation runner; this grouped record does not invent timestamps or exit codes.",
+    "operations": [
+      "Verify repository identity, current origin/main and merged M08 PR #15; create a separate checkout and m09/completion-delivery branch.",
+      "Read AGENTS.md, canonical r2 M09, architecture/runtime decisions and earlier acceptance evidence.",
+      "Inspect proven public factories, source temperature, sharing, effect policies, ownership, validation, route prefix/asset dispatch and delivery scripts.",
+      "Review Node support scope, package metadata, generated types, CI boundaries, migration declarations and deployment limitations.",
+      "Read official Cloudflare documentation for current operational commands and link supporting primary sources from the delivery guide.",
+      "Review source/script changes independently; preserve dependency graph and historical release entries.",
+      "Review final acceptance/doc links and prepare exact-byte canonical Project reference without claiming upload."
+    ]
+  },
+  "execution_capture": {
+    "runner": "/workspace/scratch/69635aad2014/m09-run.py",
+    "invocation": "python /workspace/scratch/69635aad2014/m09-run.py LABEL WORKING_DIRECTORY COMMAND [ARGUMENTS...]",
+    "command_format": "Exact argv arrays supplied to subprocess.run; no shell interpretation is implied.",
+    "path_prefix": "/workspace/scratch/69635aad2014/m00-node22/node_modules/node-linux-x64/bin",
+    "timestamps": "UTC recorded immediately before and after each subprocess; concurrent records may overlap.",
+    "log_capture": "stdout followed by stderr, not a globally ordered interleaving. Ledger retains exact arguments, timestamps, exits, test totals, relevant failure excerpts and raw-log SHA-256 digests.",
+    "filesystem": "Execution occurred in the agent workspace, not on the owner’s Dell/WSL/Windows computer."
+  },
+  "toolchain": {
+    "node": "22.22.1",
+    "npm": "11.9.0",
+    "rxjs": "7.8.2",
+    "typescript": "6.0.3",
+    "hono": "4.13.8",
+    "vite": "8.0.12",
+    "vitest": "4.1.6",
+    "wrangler": "4.133.0",
+    "cloudflare_vite_plugin": "1.54.11",
+    "cloudflare_vitest_plugin": "1.1.11",
+    "workerd": "1.20260916.1",
+    "source": "Pinned M08 dependency versions retained; M09 baseline and fresh-checkout command records establish actual installation and local toolchain. Exact review-head CI is recorded separately in the PR.",
+    "optional_browser": {
+      "playwright": "1.62.1",
+      "chromium": "153.0.8010.0",
+      "installed_in_repository": false
+    },
+    "dependency_install": "Fresh baseline npm ci recorded; final implementation-checkout installation is a separate command and acceptance gate."
+  },
+  "baseline": {
+    "evidence_kind": "Fresh starting checkout with clean npm ci; no existing installation reused.",
+    "install": {
+      "label": "baseline-install",
+      "packages_added": 153,
+      "exit_code": 0
+    },
+    "node_dom": {
+      "label": "baseline-node-dom",
+      "files": 51,
+      "tests": 847,
+      "exit_code": 0
+    },
+    "workerd": {
+      "label": "baseline-workerd",
+      "files": 9,
+      "tests": 171,
+      "exit_code": 0
+    },
+    "total": 1018
+  },
+  "commands": [
+    {
+      "label": "baseline-install",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "npm",
+        "ci",
+        "--no-fund"
+      ],
+      "started": "2026-09-23T01:06:42.904384+00:00",
+      "finished": "2026-09-23T01:06:55.422961+00:00",
+      "exit_code": 0,
+      "log_file": "baseline-install.log",
+      "log_bytes": 511,
+      "log_sha256": "f5816227645bb0062acacc58bd33c374757cda46787a15c7c8241a2a462fd378",
+      "result_lines": []
+    },
+    {
+      "label": "delivery-build-first",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "npm",
+        "run",
+        "build:worker"
+      ],
+      "started": "2026-09-23T01:08:14.816152+00:00",
+      "finished": "2026-09-23T01:08:19.047284+00:00",
+      "exit_code": 0,
+      "log_file": "delivery-build-first.log",
+      "log_bytes": 2388,
+      "log_sha256": "706a3601f2af02f8e066f7922681b4ef9f44e6f5669e53eca4dd9c1e555eb5ea",
+      "result_lines": []
+    },
+    {
+      "label": "baseline-workerd",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "npm",
+        "run",
+        "test:worker"
+      ],
+      "started": "2026-09-23T01:08:14.852781+00:00",
+      "finished": "2026-09-23T01:08:28.905231+00:00",
+      "exit_code": 0,
+      "log_file": "baseline-workerd.log",
+      "log_bytes": 13987,
+      "log_sha256": "0a8d0c956beb92a9736dfe64795ae707d5e517fdded4f94d00e76460932f3893",
+      "result_lines": [
+        "Test Files  9 passed (9)",
+        "Tests  171 passed (171)"
+      ]
+    },
+    {
+      "label": "baseline-identity",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "git",
+        "show",
+        "--no-patch",
+        "--format=fuller",
+        "HEAD"
+      ],
+      "started": "2026-09-23T01:08:14.854988+00:00",
+      "finished": "2026-09-23T01:08:14.860667+00:00",
+      "exit_code": 0,
+      "log_file": "baseline-identity.log",
+      "log_bytes": 374,
+      "log_sha256": "31bb07f804926396b8b8cd9cad7462efe7ddfe3ed94ebc16a242e0212a608cbe",
+      "result_lines": []
+    },
+    {
+      "label": "baseline-node-dom",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-23T01:08:14.858378+00:00",
+      "finished": "2026-09-23T01:08:23.372060+00:00",
+      "exit_code": 0,
+      "log_file": "baseline-node-dom.log",
+      "log_bytes": 9694,
+      "log_sha256": "0259a8ce12d3afff001f26de09bada5070616be770741e682c255ebd9f331c9b",
+      "result_lines": [
+        "Test Files  51 passed (51)",
+        "Tests  847 passed (847)"
+      ]
+    },
+    {
+      "label": "baseline-toolchain",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "node",
+        "-e",
+        "const fs=require(\"node:fs\");console.log(JSON.stringify({node:process.version,packages:Object.fromEntries([\"rxjs\",\"hono\",\"vite\",\"vitest\",\"typescript\",\"wrangler\",\"@cloudflare/vite-plugin\",\"@cloudflare/vitest-plugin\"].map(n=>[n,JSON.parse(fs.readFileSync(\"node_modules/\"+n+\"/package.json\")).version]))},null,2))"
+      ],
+      "started": "2026-09-23T01:09:16.914220+00:00",
+      "finished": "2026-09-23T01:09:16.959216+00:00",
+      "exit_code": 0,
+      "log_file": "baseline-toolchain.log",
+      "log_bytes": 446,
+      "log_sha256": "8c8eef91d98b012df30428e58c642d9d7a76f7d593d5c18613f3617737f843b2",
+      "result_lines": []
+    },
+    {
+      "label": "ops-wrangler-login-help",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "node",
+        "node_modules/wrangler/bin/wrangler.js",
+        "login",
+        "--help"
+      ],
+      "started": "2026-09-23T01:09:27.006805+00:00",
+      "finished": "2026-09-23T01:09:27.918178+00:00",
+      "exit_code": 0,
+      "log_file": "ops-wrangler-login-help.log",
+      "log_bytes": 2155,
+      "log_sha256": "885ddf8cf380fee83583e9e7425b8a6a82be15e66d3dbfc8729ee0ad10d36fb2",
+      "result_lines": []
+    },
+    {
+      "label": "ops-wrangler-deploy-help",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "node",
+        "node_modules/wrangler/bin/wrangler.js",
+        "deploy",
+        "--help"
+      ],
+      "started": "2026-09-23T01:09:27.009819+00:00",
+      "finished": "2026-09-23T01:09:27.958464+00:00",
+      "exit_code": 0,
+      "log_file": "ops-wrangler-deploy-help.log",
+      "log_bytes": 5937,
+      "log_sha256": "cf0eda08d941dbfd39759f1c6908235aab9afc99b3f7a26202664f0b5b0a2496",
+      "result_lines": []
+    },
+    {
+      "label": "ops-wrangler-secret-help",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "node",
+        "node_modules/wrangler/bin/wrangler.js",
+        "secret",
+        "put",
+        "--help"
+      ],
+      "started": "2026-09-23T01:09:27.009972+00:00",
+      "finished": "2026-09-23T01:09:27.847334+00:00",
+      "exit_code": 0,
+      "log_file": "ops-wrangler-secret-help.log",
+      "log_bytes": 1578,
+      "log_sha256": "dcacf2233a4f78ea7dee235a4cac894fdd5895a545b62d8eee24ecb43a384bde",
+      "result_lines": []
+    },
+    {
+      "label": "metadata-lock-consistency",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "python",
+        "-c",
+        "import json,subprocess; from pathlib import Path; p=json.loads(Path(\"package.json\").read_text()); b=json.loads(subprocess.check_output([\"git\",\"show\",\"HEAD:package.json\"])); lock=json.loads(Path(\"package-lock.json\").read_text()); assert p[\"private\"] and \"main\" not in p; assert p[\"version\"]==b[\"version\"]==lock[\"version\"]==\"1.0.0\"; assert p[\"dependencies\"]==b[\"dependencies\"]==lock[\"packages\"][\"\"][\"dependencies\"]; assert p[\"devDependencies\"]==b[\"devDependencies\"]==lock[\"packages\"][\"\"][\"devDependencies\"]; subprocess.run([\"git\",\"diff\",\"--exit-code\",\"HEAD\",\"--\",\"package-lock.json\"],check=True); print(\"Application metadata corrected; version, dependencies and lockfile unchanged.\")"
+      ],
+      "started": "2026-09-23T01:10:55.840966+00:00",
+      "finished": "2026-09-23T01:10:55.876799+00:00",
+      "exit_code": 0,
+      "log_file": "metadata-lock-consistency.log",
+      "log_bytes": 78,
+      "log_sha256": "79ab6b13eb3e477cf6cda581350237fa45f39789ab4153ef185a216784ed7991",
+      "result_lines": []
+    },
+    {
+      "label": "delivery-checkpoint-first",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "node",
+        "scripts/m09-delivery-checkpoint.mjs"
+      ],
+      "started": "2026-09-23T01:11:06.044751+00:00",
+      "finished": "2026-09-23T01:11:14.555855+00:00",
+      "exit_code": 0,
+      "log_file": "delivery-checkpoint-first.log",
+      "log_bytes": 6678,
+      "log_sha256": "a8b4797bc61b315270f3d7a57e4e05d02fe720b2a0a0feb0ab4cfb0fde25b405",
+      "result_lines": []
+    },
+    {
+      "label": "delivery-legacy-built",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "node",
+        "scripts/m05d-checkpoint.mjs",
+        "--preview"
+      ],
+      "started": "2026-09-23T01:11:32.005335+00:00",
+      "finished": "2026-09-23T01:11:35.762318+00:00",
+      "exit_code": 0,
+      "log_file": "delivery-legacy-built.log",
+      "log_bytes": 2332,
+      "log_sha256": "12952374e3ff19637404b9dbcd15e1dc19fe6f15e549051996d3adf7330dd749",
+      "result_lines": []
+    },
+    {
+      "label": "delivery-legacy-dev",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "node",
+        "scripts/m05d-checkpoint.mjs"
+      ],
+      "started": "2026-09-23T01:11:32.007391+00:00",
+      "finished": "2026-09-23T01:11:38.545623+00:00",
+      "exit_code": 0,
+      "log_file": "delivery-legacy-dev.log",
+      "log_bytes": 2309,
+      "log_sha256": "87c663c32f556db5611979047f4c638d794559095473c8b6d5d46d0f016f9f6f",
+      "result_lines": []
+    },
+    {
+      "label": "delivery-disabled-preview",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "npm",
+        "run",
+        "smoke:worker"
+      ],
+      "started": "2026-09-23T01:11:32.018927+00:00",
+      "finished": "2026-09-23T01:11:34.153209+00:00",
+      "exit_code": 0,
+      "log_file": "delivery-disabled-preview.log",
+      "log_bytes": 1687,
+      "log_sha256": "9e9f9f61e2e0f0dd9be0b643eb88cd0a8d313664c37260db260aa432a1af2b3e",
+      "result_lines": []
+    },
+    {
+      "label": "provenance-check",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "python",
+        "-c",
+        "import subprocess; g=lambda *a: subprocess.check_output([\"git\",*a],text=True).strip(); start=\"5362f0392b73c8cd7b8f8fb53e0857b257e55eb3\"; assert g(\"rev-parse\",\"HEAD\")==start; assert g(\"remote\",\"get-url\",\"--push\",\"origin\")==\"https://github.com/hansschenker/rxjs-flow.git\"; [subprocess.run([\"git\",\"merge-base\",\"--is-ancestor\",sha,start],check=True) for sha in [\"cbc91eefbccdeaf17221d06c75bdd237fe5e5499\",\"d701cb72f14293e96acac2cb163e6434e5fb0f54\",\"978d1be715cb2d23b9c9a0c875d15cd9707721e7\"]]; subprocess.run([\"git\",\"diff\",\"--exit-code\",start,\"--\",\"src\",\"LICENSE\",\"package-lock.json\",\"wrangler.jsonc\",\"vite.worker.config.ts\"],check=True); print(\"Original implementation/documentation/destination lineages retained. Application source, license, dependency lock and Worker build/access configuration unchanged.\")"
+      ],
+      "started": "2026-09-23T01:12:14.635285+00:00",
+      "finished": "2026-09-23T01:12:14.679357+00:00",
+      "exit_code": 0,
+      "log_file": "provenance-check.log",
+      "log_bytes": 163,
+      "log_sha256": "36acceeaed9cf1f8882da69090ee7142f15e81956c68565296f3b7d36082d4f0",
+      "result_lines": []
+    },
+    {
+      "label": "fresh-checkout-identity",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh",
+      "command": [
+        "python",
+        "-c",
+        "import subprocess; from pathlib import Path; assert not subprocess.check_output([\"git\",\"status\",\"--porcelain\"],text=True).strip(); assert not any(Path(p).exists() for p in [\"node_modules\",\"dist\",\".wrangler\"]); print(subprocess.check_output([\"git\",\"show\",\"--no-patch\",\"--format=%H%n%T%n%P%n%s\",\"HEAD\"],text=True)); print(\"Clean independently materialized checkout; no copied dependencies, built output or local runtime state.\")"
+      ],
+      "started": "2026-09-23T01:13:46.187669+00:00",
+      "finished": "2026-09-23T01:13:46.229087+00:00",
+      "exit_code": 0,
+      "log_file": "fresh-checkout-identity.log",
+      "log_bytes": 295,
+      "log_sha256": "bdd9404e88b0ceccb6fd0f37cda4cd3705c3779c678709bae0b6b87a1d48f6c5",
+      "result_lines": []
+    },
+    {
+      "label": "final-fresh-install",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh",
+      "command": [
+        "npm",
+        "ci",
+        "--no-fund"
+      ],
+      "started": "2026-09-23T01:13:46.565816+00:00",
+      "finished": "2026-09-23T01:13:50.085501+00:00",
+      "exit_code": 0,
+      "log_file": "final-fresh-install.log",
+      "log_bytes": 299,
+      "log_sha256": "41d0bf4ec6145457e0de34d1a3a04d12e5a238322bd6422123072e9ac9883b33",
+      "result_lines": []
+    },
+    {
+      "label": "final-node-dom",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "started": "2026-09-23T01:14:39.152496+00:00",
+      "finished": "2026-09-23T01:14:47.645183+00:00",
+      "exit_code": 0,
+      "log_file": "final-node-dom.log",
+      "log_bytes": 9700,
+      "log_sha256": "e52166cfa639c7c4eb9a22ebfdc772ea2723236f146a5aced76cd718ffd6455a",
+      "result_lines": [
+        "Test Files  51 passed (51)",
+        "Tests  847 passed (847)"
+      ]
+    },
+    {
+      "label": "final-typecheck",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started": "2026-09-23T01:14:39.153097+00:00",
+      "finished": "2026-09-23T01:15:14.602042+00:00",
+      "exit_code": 0,
+      "log_file": "final-typecheck.log",
+      "log_bytes": 3937,
+      "log_sha256": "154bb1c9cba06df9d6a010d16d3fcd314eac56e9c2a5f9f20a8889badd75ed62",
+      "result_lines": []
+    },
+    {
+      "label": "final-workerd",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh",
+      "command": [
+        "npm",
+        "run",
+        "test:worker"
+      ],
+      "started": "2026-09-23T01:14:39.153746+00:00",
+      "finished": "2026-09-23T01:14:53.064418+00:00",
+      "exit_code": 0,
+      "log_file": "final-workerd.log",
+      "log_bytes": 14395,
+      "log_sha256": "7390e1ae00362e5d5d0a23e7945dfe1543b5f1217fb9ba39564f8f1b90cd9bb4",
+      "result_lines": [
+        "Test Files  9 passed (9)",
+        "Tests  171 passed (171)"
+      ]
+    },
+    {
+      "label": "final-build",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh",
+      "command": [
+        "npm",
+        "run",
+        "build:worker"
+      ],
+      "started": "2026-09-23T01:14:39.154424+00:00",
+      "finished": "2026-09-23T01:14:42.397717+00:00",
+      "exit_code": 0,
+      "log_file": "final-build.log",
+      "log_bytes": 2388,
+      "log_sha256": "af5fe56bc8e333587000008a3c4edd5f857c9831ec59a629200ed831b2695935",
+      "result_lines": []
+    },
+    {
+      "label": "final-smoke-preview",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh",
+      "command": [
+        "npm",
+        "run",
+        "smoke:worker"
+      ],
+      "started": "2026-09-23T01:15:05.456887+00:00",
+      "finished": "2026-09-23T01:15:10.230430+00:00",
+      "exit_code": 0,
+      "log_file": "final-smoke-preview.log",
+      "log_bytes": 1687,
+      "log_sha256": "9e9f9f61e2e0f0dd9be0b643eb88cd0a8d313664c37260db260aa432a1af2b3e",
+      "result_lines": []
+    },
+    {
+      "label": "final-smoke-dev",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh",
+      "command": [
+        "npm",
+        "run",
+        "smoke:worker",
+        "--",
+        "--dev"
+      ],
+      "started": "2026-09-23T01:15:06.761015+00:00",
+      "finished": "2026-09-23T01:15:15.330027+00:00",
+      "exit_code": 0,
+      "log_file": "final-smoke-dev.log",
+      "log_bytes": 1744,
+      "log_sha256": "b00dc9b126f929d97038009da6f29b787d8c5e1a6d16ddc43eb133fa63d85b9f",
+      "result_lines": []
+    },
+    {
+      "label": "final-durable-restart",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh",
+      "command": [
+        "node",
+        "scripts/m05c-checkpoint.mjs",
+        "--preview"
+      ],
+      "started": "2026-09-23T01:15:08.068318+00:00",
+      "finished": "2026-09-23T01:15:15.303591+00:00",
+      "exit_code": 0,
+      "log_file": "final-durable-restart.log",
+      "log_bytes": 1882,
+      "log_sha256": "ba402b7582fb454ac5ddf33db824398c28a7abf4785c4a2a04219520968f1c39",
+      "result_lines": []
+    },
+    {
+      "label": "final-browser-built",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh",
+      "command": [
+        "env",
+        "PLAYWRIGHT_MODULE_PATH=/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+        "CHROMIUM_EXECUTABLE_PATH=/workspace/scratch/69635aad2014/m05d-browser-fallback/chromium",
+        "M08_CHROMIUM_ARGS=[\"--no-sandbox\",\"--disable-dev-shm-usage\",\"--single-process\",\"--no-zygote\",\"--use-gl=angle\",\"--use-angle=swiftshader\",\"--enable-unsafe-swiftshader\"]",
+        "M08_SCREENSHOT=/workspace/scratch/69635aad2014/m09-evidence/reference-built-final.png",
+        "M08_TRACE_OUTPUT=/workspace/scratch/69635aad2014/m09-evidence/browser-trace-built-final.json",
+        "node",
+        "scripts/m08-browser-checkpoint.mjs"
+      ],
+      "started": "2026-09-23T01:15:10.464720+00:00",
+      "finished": "2026-09-23T01:15:15.441039+00:00",
+      "exit_code": 1,
+      "log_file": "final-browser-built.log",
+      "log_bytes": 11256,
+      "log_sha256": "703345c66c44d65e018a19df7c41b4d1d54162b1b8dbd910cb489a06457bf1c1",
+      "result_lines": [],
+      "failure_excerpt": "  \"error\": \"Error: browserType.launch: Target page, context or browser has been closed\\nBrowser logs:\\n\\n<launching> /workspace/scratch/69635aad2014/m05d-browser-fallback/chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --no-sandbox --disable-dev-shm-usage --single-process --no-zygote --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --user-data-dir=/tmp/playwright_chromiumdev_profile-VUUcZ7 --remote-debugging-pipe --no-startup-window\\n<launched> pid=72\\nCall log:\\n\\u001b[2m  - <launching> /workspace/scratch/69635aad2014/m05d-browser-fallback/chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --no-sandbox --disable-dev-shm-usage --single-process --no-zygote --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --user-data-dir=/tmp/playwright_chromiumdev_profile-VUUcZ7 --remote-debugging-pipe --no-startup-window\\u001b[22m\\n\\u001b[2m  - <launched> pid=72\\u001b[22m\\n\\u001b[2m  - [pid=72] <gracefully close start>\\u001b[22m\\n\\u001b[2m  - [pid=72] <kill>\\u001b[22m\\n\\u001b[2m  - [pid=72] <will force kill>\\u001b[22m\\n\\u001b[2m  - [pid=72] exception while trying to kill process: Error: kill ESRCH\\u001b[22m\\n\\u001b[2m  - [pid=72] <process did exit: exitCode=null, signal=SIGSEGV>\\u001b[22m\\n\\u001b[2m  - [pid=72] starting temporary directories cleanup\\u001b[22m\\n\\u001b[2m  - [pid=72] finished temporary directories cleanup\\u001b[22m\\n\\u001b[2m  - [pid=72] <gracefully close end>\\u001b[22m\\n\",\n  \"previewOutput\": \"(node:17) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\\n(Use `node --trace-warnings ...` to show where the warning was created)\\n\\u001b[33m▲ \\u001b[43;33m[\\u001b[43;30mWARNING\\u001b[43;33m]\\u001b[0m \\u001b[1mProxy environment variables detected. We'll use your proxy for fetch requests.\\u001b[0m\\n\\n\\n(node:25) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\\n(Use `node --trace-warnings ...` to show where the warning was created)\\n\\n ⛅️ wrangler 4.133.0\\n────────────────────\\nYour Worker has access to the following bindings:\\nBinding                                              Resource                  Mode\\nenv.TODO_COLLECTIONS (TodoCollection)                Durable Object            local\\nenv.FOUNDATION_LABEL (\\\"rxjs-flow foundation\\\")        Environment Variable      local\\nenv.TODO_ACCESS_POLICY (\\\"(hidden)\\\")                  Environment Variable      local\\nenv.TODO_COLLECTION_ID (\\\"local-reference\\\")           Environment Variable      local\\n\\n⎔ Starting local server...\\n[wrangler:warn] Unable to fetch the `Request.cf` object! Falling back to a default placeholder...\\nTimeoutError: The operation was aborted due to timeout\\n    at new DOMException (node:internal/per_context/domexception:76:18)\\n    at Timeout._onTimeout (node:internal/abort_controller:155:9)\\n    at listOnTimeout (node:internal/timers:585:17)\\n    at process.processTimers (node:internal/timers:521:7)\\n    at /workspace/scratch/69635aad2014/rxjs-flow-m09-fresh/node_modules/undici/index.js:157:7\\n    at async setupCf (/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh/node_modules/miniflare/dist/src/index.js:53609:17)\\n    at async #assembleConfig (/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh/node_modules/miniflare/dist/src/index.js:117689:21)\\n    at async #assembleAndUpdateConfig (/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh/node_modules/miniflare/dist/src/index.js:118058:21)\\n    at async /workspace/scratch/69635aad2014/rxjs-flow-m09-fresh/node_modules/miniflare/dist/src/index.js:116893:7\\n    at async Mutex.runWith (/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh/node_modules/miniflare/dist/src/index.js:55585:16)\\n[wrangler:warn] Unable to fetch the `Request.cf` object! Falling back to a default placeholder...\\nTimeoutError: The operation was aborted due to timeout\\n    at new DOMException (node:internal/per_context/domexception:7"
+    },
+    {
+      "label": "final-package-dry-run",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh",
+      "command": [
+        "node",
+        "node_modules/wrangler/bin/wrangler.js",
+        "deploy",
+        "--config",
+        "dist/rxjs_flow_foundation/wrangler.json",
+        "--dry-run",
+        "--outdir",
+        "/workspace/scratch/69635aad2014/m09-package-dry-run"
+      ],
+      "started": "2026-09-23T01:15:12.817137+00:00",
+      "finished": "2026-09-23T01:15:15.664971+00:00",
+      "exit_code": 0,
+      "log_file": "final-package-dry-run.log",
+      "log_bytes": 1198,
+      "log_sha256": "44897ed3d261b7f5e10988da5b6880c0872f92174a7c70bba4051f41ae7a4815",
+      "result_lines": []
+    },
+    {
+      "label": "final-legacy-built",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh",
+      "command": [
+        "node",
+        "scripts/m05d-checkpoint.mjs",
+        "--preview"
+      ],
+      "started": "2026-09-23T01:15:23.923668+00:00",
+      "finished": "2026-09-23T01:15:27.207049+00:00",
+      "exit_code": 0,
+      "log_file": "final-legacy-built.log",
+      "log_bytes": 2332,
+      "log_sha256": "12952374e3ff19637404b9dbcd15e1dc19fe6f15e549051996d3adf7330dd749",
+      "result_lines": []
+    },
+    {
+      "label": "final-legacy-dev",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh",
+      "command": [
+        "node",
+        "scripts/m05d-checkpoint.mjs"
+      ],
+      "started": "2026-09-23T01:15:23.939148+00:00",
+      "finished": "2026-09-23T01:15:29.849091+00:00",
+      "exit_code": 0,
+      "log_file": "final-legacy-dev.log",
+      "log_bytes": 2309,
+      "log_sha256": "87c663c32f556db5611979047f4c638d794559095473c8b6d5d46d0f016f9f6f",
+      "result_lines": []
+    },
+    {
+      "label": "final-delivery",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh",
+      "command": [
+        "node",
+        "scripts/m09-delivery-checkpoint.mjs"
+      ],
+      "started": "2026-09-23T01:15:23.939446+00:00",
+      "finished": "2026-09-23T01:15:27.328268+00:00",
+      "exit_code": 0,
+      "log_file": "final-delivery.log",
+      "log_bytes": 6678,
+      "log_sha256": "ae0fe12fc80fe4dca3462fe2587f5c35dd1c4da55441818c2a7ca4331156bee8",
+      "result_lines": []
+    },
+    {
+      "label": "ops-wrangler-schema",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "python",
+        "-c",
+        "import json,pathlib; p=pathlib.Path(\"node_modules/wrangler/config-schema.json\"); data=json.loads(p.read_text()); found=[]\ndef walk(x,path=()):\n if isinstance(x,dict):\n  for k,v in x.items():\n   if k in (\"exports\",\"secrets\",\"migrations\") and isinstance(v,dict): found.append({\"path\":\".\".join(path+(k,)),\"definition\":v})\n   walk(v,path+(k,))\n elif isinstance(x,list):\n  for i,v in enumerate(x): walk(v,path+(str(i),))\nwalk(data); print(json.dumps({\"wranglerVersion\":json.loads(pathlib.Path(\"node_modules/wrangler/package.json\").read_text())[\"version\"],\"schema\":found},indent=2))"
+      ],
+      "started": "2026-09-23T01:15:33.900271+00:00",
+      "finished": "2026-09-23T01:15:33.926141+00:00",
+      "exit_code": 0,
+      "log_file": "ops-wrangler-schema.log",
+      "log_bytes": 8798,
+      "log_sha256": "456625155de175b0a1911dc681833baa646c777b4be463887c62ef49de609367",
+      "result_lines": []
+    },
+    {
+      "label": "final-generated-types",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh",
+      "command": [
+        "npm",
+        "run",
+        "cf:typecheck"
+      ],
+      "started": "2026-09-23T01:15:37.121985+00:00",
+      "finished": "2026-09-23T01:15:43.123427+00:00",
+      "exit_code": 0,
+      "log_file": "final-generated-types.log",
+      "log_bytes": 1036,
+      "log_sha256": "ed6e6bcb40af59160d72e1b2044bc77b7ec4a058893be8b09964009ac80de44d",
+      "result_lines": []
+    },
+    {
+      "label": "ops-wrangler-local-secrets-source",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "sed",
+        "-n",
+        "179711,179741p",
+        "node_modules/wrangler/wrangler-dist/cli.js"
+      ],
+      "started": "2026-09-23T01:15:53.526680+00:00",
+      "finished": "2026-09-23T01:15:53.564507+00:00",
+      "exit_code": 0,
+      "log_file": "ops-wrangler-local-secrets-source.log",
+      "log_bytes": 1123,
+      "log_sha256": "d65dfe30c0c5dfe3238142f5b1630b7c658fea31b4bbc5f27c3afebf2b6d3a8c",
+      "result_lines": []
+    },
+    {
+      "label": "browser-tool-archive-check",
+      "cwd": "/workspace/scratch/69635aad2014",
+      "command": [
+        "tar",
+        "-tzf",
+        "/workspace/scratch/69635aad2014/m05d-browser-fallback/sparticuz-chromium-153.0.0.tgz"
+      ],
+      "started": "2026-09-23T01:15:54.862577+00:00",
+      "finished": "2026-09-23T01:15:55.148131+00:00",
+      "exit_code": 0,
+      "log_file": "browser-tool-archive-check.log",
+      "log_bytes": 361,
+      "log_sha256": "6edff8886fa62e29561f4f6715b02d77948fd345705c476c181715694d4e7eb1",
+      "result_lines": []
+    },
+    {
+      "label": "browser-tool-restore",
+      "cwd": "/workspace/scratch/69635aad2014",
+      "command": [
+        "python",
+        "/workspace/scratch/69635aad2014/m09-restore-browser.py"
+      ],
+      "started": "2026-09-23T01:16:20.098647+00:00",
+      "finished": "2026-09-23T01:16:21.955934+00:00",
+      "exit_code": 0,
+      "log_file": "browser-tool-restore.log",
+      "log_bytes": 386,
+      "log_sha256": "bc1257e9f07da383f725e281ec0af090462177fe6f77b045b98d38434616d1dc",
+      "result_lines": []
+    },
+    {
+      "label": "ops-document-check",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "python",
+        "-c",
+        "import pathlib,re; files=[pathlib.Path(\"docs/m09/delivery.md\"),pathlib.Path(\"docs/runtime-cloudflare-hono.md\")]; bad=[]\nfor p in files:\n text=p.read_text(); assert text.count(\"```\")%2==0,p\n for target in re.findall(r\"\\]\\(([^)]+)\\)\",text):\n  if target.startswith((\"https:\",\"http:\",\"#\")):continue\n  path=target.split(\"#\",1)[0]\n  if not (p.parent/path).exists():bad.append((str(p),target))\nassert not bad,bad\nprint(\"2 operational documents: balanced fences; local targets exist\")"
+      ],
+      "started": "2026-09-23T01:16:27.241692+00:00",
+      "finished": "2026-09-23T01:16:27.280226+00:00",
+      "exit_code": 0,
+      "log_file": "ops-document-check.log",
+      "log_bytes": 62,
+      "log_sha256": "2d993d2e5c764a0fcc0c55f8608aabb3554343761aa9cc4f208fed0cde8bebd5",
+      "result_lines": []
+    },
+    {
+      "label": "final-browser-built-restored",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh",
+      "command": [
+        "env",
+        "PLAYWRIGHT_MODULE_PATH=/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+        "CHROMIUM_EXECUTABLE_PATH=/workspace/scratch/69635aad2014/m09-browser-tools/chromium",
+        "M08_CHROMIUM_ARGS=[\"--no-sandbox\",\"--disable-dev-shm-usage\",\"--single-process\",\"--no-zygote\",\"--use-gl=angle\",\"--use-angle=swiftshader\",\"--enable-unsafe-swiftshader\"]",
+        "M08_SCREENSHOT=/workspace/scratch/69635aad2014/m09-evidence/reference-built-final.png",
+        "M08_TRACE_OUTPUT=/workspace/scratch/69635aad2014/m09-evidence/browser-trace-built-final.json",
+        "node",
+        "scripts/m08-browser-checkpoint.mjs"
+      ],
+      "started": "2026-09-23T01:16:32.964774+00:00",
+      "finished": "2026-09-23T01:16:40.189550+00:00",
+      "exit_code": 0,
+      "log_file": "final-browser-built-restored.log",
+      "log_bytes": 9988,
+      "log_sha256": "a7cd76da8174ac237acbda2e08be675661e2f06b2845d5afc11fd63004208463",
+      "result_lines": []
+    },
+    {
+      "label": "final-document-check",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "python",
+        "/workspace/scratch/69635aad2014/m09-check-docs.py"
+      ],
+      "started": "2026-09-23T01:20:10.377857+00:00",
+      "finished": "2026-09-23T01:20:10.429090+00:00",
+      "exit_code": 0,
+      "log_file": "final-document-check.log",
+      "log_bytes": 143,
+      "log_sha256": "4c1d9f07ff150dbe400dd81a05a6d38f6d187440e69fad96020fe67dedeed448",
+      "result_lines": []
+    },
+    {
+      "label": "final-diff-check",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "started": "2026-09-23T01:20:10.766684+00:00",
+      "finished": "2026-09-23T01:20:10.771840+00:00",
+      "exit_code": 0,
+      "log_file": "final-diff-check.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_lines": []
+    },
+    {
+      "label": "staged-diff-first",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "started": "2026-09-23T01:21:11.594900+00:00",
+      "finished": "2026-09-23T01:21:11.600962+00:00",
+      "exit_code": 2,
+      "log_file": "staged-diff-first.log",
+      "log_bytes": 614,
+      "log_sha256": "4895ee2c24f7cd0f11663a9e69430894b84b36af88fd0bbdbbccb9c687fc7e55",
+      "result_lines": [],
+      "failure_excerpt": ""
+    },
+    {
+      "label": "final-staged-diff-check",
+      "cwd": "/workspace/scratch/69635aad2014/rxjs-flow-m09",
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "started": "2026-09-23T01:21:12.299603+00:00",
+      "finished": "2026-09-23T01:21:12.304728+00:00",
+      "exit_code": 0,
+      "log_file": "final-staged-diff-check.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_lines": []
+    }
+  ],
+  "intermediate_failure_dispositions": [
+    {
+      "labels": [
+        "final-browser-built"
+      ],
+      "exit_code": 1,
+      "cause": "Cached extracted Chromium was truncated at 191553536 bytes and terminated with SIGSEGV before a page/application scenario started.",
+      "disposition": "Restored the same Chromium 153.0.8010.0 from the existing archive into separate scratch tooling (209022176 bytes). Version check and full final-browser-built-restored checkpoint passed; no application/dependency/assertion change.",
+      "corrected_by": [
+        "browser-tool-archive-check",
+        "browser-tool-restore",
+        "final-browser-built-restored"
+      ]
+    },
+    {
+      "labels": [
+        "staged-diff-first"
+      ],
+      "classification": "Documentation packaging whitespace",
+      "disposition": "The new exact-byte roadmap copy exposed four pre-existing Markdown double-space line endings to the staged diff check. Canonical and prepared copies now use explicit backslash hard breaks with identical rendered meaning; the final staged diff check passes. No application source or dependency changed."
+    }
+  ],
+  "final_verification": {
+    "status": "All final fresh-checkout local suites, typechecks, build, preview, HTTP/live/restart, packaging dry-run and built native-browser gates passed.",
+    "source_commit": "cafebda2cc52b4b47a4889af08e69499d75a59bd",
+    "source_tree": "682099aababc56becab12160efe84233909c0cd6",
+    "fresh_checkout": "/workspace/scratch/69635aad2014/rxjs-flow-m09-fresh",
+    "fresh_checkout_evidence": "fresh-checkout-identity verifies exact detached implementation SHA/tree and absence of node_modules, dist and .wrangler before final-fresh-install.",
+    "clean_install": {
+      "label": "final-fresh-install",
+      "packages_added": 153,
+      "exit_code": 0
+    },
+    "node_dom": {
+      "label": "final-node-dom",
+      "files": 51,
+      "tests": 847,
+      "exit_code": 0
+    },
+    "workerd": {
+      "label": "final-workerd",
+      "files": 9,
+      "tests": 171,
+      "exit_code": 0
+    },
+    "total_tests": 1018,
+    "gates": {
+      "final-typecheck": 0,
+      "final-generated-types": 0,
+      "final-build": 0,
+      "final-smoke-preview": 0,
+      "final-smoke-dev": 0,
+      "final-durable-restart": 0,
+      "final-legacy-dev": 0,
+      "final-legacy-built": 0,
+      "final-delivery": 0,
+      "final-package-dry-run": 0,
+      "final-browser-built-restored": 0
+    },
+    "scope": "Application implementation/dependency versions/access policy unchanged; five-file implementation adds delivery script/helper gate/CI and package metadata only. Final documentation commit has separate exact-review-head CI."
+  },
+  "delivery_checkpoint": {
+    "status": "Passed",
+    "label": "final-delivery",
+    "script": "scripts/m09-delivery-checkpoint.mjs",
+    "actual_capture": {
+      "status": "passed",
+      "runtime": "local workerd",
+      "mode": "built-worker-local",
+      "storage": "isolated temporary directory; removed after runtime shutdown",
+      "checks": [
+        {
+          "path": "/",
+          "status": 200,
+          "script": "/assets/browser-BgUCR82r.js"
+        },
+        {
+          "path": "/assets/browser-BgUCR82r.js",
+          "status": 200,
+          "bytes": 65227
+        },
+        {
+          "path": "/api/foundation",
+          "status": 200,
+          "body": {
+            "runtime": "workerd",
+            "message": "rxjs-flow foundation"
+          }
+        },
+        {
+          "path": "/api",
+          "status": 404,
+          "body": {
+            "error": "Not found"
+          }
+        },
+        {
+          "path": "/api/missing",
+          "status": 404,
+          "body": {
+            "error": "Not found"
+          }
+        },
+        {
+          "path": "/api/api/todos",
+          "status": 404,
+          "body": {
+            "error": "Not found"
+          }
+        },
+        {
+          "path": "/api/todos",
+          "statuses": [
+            200,
+            201,
+            200,
+            400,
+            422,
+            400,
+            200,
+            204,
+            404
+          ],
+          "mode": "durable local Todo CRUD and failure isolation"
+        },
+        {
+          "path": "/unknown-page",
+          "status": 200,
+          "script": "/assets/browser-BgUCR82r.js"
+        },
+        {
+          "check": "built client manifest graph served on the API origin",
+          "servedAssets": [
+            {
+              "path": "/assets/browser-EtAKwZ-p.js",
+              "bytes": 140,
+              "sha256": "7773a30b43dcf35a0aa0129db4cbf4770fa35c3ac223580d6e3822feb991f822"
+            },
+            {
+              "path": "/assets/browser-BgUCR82r.js",
+              "bytes": 65227,
+              "sha256": "a8a69793212a078e5a683ccb88318e7fbe9c7fe53c8702ad0246e29178732d8c"
+            },
+            {
+              "path": "/assets/browser-DUTBtaI8.css",
+              "bytes": 4417,
+              "sha256": "de2a16467ae9a40acfa03b96ec12efc42cc49f735e51045856fa98c662fea876"
+            },
+            {
+              "path": "/assets/todo.schema-Cpc7foeR.js",
+              "bytes": 66300,
+              "sha256": "24bab39f8db16ea8a16a550dc7d4a64b25a7997327cd103cbc2758eadab4f36f"
+            }
+          ]
+        },
+        {
+          "check": "one API prefix; API routing precedes SPA fallback",
+          "prefixChecks": [
+            {
+              "path": "/api/",
+              "status": 404,
+              "contentType": "application/json"
+            },
+            {
+              "path": "/api/missing",
+              "status": 404,
+              "contentType": "application/json"
+            },
+            {
+              "path": "/api/api/todos",
+              "status": 404,
+              "contentType": "application/json"
+            },
+            {
+              "path": "/api/todos/missing-route",
+              "status": 404,
+              "contentType": "application/json"
+            },
+            {
+              "path": "/api/todosx",
+              "status": 404,
+              "contentType": "application/json"
+            },
+            {
+              "path": "/api/todos/",
+              "status": 200,
+              "contentType": "application/json"
+            },
+            {
+              "path": "/api//todos//",
+              "status": 200,
+              "contentType": "application/json"
+            },
+            {
+              "path": "/todos",
+              "status": 200,
+              "contentType": "text/html",
+              "reason": "outside the /api boundary"
+            },
+            {
+              "path": "/apiary",
+              "status": 200,
+              "contentType": "text/html",
+              "reason": "outside the /api boundary"
+            }
+          ]
+        },
+        {
+          "check": "local access rejections never become the HTML shell",
+          "rejected": [
+            {
+              "path": "/api/todos",
+              "reason": "foreign origin",
+              "status": 403,
+              "contentType": "application/json"
+            },
+            {
+              "path": "/api/todos",
+              "reason": "cross-site request",
+              "status": 403,
+              "contentType": "application/json"
+            },
+            {
+              "path": "/api/todos?collectionId=other",
+              "reason": "collection query",
+              "status": 403,
+              "contentType": "application/json"
+            },
+            {
+              "path": "/api/todos",
+              "reason": "collection header",
+              "status": 403,
+              "contentType": "application/json"
+            },
+            {
+              "path": "/api/todos/live",
+              "reason": "foreign origin",
+              "status": 403,
+              "contentType": "application/json"
+            },
+            {
+              "path": "/api/todos/live",
+              "reason": "cross-site request",
+              "status": 403,
+              "contentType": "application/json"
+            },
+            {
+              "path": "/api/todos/live?collectionId=other",
+              "reason": "collection query",
+              "status": 403,
+              "contentType": "application/json"
+            },
+            {
+              "path": "/api/todos/live",
+              "reason": "collection header",
+              "status": 403,
+              "contentType": "application/json"
+            },
+            {
+              "path": "/api//todos//",
+              "reason": "foreign origin",
+              "status": 403,
+              "contentType": "application/json"
+            },
+            {
+              "path": "/api//todos//",
+              "reason": "cross-site request",
+              "status": 403,
+              "contentType": "application/json"
+            },
+            {
+              "path": "/api//todos//?collectionId=other",
+              "reason": "collection query",
+              "status": 403,
+              "contentType": "application/json"
+            },
+            {
+              "path": "/api//todos//",
+              "reason": "collection header",
+              "status": 403,
+              "contentType": "application/json"
+            }
+          ]
+        },
+        {
+          "check": "versioned public CRUD/SSE with two HTTP consumers",
+          "path": "/api/todos/live",
+          "event": "todo-snapshot",
+          "collectionId": "local-reference",
+          "stateGeneration": "a6261639-4c9a-40c2-a79b-1dc2a0b7cacc",
+          "initialRevision": 3,
+          "revisionBeforeRestart": 6,
+          "mutationCount": 3,
+          "sameCommittedSnapshots": true,
+          "disconnectedConsumerStopped": true,
+          "reconnectIncludesInterveningCommit": true
+        },
+        {
+          "check": "durable reconstruction and continued public mutation delivery",
+          "sameCollectionGenerationRevisionAndTodos": true,
+          "recoveredRevision": 6,
+          "finalRevision": 8,
+          "deletedCheckpointTodos": 2,
+          "retainedSnapshotsPerConsumer": 1,
+          "maxFrameBytes": 131072,
+          "observedFrameHighWaterBytes": 442,
+          "checkpointReadLoopsActive": 0,
+          "scope": "one restarted local workerd process; no remote routing or deployment claim"
+        }
+      ]
+    }
+  },
+  "browser_checkpoints": {
+    "status": "Passed",
+    "label": "final-browser-built-restored",
+    "source_commit": "cafebda2cc52b4b47a4889af08e69499d75a59bd",
+    "script": "scripts/m08-browser-checkpoint.mjs",
+    "mode": "Built assets and real HTTP/EventSource served by restarted local Wrangler; private temporary persistence.",
+    "playwright": "1.62.1",
+    "chromium": "153.0.8010.0",
+    "tooling_in_repository": false,
+    "normal_ci_gate": false,
+    "trace_disabled_requests": 13,
+    "trace_enabled_requests": 13,
+    "independent_contexts_per_scenario": 2,
+    "steady_sse_connections_total": 2,
+    "steady_sse_per_mounted_app": 1,
+    "trace_records": 455,
+    "native_listeners_released": 160,
+    "final_current_document_api_requests": 0,
+    "uncaught_browser_errors": 0,
+    "committed_write_survives_local_cancellation": true,
+    "extra_public_consumers_repeat_no_effects": true,
+    "full_restart_recovered_without_navigation": true,
+    "retired_document_requests_without_terminal_event": 0,
+    "raw_capture_file": "browser-trace-built-final.json",
+    "raw_capture_bytes": 164713,
+    "raw_capture_sha256": "90637659682329a8b77402c580dbe13b02fca4c18135e1b7c92aa67ed814afc8",
+    "evidence_boundary": "This milestone repeats the built native browser checkpoint; M08 development-browser evidence remains historical. No remote Cloudflare deployment/routing evidence is implied.",
+    "screenshot": {
+      "file": "reference-built-final.png",
+      "bytes": 40755,
+      "sha256": "fc1dbe72c59b1f75024f776990cae64645e1d30bc198ae783878c7e6c3be50e2"
+    }
+  },
+  "runtime_disposition": {
+    "primary": "Hono/Workers reference application and Cloudflare-oriented build; actual local workerd and attached SQLite acceptance.",
+    "node": "Retained supported local compatibility mode with separate in-memory collection; existing lifecycle/HTTP/SSE tests retained. No second production infrastructure is implied.",
+    "remote": "No deployed verification, remote resource creation, account/domain change, release tag or publication performed."
+  },
+  "package_decision": {
+    "version": "1.0.0",
+    "decision": "Keep existing version; private application metadata and no nonexistent index.js npm library entry.",
+    "dependency_versions": "Unchanged; package-lock root metadata only may be reconciled."
+  },
+  "project_reference": {
+    "canonical": "docs/roadmap-gpt-6-astra-2026-09-15.md",
+    "prepared_copy": "docs/m09/project-reference/roadmap-gpt-6-astra-2026-09-15.md",
+    "filename": "roadmap-gpt-6-astra-2026-09-15.md",
+    "revision": "rxjs-flow migration r2 — Cloudflare/Hono",
+    "status": "Prepared exact-byte copy",
+    "uploaded": false,
+    "project_copy_verified": false,
+    "relative_link_base": "Canonical docs/ directory; prepared file is an upload copy, not a second navigable/editable roadmap.",
+    "identical_bytes": true,
+    "canonical_sha256": "2b3ada187ed8336e3b299364e0adc3b0ec4f5cef71fabbd840daa9c7e414a762",
+    "copy_sha256": "2b3ada187ed8336e3b299364e0adc3b0ec4f5cef71fabbd840daa9c7e414a762"
+  },
+  "publication": {
+    "status": "Implementation branch published; documentation PR and exact review-head CI follow final documentation freeze. Merge, deployment, release and publication are not authorized by this milestone alone.",
+    "implementation_commit": "cafebda2cc52b4b47a4889af08e69499d75a59bd",
+    "final_review_identity": "Recorded in the PR after the documentation commit; not substituted by earlier CI."
+  },
+  "expected_diagnostics": "Intentional cancellation/failure probes may print workerd diagnostics already present in the starting baseline. Host proxy/npm notices are environment output, distinct from failed tests or browser application errors.",
+  "limitations": [
+    "Local workerd/browser verification does not establish a deployed Cloudflare service or global routing behavior.",
+    "Todo access remains disabled in the deployable configuration; a public demo needs separately reviewed access policy and delivery authorization.",
+    "Minimal SQLite persistence does not supply production backup, restore, disaster recovery or schema-upgrade acceptance.",
+    "Reconnect recovers current committed state, not exactly-once event history; uncertain mutations are not automatically replayed.",
+    "No heartbeat or bounded idle-partition detection is provided after the first snapshot; retry exhaustion requires explicit recovery.",
+    "Application queue/snapshot bounds exclude platform/socket/browser internal buffers; local measurements do not establish production capacity.",
+    "Optional native-browser tooling is not added to repository dependencies or required by normal CI.",
+    "Project roadmap upload is not performed by a Git commit or the prepared reference copy."
+  ],
+  "blockers": []
+}

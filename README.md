@@ -3,180 +3,123 @@
 [![CI](https://github.com/hansschenker/rxjs-flow/actions/workflows/ci.yml/badge.svg)](https://github.com/hansschenker/rxjs-flow/actions/workflows/ci.yml)
 
 An **RxJS 7 + TypeScript application-dataflow foundation**, demonstrated by a
-custom-JSX Todo application. This repository continues the implementation
-originally developed in [rxjs-stack](https://github.com/hansschenker/rxjs-stack).
+custom-JSX Todo application. Events enter an owned state stream; pure functions
+derive the view; effects return typed results. Hono serves HTTP on Cloudflare
+Workers, and a Durable Object stores and publishes the committed collection.
 
-**Implementation status, 2026-09-20: M00 is accepted and closed.** PR #2 merged at
-[`c9197b6`](https://github.com/hansschenker/rxjs-flow/commit/c9197b68591e390a0a3add4667e5dd23717d6b6e).
-M01 is accepted and merged in PR #5 at `188f21f`; M05a in PR #6 at `eeb8d29`.
-M02's [instance-owned state and coherent derived streams](docs/m02/acceptance.md)
-are accepted and merged in PR #7 at `7374557`.
-M03's [owned effects and validated HTTP outcomes](docs/m03/acceptance.md)
-are accepted and merged in PR #8 at `c64fda1`.
-M04's [owned, targeted DOM rendering](docs/m04/acceptance.md) is accepted and
-merged in PR #9 at `2b316a4`. See the [minimal binding sample](docs/m04/minimal-sample.md).
-M05b's [HTTP compatibility and request ownership](docs/m05b/acceptance.md) is
-accepted and merged in PR #10 at `1cfbaec`.
-M05c's [durable Todo authority](docs/m05c/acceptance.md) is accepted and merged in
-PR #11 at `d5500da`. M05d's [bounded, owned live delivery](docs/m05d/acceptance.md)
-is accepted and merged in PR #12 at `540faec`; parent M05 is complete.
-M06's [typed live synchronization and recovery](docs/m06/acceptance.md) is
-accepted and merged in PR #13 at `36d644f`.
-M07's [reference-app completion](docs/m07/acceptance.md) is accepted and merged
-in PR #14 at `92f2568`. [Run the reference Todo application](docs/m07/local-development.md).
-The owner explicitly authorized M08 from that verified merge;
-[temporal tracing and adversarial evidence](docs/m08/acceptance.md) is implemented
-and locally verified, with acceptance review/merge pending. **1,018 tests pass**.
-[Read actual operation, cancellation and recovery traces](docs/m08/temporal-traces.md)
-or [inspect the existing application](docs/m08/local-development.md).
-Trace-disabled/enabled native-browser scenarios issue the same 13-request vector;
-owned listeners and current-document connections are released after disposal.
-The reference application adds All/Active/Completed filters, pure title validation
-and draft revision tracking so a late reply preserves newer typing. It exposes
-recoverable operation feedback and verifies explicit unmount/remount in both
-development and built browser/Worker modes. **M07 passed 968 tests**, with two actual
-browser contexts confirming forms, live updates, failure recovery and cleanup.
-The Todo application receives committed snapshots live, shares one connection
-per mounted app and reconnects under a bounded policy. Changes from another
-caller appear without Refresh. The local Workers runtime stores the configured
-collection in attached SQLite storage, so saved Todos and their ordering identity
-survive a runtime restart. The retained Node sample uses separate memory.
-M00's dated test results and separate failing characterization remain evidence,
-not a claim that every planned behavior works.
+**Status, 2026-09-23:** M00–M08 are accepted and merged. [M08 PR #15](https://github.com/hansschenker/rxjs-flow/pull/15)
+merged at `5362f0392b73c8cd7b8f8fb53e0857b257e55eb3`, with 1,018 passing
+tests in its recorded evidence. **M09: completion review and documented delivery**
+is implemented and locally verified; acceptance review/merge remains pending.
+The [fresh-checkout acceptance record](docs/m09/acceptance.md) records **1,018
+passing tests**, build/preview, public CRUD/live/restart checks and a native
+browser checkpoint. No public deployment is claimed.
 
-**Planning revision: rxjs-flow migration r2 — Cloudflare/Hono.** The selected target
-uses Hono for HTTP integration, Cloudflare Workers for execution, a minimal Durable
-Object authority for shared Todo state, Vite for builds and Wrangler for Cloudflare
-operations. M05a supplies project-local Wrangler, Vite/Workers builds and a typed
-Hono/RxJS probe. M05b adds finite Todo HTTP compatibility and request ownership;
-M05c adds bounded authority operations, atomic persistence and reconstruction.
-M05d adds atomic snapshot registration, bounded SSE delivery and cancellation.
-M06 connects versioned snapshots to application state, rejects obsolete values
-and exposes connection/recovery status. M07 completes the reference application;
-M08 adds bounded, redacted observations and temporal/resource evidence; M09 remains pending. No deployed Worker
-or domain configuration is claimed.
+## Run the reference application
 
-## Project documents
-
-- [Canonical roadmap — migration r2](docs/roadmap-gpt-6-astra-2026-09-15.md)
-- [Dataflow architecture contract](docs/dataflow-architecture.md)
-- [Cloudflare/Hono runtime decision](docs/runtime-cloudflare-hono.md)
-- [M00 baseline and recovery evidence](docs/baseline-rxjs-flow-m00.md)
-- [M01 browser lifetime acceptance](docs/m01/acceptance.md)
-- [M02 state, transition examples and acceptance](docs/m02/acceptance.md)
-- [M03 effect policies, HTTP outcomes and acceptance](docs/m03/acceptance.md)
-- [M04 targeted DOM rendering and acceptance](docs/m04/acceptance.md)
-- [M04 minimal binding sample](docs/m04/minimal-sample.md)
-- [M05a acceptance and test evidence](docs/m05a/acceptance.md)
-- [M05b acceptance and route compatibility](docs/m05b/acceptance.md)
-- [M05c durable authority and restart/failure acceptance](docs/m05c/acceptance.md)
-- [M05d live ownership, resource limits and acceptance](docs/m05d/acceptance.md)
-- [M06 live synchronization, protocol and acceptance](docs/m06/acceptance.md)
-- [M07 reference application and form acceptance](docs/m07/acceptance.md)
-- [M08 temporal traces and adversarial acceptance](docs/m08/acceptance.md)
-- [Read temporal traces](docs/m08/temporal-traces.md)
-- [Run the M08 trace checkpoint](docs/m08/local-development.md)
-- [Run the complete reference application](docs/m07/local-development.md)
-- [M06 two-page live synchronization checkpoint](docs/m06/local-development.md)
-- [M05d legacy transport checkpoint](docs/m05d/local-development.md)
-- [Persistent local Todo page and restart checks](docs/m05c/local-development.md)
-- [Historical M05a foundation guide](docs/m05a/local-development.md)
-- [Historical source audit](docs/repository-audit-2026-09-15.md)
-
-## Existing foundation and planned work
-
-| Area | Existing implementation | Work still planned |
-|---|---|---|
-| Client | Instance-owned state/effects, captured drafts, pure validation, local filters and targeted custom-JSX rendering with optional bounded temporal traces | M08 acceptance review; final public-surface documentation (M09) |
-| HTTP server | Owned finite Todo operations and bounded live responses through Hono/workerd and the retained Node adapter | Final runtime-support review (M09) |
-| Shared state | Configured Durable Object collection, atomic persistence/reconstruction, race-free live registration and local commit/recovery traces; separate Node/test histories | M08 acceptance review; operational limits and delivery review (M09) |
-| Live updates | Accepted M06 protocol, one app-owned connection, stale/duplicate protection, bounded reconnect and trace-disabled/enabled request/resource parity | M08 acceptance review; documented delivery review (M09) |
-| Reference app/delivery | Complete Todo UI, actual readable traces and adversarial acceptance; development/built browser failure, restart and explicit remount evidence | M08 acceptance review and documented delivery review (M09) |
-
-The intended flow is events → state → derived values → rendering, with external
-operations returning typed results to state. Rendering must not initiate network
-writes. The platform boundary changes; the RxJS model and custom renderer remain.
-`todo.view.tsx` owns rendering while the app root connects its streams. Synchronous
-bindings update the relevant DOM values; keyed rows retain their nodes and child
-scopes across updates, preserve focus and selection, and release ownership on removal.
-
-The recommended sequence is M01 → M05a → M02 → M03 → M04 → M05b → M05c → M05d →
-M06 → M07 → M08 → M09. M00 stays closed; M07 is accepted and merged.
-M08 was explicitly authorized from its verified merge. M09 remains a later milestone. No SSR, Hono JSX, browser router or custom CLI is required for
-this completion target.
-
-## Run the existing development application
-
-Use Node **22.22.1** (also recorded in `.nvmrc`):
+Use Node **22.22.1**, also recorded in `.nvmrc`:
 
 ```bash
 git clone https://github.com/hansschenker/rxjs-flow.git
 cd rxjs-flow
 npm ci
-npm run typecheck
-npm test
-```
-
-Run the server and client in separate terminals:
-
-```bash
-npm run dev:server
-```
-
-```bash
-npm run dev:client
-```
-
-The API uses port 3000. Vite serves the browser client and proxies `/api/*` to the
-Node API. The current store is in memory; restarting that server loses Todos.
-These commands remain the baseline workflow until implementation changes them.
-
-The [M00 build/start probes](docs/m00/build-start-strategy.md) remain historical
-Node evidence. Their future Node-only delivery choice is superseded by the r2
-runtime decision. The [M05a guide](docs/m05a/local-development.md) documents the
-installed tools, generated Worker types, local development/build/preview, and
-optional developer authentication. Local verification needs no account login.
-
-To run the Todo page and Hono API together in the local Workers runtime:
-
-```bash
 npm run dev:worker
 ```
 
-Open **http://localhost:5174** for the Todo page. Saved Todos persist in the local
-Workers runtime's SQLite storage under `.wrangler/state`. Stop and restart the
-command from the same checkout to see the same collection. The [M05c guide](docs/m05c/local-development.md)
-explains the two-caller and restart checkpoints. `npm run smoke:worker -- --dev`
-checks actual local Todo HTTP behavior; `node scripts/m05c-checkpoint.mjs` also
-restarts the local runtime using an isolated temporary database.
-Open **http://localhost:5174/m05d-live.html** for two live consumers with independent
-Connect/Disconnect controls. The [M05d guide](docs/m05d/local-development.md)
-explains the legacy checkpoint and response-lifetime evidence. The Todo page now
-uses `/api/todos/live`; open it in two tabs for the [M06 synchronization and
-reconnect checkpoint](docs/m06/local-development.md).
-The built configuration leaves Todo access disabled (503); the guide documents
-an explicit local Wrangler command. Local persistence does not deploy a service.
+Open **http://localhost:5174** in two tabs. Add, toggle, filter and delete Todos;
+both pages receive the same saved collection. Drafts and filters belong to each
+mounted app. Saved Todos persist locally beneath `.wrangler/state`; restart
+from the same checkout to recover them. Local development needs no Cloudflare
+login. The [delivery guide](docs/m09/delivery.md) explains review-branch checkout,
+the built preview, storage, verification and supported runtime modes.
 
-## Scope and contribution
+The application owns one live connection per mounted app. HTTP mutation replies
+settle pending status; accepted live snapshots replace collection content.
+Reconnect restores the current collection. It never automatically repeats an
+uncertain write. Unmount releases client resources without undoing a server
+write that already committed.
 
-Use a dedicated branch and pull request. Work on the authorized milestone only
-and record acceptance evidence before advancing. Do not merge, publish, deploy,
-create remote resources or change domain/account configuration without explicit
-authorization. The owner's existing `netxpert.ch` Cloudflare work is deployment
-context, not a claim that rxjs-flow is bound to or served from that domain.
+## Understand the application
 
-Keep local runtime verification, deployable-artifact readiness and actual deployed
-verification separate. Minimal persistence is not comprehensive production readiness.
-The historical `rxjs-stack` and separate `rxjs-fullstack` repositories are not
-implementation targets; no code/history replacement is part of this direction.
+- [Application graph and proven API](docs/m09/application-and-api.md): what flows,
+  when execution starts, sharing, effect policies and ownership.
+- [Delivery and operations](docs/m09/delivery.md): clean install, build, preview,
+  environments, migrations, secrets and the separately gated deployment procedure.
+- [M09 acceptance](docs/m09/acceptance.md) and [execution ledger](docs/m09/execution.json):
+  exact starting commit, commands, results and limitations.
+- [Reference-app controls and recovery](docs/m07/local-development.md).
+- [Optional trace checkpoint](docs/m08/local-development.md) and
+  [actual temporal traces](docs/m08/temporal-traces.md).
 
-Inherited optional Claude workflows, Dependabot configuration and local Claude
-permission settings remain under `docs/archive/` for separate review. They are not
-activated by this revision. CI now checks separate Node/DOM and workerd tests, generated types, browser/Worker
-builds, local preview and development Todo HTTP. No deployment workflow or secrets are added here.
+The UI uses a stable shell, synchronous scalar bindings and keyed rows with
+child scopes. Rendering preserves node identity, focus and selection and
+initiates no network writes. State uses one owned reducer accumulation; more
+state or view consumers do not start additional effects. Constructor-injected
+tracing is optional, bounded and redacted by default.
 
-The original work by **Hans Schenker and Claude (Anthropic)** retains its commit
-authorship and [MIT license](LICENSE). The
-[historical README](docs/archive/README-rxjs-stack-2026-09-15.md), archived r1 plan,
-and original entries in [CHANGELOG](CHANGELOG.md) preserve that provenance.
-Package version `1.0.0` is retained; milestone completion is tracked separately.
+## Verify locally
+
+```bash
+npm run typecheck
+npm test
+npm run test:worker
+npm run cf:typecheck
+npm run build:worker
+npm run smoke:worker
+node scripts/m09-delivery-checkpoint.mjs
+```
+
+`npm test` runs Node/DOM tests; `npm run test:worker` runs the separate local
+workerd/SQLite suite. The smoke/checkpoint commands own their local processes
+and temporary storage. The M09 checkpoint exercises a built browser asset and
+the public `/api` CRUD/live routes, plus routing/access failure boundaries.
+See the delivery guide for durable restart, live transport and optional native
+browser checks. CI validates; it does not deploy.
+
+## Supported runtime modes
+
+| Mode | Role | State |
+|---|---|---|
+| Hono / local Workers runtime | Primary reference application and Cloudflare-oriented build | Attached SQLite storage; committed state survives restart |
+| Node HTTP | Retained, tested local compatibility mode | Independent in-memory collection; restart resets it |
+| Deployed Cloudflare service | Separately reviewed and authorized future delivery | No deployed verification is claimed |
+
+For the Node compatibility mode, run `npm run dev:server` and
+`npm run dev:client` in separate terminals. The API uses port 3000; Vite uses
+port 5173 and proxies `/api/*` to it. Node is not a second production deployment
+target in this milestone. The [runtime decision](docs/runtime-cloudflare-hono.md)
+records the supported scope and limitations.
+
+The built configuration intentionally leaves Todo access disabled. An explicit
+local preview configuration is documented; no command above creates a remote
+Worker, changes account settings or connects the app to a domain.
+
+## Plan, history and contribution
+
+The [canonical roadmap](docs/roadmap-gpt-6-astra-2026-09-15.md), revision
+**rxjs-flow migration r2 — Cloudflare/Hono**, records milestone dependencies and
+acceptance. Read it with the [architecture contract](docs/dataflow-architecture.md)
+and [working agreement](AGENTS.md). M09 is the final planned completion review;
+further features and public deployment require a separate scope decision.
+
+Use a dedicated branch and pull request. Record evidence before advancing;
+merge, publication, release, remote resources and deployment require their own
+authorization. `netxpert.ch` is owner-provided deployment context, not a claim
+that this application is served there. Local SQLite persistence does not by
+itself establish production security, backup or recovery readiness.
+
+This repository continues the implementation originally developed in
+[rxjs-stack](https://github.com/hansschenker/rxjs-stack). Its original history,
+**Hans Schenker and Claude (Anthropic)** attribution and [MIT license](LICENSE)
+remain. The [M00 evidence](docs/baseline-rxjs-flow-m00.md),
+[historical README](docs/archive/README-rxjs-stack-2026-09-15.md), archived plans
+and original [CHANGELOG](CHANGELOG.md) release entries preserve that provenance.
+The separate `rxjs-fullstack` project is not an implementation source or target.
+
+Package version `1.0.0` is retained as historical metadata. This application is
+private for npm publication purposes; it declares no built npm library entry.
+No new package release or tag is implied. Optional inherited Claude workflows,
+Dependabot configuration and local permission settings remain archived for
+separate review. A repository commit does not update the ChatGPT Project
+reference copy automatically; [prepared-copy instructions](docs/m09/project-reference/README.md)
+describe that separate step.

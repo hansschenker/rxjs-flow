@@ -1,7 +1,9 @@
 # M08 — Reading time, causality and cleanup
 
 Revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
-Status: implemented and locally verified; acceptance review/merge pending.
+Status: accepted and merged in [PR #15](https://github.com/hansschenker/rxjs-flow/pull/15)
+at `5362f0392b73c8cd7b8f8fb53e0857b257e55eb3`. Status closeout recorded 2026-09-23;
+the captured records and their digests below remain the M08 evidence.
 
 These are selected **actual records**, not illustrative output. The
 [recorded JSON](trace-records.json) preserves their runtime identities, sequence,

@@ -1,8 +1,14 @@
 # ADR: Cloudflare Workers and Hono runtime direction
 
-Date: 2026-09-17. Plan revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
+Decision date: 2026-09-17. Delivery review: 2026-09-23.
+Plan revision: **rxjs-flow migration r2 — Cloudflare/Hono**.
 
-**Decision status:** selected planning direction following the owner's request to revise the plan. This document does not mean that Hono, Wrangler, a Worker, or Durable Object storage has been implemented or deployed. Repository adoption is reviewed through the documentation PR; implementation remains governed by the [canonical roadmap](roadmap-gpt-6-astra-2026-09-15.md).
+**Decision status:** implemented through accepted M08. Hono/Workers, attached
+Durable Object SQLite and the local Vite/Wrangler workflow are implemented and
+locally verified. M09 completes the documentation and final acceptance review;
+its review/merge status is recorded in [M09 acceptance](m09/acceptance.md).
+Public access configuration and actual deployment remain unperformed, separately
+authorized work. Implementation follows the [canonical roadmap](roadmap-gpt-6-astra-2026-09-15.md).
 
 **Inspected implementation baseline:** `c9197b68591e390a0a3add4667e5dd23717d6b6e` (`main`, M00 closeout, PR #2). M00 stays accepted. At that inspected planning baseline, M01–M09 were pending and the application used Node HTTP and an in-memory Todo store. Subsequent implementation status follows below.
 
@@ -18,9 +24,12 @@ parent M05. M06 is accepted and merged in PR #13 at
 `36d644f529d5660506d6f2aa90e90af562d01440`; it implements
 [typed live synchronization and recovery](m06/acceptance.md). The inspected planning baseline above is historical.
 M07 reference-app completion is [accepted/merged in PR #14](m07/acceptance.md)
-at `92f25680072da22d45e815ac411abd3651d002a5`. The owner explicitly authorized
-M08 from that verified merge; its [temporal-trace implementation](m08/acceptance.md)
-is locally verified with acceptance review/merge pending. M09 and deployment remain pending.
+at `92f25680072da22d45e815ac411abd3651d002a5`. M08's
+[temporal-trace implementation](m08/acceptance.md) is accepted/merged in PR #15 at
+`5362f0392b73c8cd7b8f8fb53e0857b257e55eb3`. The owner explicitly authorized M09
+from that verified merge. Its [operational guide](m09/delivery.md) supplies exact
+local commands, the retained Node support decision and a gated future deployment
+procedure. No remote deployment is claimed.
 
 ## 1. Context and authority
 
@@ -64,7 +73,11 @@ The r2 reference target selects one Durable Object per authorized logical Todo c
 
 A thin platform entry class may delegate to function-based domain and dataflow code. This is a limited adapter exception to the function-first preference, not permission to introduce application class hierarchies. Durable Objects expose an entry-class API and private transactional storage [6]. They can be restarted, so correctness must not depend on a permanently resident Observable graph [7].
 
-M05c must define and test the serialized read/validate/transition/commit boundary. Persist state and ordering metadata consistently before acknowledging a successful commit or publishing it as committed. Do not treat single-threaded JavaScript or `concatMap` in one browser as a transaction guarantee. Concurrent callers and interleaving around asynchronous work must be tested.
+M05c defines and tests the serialized read/validate/transition/commit boundary.
+State and ordering metadata settle consistently before successful acknowledgment
+or committed publication. Single-threaded JavaScript or `concatMap` in one browser
+does not establish a storage transaction. Concurrent callers and interleaving
+around asynchronous work are covered by the authority and restart evidence.
 
 On storage failure, expose a typed failure and leave the prior committed state authoritative; speculative in-memory reductions must not leak as committed snapshots. After restart, reconstruct the same history. If a commit succeeds but a response is lost, report an uncertain outcome rather than automatically retrying a non-idempotent mutation. Exactly-once execution is not promised.
 
@@ -90,7 +103,7 @@ shared named pure transitions.
 The explicit access policy is local development only. The server is bound to
 loopback; authorization requires a loopback request URL, matching Origin when
 present, no cross-site fetch indicator, and no request-supplied collection
-selector. Trusted configuration chooses `local-reference`. The deployed
+selector. Trusted configuration chooses `local-reference`. The checked-in and built
 configuration keeps `TODO_ACCESS_POLICY=disabled`; development enables
 `local-loopback`, and executing the built artifact locally requires an explicit Wrangler command. This is
 not end-user authentication or a production release policy. No remote resource,
@@ -111,7 +124,11 @@ The ordering identity is `collectionId + stateGeneration + revision`. M06 publis
 
 Track connection identity separately. Drop notifications from superseded connections, and accept a new generation only through the defined current-connection/resynchronization policy. Do not accept arbitrary delayed payloads merely because their generation differs.
 
-M05d must prove the authority-to-Worker response path as well as browser disconnect handling. Initial snapshot acquisition and attachment to live updates must not lose a committed update; use a serialized registration/snapshot step or an equivalently tested handoff. The transport can coalesce full snapshots under a bounded latest-snapshot policy, but must not silently discard domain events.
+M05d proves the authority-to-Worker response path and browser disconnect handling.
+Initial snapshot acquisition and attachment share a serialized registration step,
+so a committed update cannot fall between them. The transport coalesces complete
+snapshots under a bounded latest-snapshot policy; generic events retain their
+separate FIFO/overflow contract.
 
 Hono's streaming helper exposes abort handling and closes the stream when its callback completes [2]. The callback and owned subscription therefore need aligned lifetimes. Register cancellation safely before synchronous emissions; handle already-aborted input; serialize and await transport writes; prevent an unbounded chain of pending write promises. Post-header errors cannot be converted into a fresh JSON error response. Terminate or signal a documented protocol failure and release resources.
 
@@ -163,11 +180,16 @@ collection remains visible. The [M06 guide](m06/local-development.md) records th
 two-page synchronization/restart workflow. Local cancellation is not rollback,
 and reconnect never automatically replays an uncertain mutation.
 
-Node remains a tested retained mode
+Node remains a tested local compatibility mode for r2
 with an in-memory collection and a fresh generation per factory/reset, at most
 32 active SSE responses per listener, `drain`-aware writes, explicit stream
-shutdown and port release. Durable restart instead preserves history. M09
-reviews its final support disposition. No remote deployment was performed.
+shutdown and port release through the owned adapter API. Durable restart instead
+preserves history. M09 retains Node with its existing scripts/tests and explicitly
+does not add a production Node deployment or promise indefinite dual support.
+The executable Node launcher has no process-signal hook and does not enforce the
+Worker loopback access policy; tested `app.stop()` must not be confused with
+process termination. See [supported modes](m09/delivery.md#retained-node-mode).
+No remote deployment was performed.
 
 M07 completes the reference UI around these unchanged HTTP/SSE boundaries.
 Local filters and captured draft revisions stay in browser state; server
@@ -181,15 +203,40 @@ Current results and controlled failure/delay probes are recorded in
 
 ## 6. Vite and Wrangler workflow
 
-Use Vite plus the official Cloudflare plugin for browser/Worker development, build and runtime preview [3]. Use project-local Wrangler for platform operations. Verify compatible package versions and pin the resolved toolchain/lockfile in M05a; this documentation revision adds no dependencies and assumes no particular future latest version.
+The repository uses Vite plus the official Cloudflare plugin for browser/Worker
+development, build and local preview [3]. Project-local Wrangler and the committed
+lockfile fix the validated toolchain. Node 22.22.1 remains the execution baseline.
+No dependency upgrade is part of M09. The [delivery guide](m09/delivery.md)
+documents clean installation, all separate type/test environments, build output,
+preview, local persistence and executable checkpoints.
 
-`wrangler.jsonc` is the planned source of Worker configuration. Keep entry points, compatibility date/flags, bindings, migration declarations and environments explicit. Keep browser, Worker and Node-tooling TypeScript environments separate; generate Worker binding types with `wrangler types` [9]. Do not hide incompatible ambient types with an unrestricted shared environment.
+`wrangler.jsonc` is the configuration source. `npm run cf:typegen` generates
+`WorkerEnv`; `cf:typecheck` verifies it. Browser, Worker and Node-tooling ambient
+types stay separate. The default Worker is `rxjs-flow-foundation`, with
+`TODO_COLLECTIONS` bound to `TodoCollection` and `m05c-v1` declaring its SQLite
+class. The project has no named deployment environments and requires no application
+secrets. Its checked-in and generated configuration disables Todo access and public
+Worker/preview URLs.
 
-After Wrangler is installed, document `npx wrangler login` and `npx wrangler whoami` for interactive developer authentication [8]. Device authorization is an optional version-checked alternative when needed. Login is not application-user authentication. Local tests/builds should not require a developer's production credentials. Do not auto-provision resources or enable remote bindings during local verification.
+`dev:worker` enables only local-loopback access. Ordinary `preview:worker` serves
+the built shell while Todo requests return 503 JSON. An explicit project-local
+Wrangler `dev --local` invocation can enable built CRUD/SSE on loopback with local
+disk state. It changes neither source policy nor a remote service.
 
-CI deployment credentials, application secrets and interactive OAuth state are separate. Keep credentials out of Git and out of documentation examples; ignore local secret files. Select least-privilege deployment access during a separately authorized release setup, not as a side effect of a plan change.
+Assets and API share an origin. The Worker retains `/api`; Hono registers it once.
+`assets.run_worker_first: ["/api", "/api/*"]` places API handling before the SPA
+fallback. Built checkpoints verify API 404/access failures remain JSON, even for
+navigation requests. The retained Node development proxy instead strips `/api`
+once before its unprefixed adapter routes.
 
-Do not rerun a starter generator over the repository. Use the existing Vite/JSX application. Define the same-origin asset/API arrangement, including whether `/api` is retained or stripped, and test unknown API routes/auth failures against HTML-fallback interception. M05a establishes the build path; M09 completes its documented delivery evidence.
+Wrangler login/whoami and the pinned device-login alternative are documented for
+a future authorized operator session [8]. Developer authentication is not Todo
+user authentication. Local validation uses no production credentials or remote
+bindings. Named environments, if later introduced, must be selected at Vite build
+time and inspected in the generated config before deployment. Secret writes,
+migration application and deployment are remote release actions, not validation
+steps. The [delivery procedure and current primary references](m09/delivery.md#gated-deployment-procedure)
+explain those boundaries; CI remains validation-only.
 
 ## 7. Migration and evidence gates
 
@@ -197,9 +244,17 @@ M00 remains closed. The recommended order is:
 
 `M01 → M05a → M02 → M03 → M04 → M05b → M05c → M05d → M06 → M07 → M08 → M09`.
 
-Retain the Node baseline until corresponding behavior has Worker acceptance evidence. Node listen/readiness/stop/port-release checks remain applicable to a supported Node adapter. Before deleting or retiring it, map its characterized failures to either a verified fix or a tested replacement, and document the support decision. Do not maintain two competing routing implementations indefinitely and do not remove tests merely to make a migration appear complete.
+M09 explicitly retains the Node baseline as a tested local compatibility mode.
+Its applicable listen/readiness/stop/port-release checks remain. The Worker path
+is primary for durable acceptance; retaining Node does not substitute for those
+tests or require a second production infrastructure. A later retirement needs
+its own tested decision and preserves the historical migration evidence.
 
-M05a must add a compatible Workers-runtime test setup, not wait until M08. Cloudflare provides an official Vitest integration [10]. M08 adds adversarial cross-boundary evidence. Pure reducer, RxJS policy, DOM, Worker, real-transport and browser tests have distinct responsibilities; one layer does not substitute for the others.
+M05a established the compatible Workers-runtime setup using the official Vitest
+integration [10]. M08 added adversarial cross-boundary evidence; M09 checks built
+asset delivery, public API precedence, versioned live snapshots and reconstruction.
+Pure reducer, RxJS policy, DOM, Worker, real-transport and browser tests have
+distinct responsibilities; one layer does not substitute for the others.
 
 M08's opt-in trace capability records the already owned request, response and
 authority boundaries. A local test may construct the functional authority over
@@ -218,15 +273,28 @@ counts check that observation does not repeat effects or retain owned work. See
 
 ## 8. Release and non-goals
 
-This decision authorizes a documentation revision only. It does not authorize merging, starting implementation, publishing packages, creating remote resources, deploying, enabling automatic deployment, or changing `netxpert.ch` DNS, routes, domains, secrets or account settings.
+The owner authorized M09 implementation and completion review. This decision does
+not authorize merging, publishing packages, creating remote resources, deploying,
+enabling automatic deployment, or changing `netxpert.ch` DNS, routes, domains,
+secrets or account settings.
 
-Completion of local tests means local runtime verification. A deployable build means deployment readiness. Only an explicitly authorized, recorded remote verification establishes deployed behavior. Keep those claims separate, and require a documented release access policy before any public demo.
+Passing local tests establishes local runtime verification. The build supplies
+locally tested Worker/assets, while public release readiness still requires a
+reviewed access policy, target configuration and operational decisions. A successful
+build alone does not provide them. Only an explicitly authorized, recorded remote
+verification establishes deployed behavior. Current security, capacity,
+backup/recovery and monitoring limits are listed in
+[M09 delivery](m09/delivery.md#remaining-operational-limits).
 
 SSR/hydration/islands, browser routing, Hono JSX, server-function extraction, a plugin ecosystem, multi-provider portability, jobs/queues and rich devtools remain deferred. The distinctive work is the RxJS dataflow/lifecycle contract and custom rendering integration, not reimplementation of infrastructure.
 
-## 9. Primary references checked on 2026-09-17
+## 9. Primary references
 
-These references support platform facts, not claims that this repository has implemented them. Recheck against the pinned versions during implementation.
+The original architecture references below were checked on 2026-09-17. M09's
+[operational references](m09/delivery.md#primary-platform-references) were checked
+on 2026-09-23, alongside the pinned Wrangler help/schema. Platform documentation
+supports platform facts; repository acceptance evidence supports implementation
+claims.
 
 1. [Hono on Cloudflare Workers](https://hono.dev/docs/getting-started/cloudflare-workers)
 2. [Hono streaming helper](https://hono.dev/docs/helpers/streaming)
